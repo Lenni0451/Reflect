@@ -1,10 +1,10 @@
 package net.lenni0451.reflect.stream;
 
+import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.constructor.ConstructorStream;
 import net.lenni0451.reflect.stream.field.FieldStream;
 import net.lenni0451.reflect.stream.method.MethodStream;
 import net.lenni0451.reflect.stream.utils.Lazy;
-import net.lenni0451.reflect.stream.utils.Sneaky;
 
 public class RStream {
 
@@ -40,7 +40,7 @@ public class RStream {
         try {
             return of(Class.forName(className));
         } catch (ClassNotFoundException e) {
-            Sneaky.sthrow(e);
+            JavaBypass.UNSAFE.throwException(e);
         }
         return null;
     }
@@ -57,7 +57,7 @@ public class RStream {
         try {
             return of(Class.forName(className), instance);
         } catch (ClassNotFoundException e) {
-            Sneaky.sthrow(e);
+            JavaBypass.UNSAFE.throwException(e);
         }
         return null;
     }

@@ -1,8 +1,8 @@
 package net.lenni0451.reflect.stream.field;
 
 import net.lenni0451.reflect.Fields;
+import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.RStream;
-import net.lenni0451.reflect.stream.utils.Sneaky;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class FieldStream {
                 return field;
             }
         }
-        Sneaky.sthrow(new NoSuchFieldException());
+        JavaBypass.UNSAFE.throwException(new NoSuchFieldException());
         return null;
     }
 
@@ -70,7 +70,7 @@ public class FieldStream {
         try {
             return this.fields.get(index);
         } catch (IndexOutOfBoundsException e) {
-            Sneaky.sthrow(new NoSuchFieldException());
+            JavaBypass.UNSAFE.throwException(new NoSuchFieldException());
         }
         return null;
     }

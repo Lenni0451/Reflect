@@ -1,8 +1,8 @@
 package net.lenni0451.reflect.stream.method;
 
+import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.stream.RStream;
-import net.lenni0451.reflect.stream.utils.Sneaky;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class MethodStream {
         for (MethodWrapper method : this.methods) {
             if (method.name().equals(name)) return method;
         }
-        Sneaky.sthrow(new NoSuchMethodException());
+        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         return null;
     }
 
@@ -69,7 +69,7 @@ public class MethodStream {
         for (MethodWrapper method : this.methods) {
             if (Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
         }
-        Sneaky.sthrow(new NoSuchMethodException());
+        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         return null;
     }
 
@@ -85,7 +85,7 @@ public class MethodStream {
         for (MethodWrapper method : this.methods) {
             if (method.name().equals(name) && Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
         }
-        Sneaky.sthrow(new NoSuchMethodException());
+        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         return null;
     }
 
@@ -100,7 +100,7 @@ public class MethodStream {
         try {
             return this.methods.get(index);
         } catch (IndexOutOfBoundsException e) {
-            Sneaky.sthrow(new NoSuchMethodException());
+            JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         }
         return null;
     }

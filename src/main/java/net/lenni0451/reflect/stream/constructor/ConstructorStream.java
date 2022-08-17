@@ -1,8 +1,8 @@
 package net.lenni0451.reflect.stream.constructor;
 
 import net.lenni0451.reflect.Constructors;
+import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.RStream;
-import net.lenni0451.reflect.stream.utils.Sneaky;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class ConstructorStream {
         for (ConstructorWrapper constructor : this.constructors) {
             if (Arrays.equals(constructor.parameterTypes(), parameterTypes)) return constructor;
         }
-        Sneaky.sthrow(new NoSuchMethodException());
+        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         return null;
     }
 
@@ -69,7 +69,7 @@ public class ConstructorStream {
         try {
             return this.constructors.get(index);
         } catch (IndexOutOfBoundsException e) {
-            Sneaky.sthrow(new NoSuchMethodException());
+            JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         }
         return null;
     }
