@@ -6,6 +6,15 @@ plugins {
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 compileJava.options.encoding = "UTF-8"
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+javadoc {
+    failOnError = false
+}
+
 publishing {
     repositories {
         maven {
