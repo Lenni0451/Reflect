@@ -23,7 +23,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = "net.lenni0451"
-            artifactId = "LambdaEvents"
+            artifactId = "Reflect"
             version = "1.0.0"
 
             from components.java
