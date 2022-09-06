@@ -1,6 +1,32 @@
 plugins {
     id "java-library"
+    id "maven-publish"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 compileJava.options.encoding = "UTF-8"
+
+publishing {
+    repositories {
+        maven {
+            name = "reposilite"
+            url = "https://maven.lenni0451.net/releases"
+            credentials {
+                username = "${System.env.REPOSILITE_USERNAME}"
+                password = "${System.env.REPOSILITE_PASSWORD}"
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId = "net.lenni0451"
+            artifactId = "LambdaEvents"
+            version = "1.0.0"
+
+            from components.java
+        }
+    }
+}
