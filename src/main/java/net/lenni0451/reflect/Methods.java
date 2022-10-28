@@ -48,7 +48,26 @@ public class Methods {
     public static <T> T invoke(final Object instance, final Method method, final Object... args) {
         try {
             if (Modifier.isStatic(method.getModifiers())) return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
-            else return (T) JavaBypass.TRUSTED_LOOKUP.unreflectSpecial(method, method.getDeclaringClass()).bindTo(instance).invokeWithArguments(args);
+            else return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
+        } catch (Throwable t) {
+            UNSAFE.throwException(new RuntimeException("Unable to invoke method " + method.getName(), t));
+        }
+        return null;
+    }
+
+    /**
+     * Invoke a super method without any checks
+     *
+     * @param instance   The instance to invoke the method on
+     * @param superClass The super class to call the method of
+     * @param method     The method to invoke
+     * @param args       The arguments to pass to the method
+     * @return The return value of the method (null if void)
+     */
+    public static <I extends S, S, T> T invokeSuper(final I instance, final Class<S> superClass, final Method method, final Object... args) {
+        try {
+            if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Cannot invoke static super method");
+            else return (T) JavaBypass.TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance).invokeWithArguments(args);
         } catch (Throwable t) {
             UNSAFE.throwException(new RuntimeException("Unable to invoke method " + method.getName(), t));
         }
