@@ -20,11 +20,17 @@ public class FieldStream {
     private final RStream parent;
     private final List<FieldWrapper> fields;
 
-    public FieldStream(final RStream parent) {
+    public FieldStream(final RStream parent, final boolean withSuper) {
         this.parent = parent;
         this.fields = new ArrayList<>();
 
-        for (Field field : Fields.getDeclaredFields(parent.clazz())) this.fields.add(new FieldWrapper(this, field));
+        Class<?> clazz = parent.clazz();
+        do {
+            for (Field field : Fields.getDeclaredFields(clazz)) this.fields.add(new FieldWrapper(this, field));
+
+            if (!withSuper) break;
+            clazz = clazz.getSuperclass();
+        } while (clazz != null);
     }
 
     /**

@@ -21,11 +21,17 @@ public class MethodStream {
     private final RStream parent;
     private final List<MethodWrapper> methods;
 
-    public MethodStream(final RStream parent) {
+    public MethodStream(final RStream parent, final boolean withSuper) {
         this.parent = parent;
         this.methods = new ArrayList<>();
 
-        for (Method method : Methods.getDeclaredMethods(parent.clazz())) this.methods.add(new MethodWrapper(this, method));
+        Class<?> clazz = parent.clazz();
+        do {
+            for (Method method : Methods.getDeclaredMethods(clazz)) this.methods.add(new MethodWrapper(this, method));
+
+            if (!withSuper) break;
+            clazz = clazz.getSuperclass();
+        } while (clazz != null);
     }
 
     /**

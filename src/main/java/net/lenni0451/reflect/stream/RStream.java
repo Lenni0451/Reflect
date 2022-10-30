@@ -75,6 +75,7 @@ public class RStream {
 
     private final Class<?> clazz;
     private final Object instance;
+    private boolean withSuper;
 
     private final Lazy<FieldStream> fieldStream;
     private final Lazy<MethodStream> methodStream;
@@ -84,8 +85,8 @@ public class RStream {
         this.clazz = clazz;
         this.instance = instance;
 
-        this.fieldStream = new Lazy<>(() -> new FieldStream(this));
-        this.methodStream = new Lazy<>(() -> new MethodStream(this));
+        this.fieldStream = new Lazy<>(() -> new FieldStream(this, this.withSuper));
+        this.methodStream = new Lazy<>(() -> new MethodStream(this, this.withSuper));
         this.constructorStream = new Lazy<>(() -> new ConstructorStream(this));
     }
 
@@ -101,6 +102,11 @@ public class RStream {
      */
     public Object instance() {
         return this.instance;
+    }
+
+    public RStream withSuper() {
+        this.withSuper = true;
+        return this;
     }
 
 

@@ -30,7 +30,7 @@ publishing {
         maven(MavenPublication) {
             groupId = "net.lenni0451"
             artifactId = "Reflect"
-            version = "1.0.0"
+            version = "1.0.1"
 
             from components.java
         }
