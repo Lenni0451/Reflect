@@ -88,9 +88,9 @@ public class ClassLoaders {
 
     /**
      * Define an anonymous class<br>
-     * This is java version independent but in java 17+ the parent class is unused
+     * This is java version independent
      *
-     * @param parent   The parent class (unused in java 17+)
+     * @param parent   The parent class
      * @param bytecode The bytecode of the class
      * @return The defined class
      */
@@ -101,7 +101,7 @@ public class ClassLoaders {
         Class<?> classOptionClass = Classes.forName("java.lang.invoke.MethodHandles$Lookup$ClassOption");
         Object emptyClassOptionArray = Array.newInstance(classOptionClass, 0);
         Method lookupDefineHiddenClass = Methods.getDeclaredMethod(MethodHandles.Lookup.class, "defineHiddenClass", byte[].class, boolean.class, emptyClassOptionArray.getClass());
-        MethodHandles.Lookup lookup = Methods.invoke(TRUSTED_LOOKUP, lookupDefineHiddenClass, bytecode, false, emptyClassOptionArray);
+        MethodHandles.Lookup lookup = Methods.invoke(TRUSTED_LOOKUP.in(parent), lookupDefineHiddenClass, bytecode, false, emptyClassOptionArray);
         return lookup.lookupClass();
     }
 
