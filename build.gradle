@@ -1,10 +1,15 @@
 plugins {
-    id "java-library"
+    id "java"
     id "maven-publish"
+    id "signing"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-compileJava.options.encoding = "UTF-8"
+compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+
+archivesBaseName = project.maven_name
+group = project.maven_group
+version = project.maven_version
 
 java {
     withSourcesJar()
@@ -19,7 +24,21 @@ publishing {
     repositories {
         maven {
             name = "reposilite"
-            url = "https://maven.lenni0451.net/releases"
+            def releasesUrl = "https://maven.lenni0451.net/releases"
+            def snapshotsUrl = "https://maven.lenni0451.net/snapshots"
+            url = project.maven_version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+
+            credentials(PasswordCredentials)
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+        maven {
+            name = "ossrh"
+            def releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = project.maven_version.endsWith("SNAPSHOT") ? snapshotsUrl : releasesUrl
+
             credentials(PasswordCredentials)
             authentication {
                 basic(BasicAuthentication)
@@ -28,11 +47,42 @@ publishing {
     }
     publications {
         maven(MavenPublication) {
-            groupId = "net.lenni0451"
-            artifactId = "Reflect"
-            version = "1.0.2"
+            artifactId = project.maven_name
+            groupId = project.maven_group
+            version = project.maven_version
 
             from components.java
+
+            pom {
+                name = rootProject.name
+                description = "A template for gradle projects"
+                url = "https://github.com/Lenni0451/GradleTemplate"
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://github.com/Lenni0451/GradleTemplate/blob/main/LICENSE"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "Lenni0451"
+                    }
+                }
+                scm {
+                    connection = "scm:git:git://github.com/Lenni0451/GradleTemplate.git"
+                    developerConnection = "scm:git:ssh://github.com/Lenni0451/GradleTemplate.git"
+                    url = "github.com/Lenni0451/GradleTemplate"
+                }
+            }
         }
     }
+}
+
+signing {
+    sign configurations.archives
+    sign publishing.publications.maven
+}
+
+project.tasks.withType(PublishToMavenRepository).forEach {
+    it.dependsOn(project.tasks.withType(Sign))
 }
