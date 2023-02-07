@@ -3,11 +3,14 @@ package net.lenni0451.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * This class contains some useful methods for working with modules.
+ */
 public class Modules {
 
     /**
-     * Copy the module from one class to another<br>
-     * This bypasses all reflection restrictions in place
+     * Copy the module from one class to another.<br>
+     * This allows the usage of jdk internal classes which are normally protected by restricted module access.
      *
      * @param from The class to copy the module from
      * @param to   The class to copy the module to
@@ -20,7 +23,7 @@ public class Modules {
 
     /**
      * Open a module of a class to everyone<br>
-     * This allows the usage of jdk internal classes which are normally protected by restricted module access
+     * This allows the usage of jdk internal classes which are normally protected by restricted module access.
      *
      * @param clazz The class to open the module of
      */

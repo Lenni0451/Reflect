@@ -5,15 +5,27 @@ import sun.misc.Unsafe;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
+/**
+ * The main class for bypassing java restrictions.<br>
+ * This class contains the unsafe instance and the trusted lookup instance used for everything else.
+ */
 public class JavaBypass {
 
+    /**
+     * The instance of the unsafe class.
+     */
     public static final Unsafe UNSAFE = getUnsafe();
+    /**
+     * The instance of the trusted lookup.
+     */
     public static final MethodHandles.Lookup TRUSTED_LOOKUP = getTrustedLookup();
 
     /**
-     * Get the unsafe instance
+     * Get the unsafe instance.<br>
+     * You should use the static instance {@link #UNSAFE} instead.
      *
      * @return The unsafe instance
+     * @throws IllegalStateException If the unsafe instance could not be gotten
      */
     public static Unsafe getUnsafe() {
         try {
@@ -29,9 +41,11 @@ public class JavaBypass {
     }
 
     /**
-     * Get the trusted lookup instance
+     * Get the trusted lookup instance.<br>
+     * You should use the static instance {@link #TRUSTED_LOOKUP} instead.
      *
      * @return The trusted lookup instance
+     * @throws IllegalStateException If the trusted lookup instance could not be gotten
      */
     public static MethodHandles.Lookup getTrustedLookup() {
         try {
@@ -45,7 +59,8 @@ public class JavaBypass {
     }
 
     /**
-     * Clear the reflection filter maps
+     * Clear the reflection filter maps.<br>
+     * This will allow you to access all fields and methods of a class.
      *
      * @throws ClassNotFoundException If the Reflection class is not found
      */

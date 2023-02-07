@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * A wrapper for {@link Field}/{@link Method}/{@link Constructor} modifier for easier usage.
+ * A wrapper for field/constructor/method modifier for easier usage.
  */
 public class ModifierWrapper {
 
@@ -17,95 +17,106 @@ public class ModifierWrapper {
     }
 
     /**
-     * Get the raw modifier int
+     * @return The raw modifier
      */
     public int raw() {
         return this.modifier;
     }
 
     /**
-     * Get if the modifier contains the public modifier<br>
-     * Targets: {@link Field}, {@link Method}, {@link Constructor}
+     * Targets: {@link Field}, {@link Constructor}, {@link Method}.
+     *
+     * @return If the modifier is public
      */
     public boolean isPublic() {
         return Modifier.isPublic(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the private modifier<br>
-     * Targets: {@link Field}, {@link Method}, {@link Constructor}
+     * Targets: {@link Field}, {@link Constructor}, {@link Method}.
+     *
+     * @return If the modifier is private
      */
     public boolean isPrivate() {
         return Modifier.isPrivate(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the protected modifier<br>
-     * Targets: {@link Field}, {@link Method}, {@link Constructor}
+     * Targets: {@link Field}, {@link Constructor}, {@link Method}.
+     *
+     * @return If the modifier is protected
      */
     public boolean isProtected() {
         return Modifier.isProtected(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the static modifier<br>
-     * Targets: {@link Field}, {@link Method}
+     * Targets: {@link Field}, {@link Method}.
+     *
+     * @return If the modifier is static
      */
     public boolean isStatic() {
         return Modifier.isStatic(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the final modifier<br>
-     * Targets: {@link Field}, {@link Method}
+     * Targets: {@link Field}, {@link Method}.
+     *
+     * @return If the modifier is final
      */
     public boolean isFinal() {
         return Modifier.isFinal(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the synchronized modifier<br>
-     * Targets: {@link Method}
+     * Targets: {@link Field}, {@link Method}.
+     *
+     * @return If the modifier is synchronized
      */
     public boolean isSynchronized() {
         return Modifier.isSynchronized(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the volatile modifier<br>
-     * Targets: {@link Field}
+     * Targets: {@link Field}.
+     *
+     * @return If the modifier is volatile
      */
     public boolean isVolatile() {
         return Modifier.isVolatile(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the transient modifier<br>
-     * Targets: {@link Field}
+     * Targets: {@link Field}.
+     *
+     * @return If the modifier is transient
      */
     public boolean isTransient() {
         return Modifier.isTransient(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the native modifier<br>
-     * Targets: {@link Method}
+     * Targets: {@link Method}.
+     *
+     * @return If the modifier is native
      */
     public boolean isNative() {
         return Modifier.isNative(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the abstract modifier<br>
-     * Targets: {@link Method}
+     * Targets: {@link Method}.
+     *
+     * @return If the modifier is abstract
      */
     public boolean isAbstract() {
         return Modifier.isAbstract(this.modifier);
     }
 
     /**
-     * Get if the modifier contains the strict modifier<br>
-     * Targets: {@link Method}
+     * Targets: {@link Method}.
+     *
+     * @return If the modifier is strict
      */
     public boolean isStrict() {
         return Modifier.isStrict(this.modifier);

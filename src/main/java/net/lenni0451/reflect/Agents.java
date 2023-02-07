@@ -10,6 +10,9 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+/**
+ * This class contains some useful methods for working with agents.
+ */
 public class Agents {
 
     /*
@@ -53,7 +56,7 @@ public class Agents {
             "AAqxAAAAAAAJAAsADAABABAAAAARAAEAAgAAAAUrswAOsQAAAAAACQAPAAwAAQAQAAAAEQABAAIAAAAFK7MADrEAAAAAAAA=";
 
     /**
-     * Create a temp empty dummy agent jar for a given class
+     * Create a temp empty dummy agent jar for a given class.
      *
      * @param agentClass The class to create the agent for
      * @return The path to the agent jar
@@ -67,7 +70,7 @@ public class Agents {
     }
 
     /**
-     * Create an empty dummy agent jar for a given class
+     * Create an empty dummy agent jar for a given class.
      *
      * @param agentJar  The path to the agent jar
      * @param agentName The name of the agent class
@@ -89,10 +92,12 @@ public class Agents {
     }
 
     /**
-     * Load an agent from a jar during runtime
+     * Load an agent from a jar during runtime.<br>
+     * The method used was added in Java 9 and is not available in Java 8.
      *
      * @param agentJar The path to the agent jar
      * @throws ClassNotFoundException If the InstrumentationImpl class is not found
+     * @throws IllegalStateException  If the loadAgent method does not exist
      */
     public static void load(final File agentJar) throws ClassNotFoundException {
         Class<?> instrumentationImpl = Class.forName("sun.instrument.InstrumentationImpl");
@@ -102,24 +107,28 @@ public class Agents {
     }
 
     /**
-     * Create a dummy agent jar for the given class and load it
+     * Create a dummy agent jar for the given class and load it.<br>
+     * The method used was added in Java 9 and is not available in Java 8.
      *
      * @param agentClass The class to create the agent for
      * @throws IOException            If an I/O error occurs
      * @throws ClassNotFoundException If the InstrumentationImpl class is not found
+     * @throws IllegalStateException  If the loadAgent method does not exist
      */
     public static void loadInternal(final Class<?> agentClass) throws IOException, ClassNotFoundException {
         load(createDummyAgent(agentClass));
     }
 
     /**
-     * Get an instrumentation instance by loading an agent<br>
-     * The loaded agent stores the instrumentation instance in a static field which is accessed by reflection<br>
-     * This solves many problems which can occur with class loaders
+     * Get an instrumentation instance by loading an agent during runtime.<br>
+     * The loaded agent stores the instrumentation instance in a static field which is accessed using reflection.<br>
+     * This solves many problems which can occur with class loaders.<br>
+     * The instrumentation instance is cached so that it is only loaded once.
      *
      * @return The instrumentation instance
      * @throws IOException            If an IO error occurs
      * @throws ClassNotFoundException If the InstrumentationImpl class is not found
+     * @throws IllegalStateException  If the loadAgent method does not exist
      */
     public static Instrumentation getInstrumentation() throws IOException, ClassNotFoundException {
         final String agentLoaderClassName = "net.lenni0451.reflect.AgentLoader";

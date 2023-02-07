@@ -7,12 +7,18 @@ import java.util.Arrays;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
+/**
+ * This class contains some useful methods for working with constructors.
+ */
 public class Constructors {
 
     /**
-     * Get all declared constructors of a class
+     * Get all declared constructors of a class.<br>
+     * The reflection filter of the class will be ignored.<br>
+     * An empty array will be returned if the method could not be invoked.
      *
-     * @param clazz The class to get the constructors of
+     * @param clazz The class to get the constructors from
+     * @param <T>   The type of the class
      * @return An array of all declared constructors of the class
      */
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
@@ -25,11 +31,13 @@ public class Constructors {
     }
 
     /**
-     * Get a declared constructor of a class by its parameter types
+     * Get a declared constructor of a class by its parameter types.<br>
+     * The reflection filter of the class will be ignored.
      *
-     * @param clazz          The class to get the constructor of
+     * @param clazz          The class to get the constructor from
      * @param parameterTypes The parameter types of the constructor
-     * @return The constructor of the class or null if it doesn't exist
+     * @param <T>            The type of the class
+     * @return The constructor or null if it doesn't exist
      */
     public static <T> Constructor<T> getDeclaredConstructor(final Class<T> clazz, final Class<?>... parameterTypes) {
         for (Constructor<T> constructor : getDeclaredConstructors(clazz)) if (Arrays.equals(constructor.getParameterTypes(), parameterTypes)) return constructor;
@@ -38,10 +46,12 @@ public class Constructors {
 
 
     /**
-     * Invoke a constructor without any checks
+     * Invoke a constructor without any checks.<br>
+     * The constructor does not have to be accessible.
      *
      * @param constructor The constructor to invoke
      * @param args        The arguments to pass to the constructor
+     * @param <T>         The type of the class
      * @return The instance of the class
      */
     public static <T> T invoke(final Constructor<T> constructor, final Object... args) {

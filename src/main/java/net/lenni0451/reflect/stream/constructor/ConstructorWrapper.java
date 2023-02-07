@@ -6,7 +6,7 @@ import net.lenni0451.reflect.stream.general.ModifierWrapper;
 import java.lang.reflect.Constructor;
 
 /**
- * Wrap a {@link Constructor} for easy access
+ * A wrapper of the {@link Constructor} class for easy access to all required methods.
  */
 public class ConstructorWrapper {
 
@@ -21,35 +21,35 @@ public class ConstructorWrapper {
     }
 
     /**
-     * Get the parent {@link ConstructorStream}
+     * @return The parent constructor stream
      */
     public ConstructorStream parent() {
         return this.parent;
     }
 
     /**
-     * Get the raw {@link Constructor}
+     * @return The underlying constructor
      */
     public Constructor<?> raw() {
         return this.constructor;
     }
 
     /**
-     * Get the parameter types of the {@link Constructor}
+     * @return The parameter types of the constructor
      */
     public Class<?>[] parameterTypes() {
         return this.constructor.getParameterTypes();
     }
 
     /**
-     * Get the owner {@link Class} of the {@link Constructor}
+     * @return The owner (declaring) class of the constructor
      */
     public Class<?> owner() {
         return this.constructor.getDeclaringClass();
     }
 
     /**
-     * Get the {@link ModifierWrapper} of the {@link Constructor}
+     * @return The {@link ModifierWrapper} of the constructor
      */
     public ModifierWrapper modifier() {
         return this.modifier;
@@ -57,10 +57,11 @@ public class ConstructorWrapper {
 
 
     /**
-     * Invoke the {@link Constructor} with the given arguments
+     * Create a new instance of the owner class with the given arguments.
      *
-     * @param args The arguments to pass to the {@link Constructor}
-     * @return The result of the invocation
+     * @param args The arguments to pass to the constructor
+     * @param <T>  The type of the owner class
+     * @return The new instance
      */
     public <T> T newInstance(final Object... args) {
         return (T) Constructors.invoke(this.constructor, args);

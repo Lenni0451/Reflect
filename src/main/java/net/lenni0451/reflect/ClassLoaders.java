@@ -12,10 +12,13 @@ import java.security.ProtectionDomain;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
+/**
+ * This class contains some useful methods for working with class loaders.
+ */
 public class ClassLoaders {
 
     /**
-     * Add a URL to the system classpath
+     * Add a URL to the system classpath.
      *
      * @param url The URL to add
      */
@@ -30,7 +33,7 @@ public class ClassLoaders {
     }
 
     /**
-     * Get all URLs of the system classpath
+     * Get all URLs of the system classpath.
      *
      * @return The system classpath
      */
@@ -46,7 +49,7 @@ public class ClassLoaders {
 
 
     /**
-     * Define a class using the given class loader
+     * Define a class using the given class loader.
      *
      * @param classLoader The class loader to use
      * @param name        The name of the class
@@ -58,7 +61,7 @@ public class ClassLoaders {
     }
 
     /**
-     * Define a class using the given class loader
+     * Define a class using the given class loader.
      *
      * @param classLoader      The class loader to use
      * @param name             The name of the class
@@ -71,7 +74,7 @@ public class ClassLoaders {
     }
 
     /**
-     * Define a class using the given class loader
+     * Define a class using the given class loader.
      *
      * @param classLoader      The class loader to use
      * @param name             The name of the class
@@ -87,8 +90,8 @@ public class ClassLoaders {
     }
 
     /**
-     * Define an anonymous class<br>
-     * This is java version independent
+     * Define an anonymous class.<br>
+     * This is java version independent.
      *
      * @param parent   The parent class
      * @param bytecode The bytecode of the class

@@ -6,7 +6,7 @@ import net.lenni0451.reflect.stream.general.ModifierWrapper;
 import java.lang.reflect.Field;
 
 /**
- * Wrap a {@link Field} for easy access
+ * A wrapper of the {@link Field} class for easy access to all required methods.
  */
 public class FieldWrapper {
 
@@ -21,42 +21,42 @@ public class FieldWrapper {
     }
 
     /**
-     * Get the parent {@link FieldStream}
+     * @return The parent field stream
      */
     public FieldStream parent() {
         return this.parent;
     }
 
     /**
-     * Get the raw {@link Field}
+     * @return The underlying field
      */
     public Field raw() {
         return this.field;
     }
 
     /**
-     * Get the name of the {@link Field}
+     * @return The name of the field
      */
     public String name() {
         return this.field.getName();
     }
 
     /**
-     * Get the type of the {@link Field}
+     * @return The type of the field
      */
     public Class<?> type() {
         return this.field.getType();
     }
 
     /**
-     * Get the owner {@link Class} of the {@link Field}
+     * @return The owner (declaring) class of the field
      */
     public Class<?> owner() {
         return this.field.getDeclaringClass();
     }
 
     /**
-     * Get the {@link ModifierWrapper} of the field
+     * @return The {@link ModifierWrapper} of the field
      */
     public ModifierWrapper modifier() {
         return this.modifier;
@@ -64,9 +64,12 @@ public class FieldWrapper {
 
 
     /**
-     * Get the value of the {@link Field}
+     * Get the value of the field.<br>
+     * The cached instance of the owner will be used if required.
      *
-     * @throws IllegalStateException If trying to get a non-static {@link Field} if no instance is provided
+     * @param <T> The type of the field
+     * @return The value of the field
+     * @throws IllegalStateException If the field is not static and no instance is cached
      */
     public <T> T get() {
         if (!this.modifier.isStatic() && this.parent.parent().instance() == null) throw new IllegalStateException("Can not get non static field if no instance is provided");
@@ -74,10 +77,11 @@ public class FieldWrapper {
     }
 
     /**
-     * Get the value of the {@link Field} with the given owner
+     * Get the value of the field with the given instance.
      *
      * @param instance The instance of the owner
-     * @return The value of the {@link Field}
+     * @param <T>      The type of the field
+     * @return The value of the field
      */
     public <T> T get(final Object instance) {
         return Fields.get(instance, this.field);

@@ -13,7 +13,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * An easy-to-use stream to filter out the fields you want to access
+ * A stream of all fields of a class and super classes (if wanted).<br>
+ * The fields of super classes are after the fields of the class itself (descending order).
  */
 public class FieldStream {
 
@@ -34,14 +35,14 @@ public class FieldStream {
     }
 
     /**
-     * Get the parent {@link RStream} instance
+     * @return The parent stream
      */
     public RStream parent() {
         return this.parent;
     }
 
     /**
-     * Get the amount of fields in this stream
+     * @return The amount of fields in this stream
      */
     public int size() {
         return this.fields.size();
@@ -49,10 +50,11 @@ public class FieldStream {
 
 
     /**
-     * Get the {@link FieldWrapper} instance of the field with the given name
+     * Get a field by the given name.<br>
+     * If there are multiple fields with the same name the first one will be returned.
      *
      * @param name The name of the field
-     * @return The {@link FieldWrapper} instance
+     * @return The field wrapper
      * @throws NoSuchFieldException If the field doesn't exist
      */
     public FieldWrapper by(final String name) {
@@ -66,11 +68,12 @@ public class FieldStream {
     }
 
     /**
-     * Get the {@link FieldWrapper} instance of the field with the given index
+     * Get a field by the given index.<br>
+     * The index is the position of the field in the stream.
      *
      * @param index The index of the field
-     * @return The {@link FieldWrapper} instance
-     * @throws NoSuchFieldException If the index is out of bounds
+     * @return The field wrapper
+     * @throws NoSuchFieldException If the field doesn't exist
      */
     public FieldWrapper by(final int index) {
         try {
@@ -83,10 +86,11 @@ public class FieldStream {
 
 
     /**
-     * Filter the fields by the given predicate
+     * Filter the fields with the given filter.<br>
+     * The current stream will be modified.
      *
-     * @param filter The predicate
-     * @return The filtered {@link FieldStream}
+     * @param filter The filter
+     * @return This stream
      */
     public FieldStream filter(final Predicate<FieldWrapper> filter) {
         this.fields.removeIf(filter.negate());
@@ -94,20 +98,22 @@ public class FieldStream {
     }
 
     /**
-     * Filter out all fields whose type is not the given {@link Class}
+     * Filter the fields by the given type.<br>
+     * The current stream will be modified.
      *
-     * @param clazz The {@link Class} of the field type
-     * @return The filtered {@link FieldStream}
+     * @param clazz The type
+     * @return This stream
      */
     public FieldStream filter(final Class<?> clazz) {
         return this.filter(field -> field.type().equals(clazz));
     }
 
     /**
-     * Filter out all static/non-static fields
+     * Filter the fields by whether tey are static.<br>
+     * The current stream will be modified.
      *
-     * @param isStatic Whether the field should be static or not
-     * @return The filtered {@link FieldStream}
+     * @param isStatic Whether the fields should be static
+     * @return This stream
      */
     public FieldStream filter(final boolean isStatic) {
         return this.filter(field -> field.modifier().isStatic() == isStatic);
@@ -115,24 +121,24 @@ public class FieldStream {
 
 
     /**
-     * Get an iterator of the {@link FieldWrapper} instances
+     * @return An iterator of field wrappers
      */
     public Iterator<FieldWrapper> iterator() {
         return this.fields.iterator();
     }
 
     /**
-     * Get the java stream of the {@link FieldWrapper} instances
+     * @return A stream of field wrappers
      */
     public Stream<FieldWrapper> jstream() {
         return this.fields.stream();
     }
 
     /**
-     * Loop through all {@link FieldWrapper} instances
+     * Loop through all fields in this stream.
      *
      * @param consumer The consumer
-     * @return The {@link FieldStream}
+     * @return This stream
      */
     public FieldStream forEach(final Consumer<FieldWrapper> consumer) {
         this.fields.forEach(consumer);

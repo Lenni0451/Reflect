@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * An easy-to-use stream to filter out the constructors you want to access
+ * A stream of all constructors of a class.
  */
 public class ConstructorStream {
 
@@ -29,14 +29,14 @@ public class ConstructorStream {
     }
 
     /**
-     * Get the parent {@link RStream} instance
+     * @return The parent stream
      */
     public RStream parent() {
         return this.parent;
     }
 
     /**
-     * Get the amount of constructors in this stream
+     * @return The amount of methods in this stream
      */
     public int size() {
         return this.constructors.size();
@@ -44,10 +44,10 @@ public class ConstructorStream {
 
 
     /**
-     * Get the {@link ConstructorWrapper} instance of the constructor with the given parameter types
+     * Get a constructor by the given parameter types.
      *
      * @param parameterTypes The parameter types of the constructor
-     * @return The {@link ConstructorWrapper} instance
+     * @return The constructor wrapper
      * @throws NoSuchMethodException If the constructor doesn't exist
      */
     public ConstructorWrapper by(final Class<?>... parameterTypes) {
@@ -59,10 +59,11 @@ public class ConstructorStream {
     }
 
     /**
-     * Get the {@link ConstructorWrapper} instance of the constructor with the given index
+     * Get a constructor by the given index.<br>
+     * The index is the position of the constructor in the stream.
      *
      * @param index The index of the constructor
-     * @return The {@link ConstructorWrapper} instance
+     * @return The constructor wrapper
      * @throws NoSuchMethodException If the constructor doesn't exist
      */
     public ConstructorWrapper by(final int index) {
@@ -76,10 +77,11 @@ public class ConstructorStream {
 
 
     /**
-     * Filter the constructors by the given predicate
+     * Filter the methods with the given filter.<br>
+     * The current stream will be modified.
      *
-     * @param filter The predicate
-     * @return The filtered {@link ConstructorStream}
+     * @param filter The filter
+     * @return This stream
      */
     public ConstructorStream filter(final Predicate<ConstructorWrapper> filter) {
         this.constructors.removeIf(filter.negate());
@@ -87,20 +89,22 @@ public class ConstructorStream {
     }
 
     /**
-     * Filter the constructors by the given parameter types
+     * Filter the methods by the given parameter types.<br>
+     * The current stream will be modified.
      *
-     * @param parameterTypes The parameter types
-     * @return The filtered {@link ConstructorStream}
+     * @param parameterTypes The parameter types of the constructor
+     * @return This stream
      */
     public ConstructorStream filter(final Class<?>... parameterTypes) {
         return this.filter(constructor -> Arrays.equals(constructor.parameterTypes(), parameterTypes));
     }
 
     /**
-     * Filter out all static/non-static constructors
+     * Filter the constructors by whether they are static.<br>
+     * The current stream will be modified.
      *
-     * @param isStatic Whether the constructor should be static or not
-     * @return The filtered {@link ConstructorStream}
+     * @param isStatic Whether the constructor should be static
+     * @return This stream
      */
     public ConstructorStream filter(final boolean isStatic) {
         return this.filter(constructor -> constructor.modifier().isStatic() == isStatic);
@@ -108,24 +112,24 @@ public class ConstructorStream {
 
 
     /**
-     * Get an iterator of the {@link ConstructorWrapper} instances
+     * @return An iterator of method wrappers
      */
     public Iterator<ConstructorWrapper> iterator() {
         return this.constructors.iterator();
     }
 
     /**
-     * Get the java stream of the {@link ConstructorWrapper} instances
+     * @return A stream of method wrappers
      */
     public Stream<ConstructorWrapper> jstream() {
         return this.constructors.stream();
     }
 
     /**
-     * Loop through all {@link ConstructorWrapper} instances
+     * Loop through all constructors in this stream.
      *
      * @param consumer The consumer
-     * @return The {@link ConstructorStream}
+     * @return This stream
      */
     public ConstructorStream forEach(final Consumer<ConstructorWrapper> consumer) {
         this.constructors.forEach(consumer);

@@ -3,16 +3,21 @@ package net.lenni0451.reflect;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+/**
+ * This class contains some useful methods for working with enums.
+ */
 public class Enums {
 
     /**
-     * Create a new enum instance during runtime
+     * Create a new instance of an enum.<br>
+     * The value will <b>not</b> be added to the enum class. Use {@link #addEnumInstance(Class, Enum)} for that.
      *
      * @param enumClass     The enum class
-     * @param name          The name of the new enum value
-     * @param ordinal       The ordinal of the new enum value
-     * @param argumentTypes The argument types of the enum constructor
-     * @param arguments     The arguments of the enum constructor
+     * @param name          The name of the enum value
+     * @param ordinal       The ordinal of the enum value
+     * @param argumentTypes The argument types of the constructor
+     * @param arguments     The arguments of the constructor
+     * @param <T>           The enum type
      * @return The new enum value
      */
     public static <T extends Enum<T>> T newInstance(final Class<T> enumClass, final String name, final int ordinal, final Class<?>[] argumentTypes, final Object[] arguments) {
@@ -30,10 +35,12 @@ public class Enums {
     }
 
     /**
-     * Add a enum value to an enum class
+     * Add a new enum value to an enum class.<br>
+     * The enum value will be added to the enum class and the enum value cache will be cleared.
      *
      * @param enumClass The enum class
-     * @param enumValue The enum value
+     * @param enumValue The enum value to add
+     * @param <T>       The enum type
      */
     public static <T extends Enum<T>> void addEnumInstance(final Class<T> enumClass, final T enumValue) {
         { //Add the enum value to the enum class

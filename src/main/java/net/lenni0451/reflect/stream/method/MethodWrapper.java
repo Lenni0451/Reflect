@@ -6,7 +6,7 @@ import net.lenni0451.reflect.stream.general.ModifierWrapper;
 import java.lang.reflect.Method;
 
 /**
- * Wrap a {@link Method} for easy access
+ * A wrapper of the {@link Method} class for easy access to all required methods.
  */
 public class MethodWrapper {
 
@@ -21,49 +21,49 @@ public class MethodWrapper {
     }
 
     /**
-     * Get the parent {@link MethodStream}
+     * @return The parent method stream
      */
     public MethodStream parent() {
         return this.parent;
     }
 
     /**
-     * Get the raw {@link Method}
+     * @return The underlying method
      */
     public Method raw() {
         return this.method;
     }
 
     /**
-     * Get the name of the {@link Method}
+     * @return The name of the method
      */
     public String name() {
         return this.method.getName();
     }
 
     /**
-     * Get the return type of the {@link Method}
+     * @return The return type of the method
      */
     public Class<?> returnType() {
         return this.method.getReturnType();
     }
 
     /**
-     * Get the parameter types of the {@link Method}
+     * @return The parameter types of the method
      */
     public Class<?>[] parameterTypes() {
         return this.method.getParameterTypes();
     }
 
     /**
-     * Get the owner {@link Class} of the {@link Method}
+     * @return The owner (declaring) class of the method
      */
     public Class<?> owner() {
         return this.method.getDeclaringClass();
     }
 
     /**
-     * Get the {@link ModifierWrapper} of the {@link Method}
+     * @return The {@link ModifierWrapper} of the method
      */
     public ModifierWrapper modifier() {
         return this.modifier;
@@ -71,19 +71,23 @@ public class MethodWrapper {
 
 
     /**
-     * Invoke the {@link Method} without any args
+     * Invoke the method without any arguments.<br>
+     * The cached instance of the owner will be used if required.
      *
-     * @return The result of the invocation
+     * @return The result of the invocation or null if the method is void
+     * @throws IllegalStateException If the method is not static and no instance is cached
      */
     public <T> T invoke() {
         return this.invokeArgs();
     }
 
     /**
-     * Invoke the {@link Method} with the given arguments
+     * Invoke the method with the given arguments.<br>
+     * The cached instance of the owner will be used if required.
      *
-     * @param args The arguments to pass to the {@link Method}
-     * @return The result of the invocation
+     * @param args The arguments to pass to the method
+     * @return The result of the invocation or null if the method is void
+     * @throws IllegalStateException If the method is not static and no instance is cached
      */
     public <T> T invokeArgs(final Object... args) {
         if (!this.modifier.isStatic() && this.parent.parent().instance() == null) throw new IllegalStateException("Can not invoke non-static method if no instance is provided");
@@ -91,11 +95,11 @@ public class MethodWrapper {
     }
 
     /**
-     * Invoke the {@link Method} with the give arguments and instance
+     * Invoke the method of the given instance with the given arguments.
      *
-     * @param instance The instance of the owner
-     * @param args     The arguments to pass to the {@link Method}
-     * @return The result of the invocation
+     * @param instance The instance to invoke the method on
+     * @param args     The arguments to pass to the method
+     * @return The result of the invocation or null if the method is void
      */
     public <T> T invokeInstance(final Object instance, final Object... args) {
         return Methods.invoke(instance, this.method, args);
