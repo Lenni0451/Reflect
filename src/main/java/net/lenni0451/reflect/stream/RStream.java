@@ -95,14 +95,14 @@ public class RStream {
     }
 
     /**
-     * Get the class of this stream.
+     * @return The class of this stream.
      */
     public Class<?> clazz() {
         return this.clazz;
     }
 
     /**
-     * Get the instance of this stream.
+     * @return The instance of this stream.
      */
     public Object instance() {
         return this.instance;
@@ -124,7 +124,7 @@ public class RStream {
 
 
     /**
-     * Get the field stream of this class.
+     * @return A stream with all fields of this class.
      */
     public FieldStream fields() {
         if (this.fieldStream == null) this.fieldStream = new FieldStream(this, this.withSuper);
@@ -132,7 +132,7 @@ public class RStream {
     }
 
     /**
-     * Get the constructor stream of this class.
+     * @return A stream with all constructors of this class.
      */
     public ConstructorStream constructors() {
         if (this.constructorStream == null) this.constructorStream = new ConstructorStream(this);
@@ -140,7 +140,7 @@ public class RStream {
     }
 
     /**
-     * Get the method stream of this class.
+     * @return A stream with all methods of this class.
      */
     public MethodStream methods() {
         if (this.methodStream == null) this.methodStream = new MethodStream(this, this.withSuper);

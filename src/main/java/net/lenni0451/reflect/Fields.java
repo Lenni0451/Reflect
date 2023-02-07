@@ -441,6 +441,7 @@ public class Fields {
      *
      * @param instance The instance or null if the field is static
      * @param field    The field to get the value of
+     * @param <T>      The type of the field
      * @return The value of the field
      */
     public static <T> T get(final Object instance, final Field field) {

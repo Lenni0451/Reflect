@@ -74,6 +74,7 @@ public class MethodWrapper {
      * Invoke the method without any arguments.<br>
      * The cached instance of the owner will be used if required.
      *
+     * @param <T> The type of the result
      * @return The result of the invocation or null if the method is void
      * @throws IllegalStateException If the method is not static and no instance is cached
      */
@@ -86,6 +87,7 @@ public class MethodWrapper {
      * The cached instance of the owner will be used if required.
      *
      * @param args The arguments to pass to the method
+     * @param <T>  The type of the result
      * @return The result of the invocation or null if the method is void
      * @throws IllegalStateException If the method is not static and no instance is cached
      */
@@ -99,6 +101,7 @@ public class MethodWrapper {
      *
      * @param instance The instance to invoke the method on
      * @param args     The arguments to pass to the method
+     * @param <T>      The type of the result
      * @return The result of the invocation or null if the method is void
      */
     public <T> T invokeInstance(final Object instance, final Object... args) {
