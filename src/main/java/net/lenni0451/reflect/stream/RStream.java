@@ -5,6 +5,9 @@ import net.lenni0451.reflect.stream.constructor.ConstructorStream;
 import net.lenni0451.reflect.stream.field.FieldStream;
 import net.lenni0451.reflect.stream.method.MethodStream;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Get a stream of all fields, methods or constructors of a class.
  */
@@ -17,7 +20,7 @@ public class RStream {
      * @param clazz The class to get the stream of
      * @return The stream instance of the given class
      */
-    public static RStream of(final Class<?> clazz) {
+    public static RStream of(@Nonnull final Class<?> clazz) {
         return new RStream(clazz, null);
     }
 
@@ -29,7 +32,7 @@ public class RStream {
      * @param instance The instance of the given class
      * @return The stream instance of the given class and instance
      */
-    public static RStream of(final Class<?> clazz, final Object instance) {
+    public static RStream of(@Nonnull final Class<?> clazz, @Nullable final Object instance) {
         return new RStream(clazz, instance);
     }
 
@@ -41,13 +44,8 @@ public class RStream {
      * @return The stream instance of the given class by name
      * @throws ClassNotFoundException If the class with the given name doesn't exist
      */
-    public static RStream of(final String className) {
-        try {
-            return of(Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            JavaBypass.UNSAFE.throwException(e);
-        }
-        return null;
+    public static RStream of(@Nonnull final String className) {
+        return of(className, null);
     }
 
     /**
@@ -59,7 +57,7 @@ public class RStream {
      * @return The stream instance of the given class by name and instance
      * @throws ClassNotFoundException If the class with the given name doesn't exist
      */
-    public static RStream of(final String className, final Object instance) {
+    public static RStream of(@Nonnull final String className, @Nullable final Object instance) {
         try {
             return of(Class.forName(className), instance);
         } catch (ClassNotFoundException e) {
@@ -76,7 +74,7 @@ public class RStream {
      * @param instance The instance to get the stream of
      * @return The stream instance of the given instance
      */
-    public static RStream of(final Object instance) {
+    public static RStream of(@Nonnull final Object instance) {
         return new RStream(instance.getClass(), instance);
     }
 
@@ -89,7 +87,7 @@ public class RStream {
     private MethodStream methodStream;
     private ConstructorStream constructorStream;
 
-    private RStream(final Class<?> clazz, final Object instance) {
+    private RStream(@Nonnull final Class<?> clazz, @Nullable final Object instance) {
         this.clazz = clazz;
         this.instance = instance;
     }
@@ -104,6 +102,7 @@ public class RStream {
     /**
      * @return The instance of this stream.
      */
+    @Nullable
     public Object instance() {
         return this.instance;
     }

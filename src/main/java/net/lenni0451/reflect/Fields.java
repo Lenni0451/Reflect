@@ -1,5 +1,6 @@
 package net.lenni0451.reflect;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -61,6 +62,7 @@ public class Fields {
      * @param name  The name of the field
      * @return The field or null if it doesn't exist
      */
+    @Nullable
     public static Field getDeclaredField(final Class<?> clazz, final String name) {
         for (Field field : getDeclaredFields(clazz)) {
             if (field.getName().equals(name)) return field;
@@ -400,6 +402,7 @@ public class Fields {
      * @param <T>      The type of the field
      * @return The value of the field
      */
+    @Nullable
     public static <T> T getObject(final Object instance, final Field field) {
         return (T) UNSAFE.getObject(instance(instance, field), offset(field));
     }
@@ -444,6 +447,7 @@ public class Fields {
      * @param <T>      The type of the field
      * @return The value of the field
      */
+    @Nullable
     public static <T> T get(final Object instance, final Field field) {
         if (field.getType().equals(boolean.class)) return (T) Boolean.valueOf(getBoolean(instance, field));
         else if (field.getType().equals(byte.class)) return (T) Byte.valueOf(getByte(instance, field));

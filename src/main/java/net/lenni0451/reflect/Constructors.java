@@ -1,5 +1,6 @@
 package net.lenni0451.reflect;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ public class Constructors {
      * @param <T>            The type of the class
      * @return The constructor or null if it doesn't exist
      */
+    @Nullable
     public static <T> Constructor<T> getDeclaredConstructor(final Class<T> clazz, final Class<?>... parameterTypes) {
         for (Constructor<T> constructor : getDeclaredConstructors(clazz)) if (Arrays.equals(constructor.getParameterTypes(), parameterTypes)) return constructor;
         return null;

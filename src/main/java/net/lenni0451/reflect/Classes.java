@@ -1,5 +1,6 @@
 package net.lenni0451.reflect;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
@@ -32,6 +33,7 @@ public class Classes {
      * @param simpleName The simple name of the class
      * @return The class or null if it doesn't exist
      */
+    @Nullable
     public static Class<?> getDeclaredClass(final Class<?> clazz, final String simpleName) {
         for (Class<?> c : getDeclaredClasses(clazz)) if (c.getSimpleName().equals(simpleName)) return c;
         return null;
@@ -45,6 +47,7 @@ public class Classes {
      * @param name The name of the class
      * @return The class
      */
+    @Nullable
     public static Class<?> forName(final String name) {
         try {
             return Class.forName(name);
@@ -61,6 +64,7 @@ public class Classes {
      * @param name   The name of the class
      * @return The class
      */
+    @Nullable
     public static Class<?> forName(final ClassLoader loader, final String name) {
         return forName(loader, name, true);
     }
@@ -74,6 +78,7 @@ public class Classes {
      * @param initialize Whether to initialize the class
      * @return The class
      */
+    @Nullable
     public static Class<?> forName(final ClassLoader loader, final String name, final boolean initialize) {
         try {
             return Class.forName(name, initialize, loader);

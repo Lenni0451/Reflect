@@ -1,5 +1,7 @@
 package net.lenni0451.reflect;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -35,6 +37,7 @@ public class Methods {
      * @param parameterTypes The parameter types of the method
      * @return The method or null if it doesn't exist
      */
+    @Nullable
     public static Method getDeclaredMethod(final Class<?> clazz, final String name, final Class<?>... parameterTypes) {
         for (Method method : getDeclaredMethods(clazz)) {
             if (method.getName().equals(name) && Arrays.equals(method.getParameterTypes(), parameterTypes)) return method;
@@ -54,7 +57,7 @@ public class Methods {
      * @return The return value of the method (null if void)
      * @throws RuntimeException If the method could not be invoked
      */
-    public static <T> T invoke(final Object instance, final Method method, final Object... args) {
+    public static <T> T invoke(@Nullable final Object instance, final Method method, final Object... args) {
         try {
             if (Modifier.isStatic(method.getModifiers())) return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
             else return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
@@ -77,7 +80,7 @@ public class Methods {
      * @return The return value of the method (null if void)
      * @throws RuntimeException If the method could not be invoked
      */
-    public static <I extends S, S, T> T invokeSuper(final I instance, final Class<S> superClass, final Method method, final Object... args) {
+    public static <I extends S, S, T> T invokeSuper(@Nonnull final I instance, @Nonnull final Class<S> superClass, final Method method, final Object... args) {
         try {
             if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Cannot invoke static super method");
             else return (T) JavaBypass.TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance).invokeWithArguments(args);
