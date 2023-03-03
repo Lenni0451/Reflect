@@ -243,6 +243,15 @@ public class ASMAccess {
             }
         }
 
+        public <E extends Throwable> void visitMaxs(final int maxStack, final int maxLocals) throws E {
+            try {
+                MethodHandle visitMaxs = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMaxs", MethodType.methodType(void.class, int.class, int.class));
+                visitMaxs.invoke(this.methodVisitor, maxStack, maxLocals);
+            } catch (Throwable t) {
+                throw (E) t;
+            }
+        }
+
         public <E extends Throwable> void visitEnd() throws E {
             try {
                 MethodHandle visitEnd = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitEnd", MethodType.methodType(void.class));
