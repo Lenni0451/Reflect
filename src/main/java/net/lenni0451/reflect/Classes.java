@@ -35,7 +35,9 @@ public class Classes {
      */
     @Nullable
     public static Class<?> getDeclaredClass(final Class<?> clazz, final String simpleName) {
-        for (Class<?> c : getDeclaredClasses(clazz)) if (c.getSimpleName().equals(simpleName)) return c;
+        for (Class<?> c : getDeclaredClasses(clazz)) {
+            if (c.getSimpleName().equals(simpleName)) return c;
+        }
         return null;
     }
 
@@ -47,7 +49,6 @@ public class Classes {
      * @param name The name of the class
      * @return The class
      */
-    @Nullable
     public static Class<?> forName(final String name) {
         try {
             return Class.forName(name);
@@ -64,7 +65,6 @@ public class Classes {
      * @param name   The name of the class
      * @return The class
      */
-    @Nullable
     public static Class<?> forName(final ClassLoader loader, final String name) {
         return forName(loader, name, true);
     }
@@ -78,7 +78,6 @@ public class Classes {
      * @param initialize Whether to initialize the class
      * @return The class
      */
-    @Nullable
     public static Class<?> forName(final ClassLoader loader, final String name, final boolean initialize) {
         try {
             return Class.forName(name, initialize, loader);
