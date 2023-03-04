@@ -46,7 +46,7 @@ public class FieldAccessor {
 
         ASMAccess.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         if (staticField) {
-            mv.visitVarInsn(opcode("ALOAD"), 1);
+            mv.visitVarInsn(getLoadOpcode(invokerMethod.getParameterTypes()[0]), 1);
             if (!invokerMethod.getParameterTypes()[0].equals(field.getType())) mv.visitTypeInsn(opcode("CHECKCAST"), dash(field.getType()));
             mv.visitFieldInsn(opcode("PUTSTATIC"), dash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
         } else {
