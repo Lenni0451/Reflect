@@ -6,12 +6,10 @@ import net.lenni0451.reflect.Methods;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -140,11 +138,6 @@ public class FieldAccessor {
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        try {
-            Files.write(new File("C:/Users/User/Desktop/lalalalaaalal.class").toPath(), acc.toByteArray());
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
         Class<?> clazz = acc.defineMetafactory(field.getDeclaringClass());
         if (staticField) {
             Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz);
