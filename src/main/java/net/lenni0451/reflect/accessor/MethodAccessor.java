@@ -61,9 +61,9 @@ public class MethodAccessor {
         }
 
         String methodClass = dash(method.getDeclaringClass());
-        String methodDesc = buildDescriptor(method);
+        String methodDesc = desc(method);
         boolean interfaceMethod = Modifier.isInterface(method.getDeclaringClass().getModifiers());
-        MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), buildDescriptor(invokerMethod), null, null);
+        MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         if (staticMethod) {
             pushArgs(mv, invokerMethod.getParameterTypes(), method.getParameterTypes());
             mv.visitMethodInsn(opcode("INVOKESTATIC"), methodClass, method.getName(), methodDesc, interfaceMethod);
@@ -116,12 +116,12 @@ public class MethodAccessor {
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
-        mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), buildDescriptor(invokerMethod), null, null);
+        mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         pushArgs(mv, invokerMethod.getParameterTypes(), prepend(method.getParameterTypes(), method.getDeclaringClass()));
         if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
-            mv.visitMethodInsn(opcode("INVOKEINTERFACE"), dash(method.getDeclaringClass()), method.getName(), buildDescriptor(method), true);
+            mv.visitMethodInsn(opcode("INVOKEINTERFACE"), dash(method.getDeclaringClass()), method.getName(), desc(method), true);
         } else {
-            mv.visitMethodInsn(opcode("INVOKEVIRTUAL"), dash(method.getDeclaringClass()), method.getName(), buildDescriptor(method), false);
+            mv.visitMethodInsn(opcode("INVOKEVIRTUAL"), dash(method.getDeclaringClass()), method.getName(), desc(method), false);
         }
         if (!method.getReturnType().equals(invokerMethod.getReturnType())) mv.visitTypeInsn(opcode("CHECKCAST"), dash(invokerMethod.getReturnType()));
         mv.visitInsn(getReturnOpcode(invokerMethod.getReturnType()));
@@ -161,16 +161,6 @@ public class MethodAccessor {
         return methods.get(0);
     }
 
-    private static String buildDescriptor(final Method method) {
-        Class<?> returnType = method.getReturnType();
-        Class<?>[] parameterTypes = method.getParameterTypes();
-
-        StringBuilder builder = new StringBuilder("(");
-        for (Class<?> parameterType : parameterTypes) builder.append(desc(parameterType));
-        builder.append(")").append(desc(returnType));
-        return builder.toString();
-    }
-
     private static void pushArgs(final MethodVisitorAccess mv, final Class<?>[] supplied, final Class<?>[] target) {
         int stack = 1;
         for (int i = 0; i < supplied.length; i++) {
@@ -182,26 +172,9 @@ public class MethodAccessor {
         }
     }
 
-    private static int getLoadOpcode(final Class<?> clazz) {
-        if (boolean.class.equals(clazz) || byte.class.equals(clazz) || char.class.equals(clazz) || short.class.equals(clazz) || int.class.equals(clazz)) return opcode("ILOAD");
-        if (long.class.equals(clazz)) return opcode("LLOAD");
-        if (float.class.equals(clazz)) return opcode("FLOAD");
-        if (double.class.equals(clazz)) return opcode("DLOAD");
-        return opcode("ALOAD");
-    }
-
     private static int getStackSize(final Class<?> clazz) {
         if (long.class.equals(clazz) || double.class.equals(clazz)) return 2;
         return 1;
-    }
-
-    private static int getReturnOpcode(final Class<?> clazz) {
-        if (void.class.equals(clazz)) return opcode("RETURN");
-        if (boolean.class.equals(clazz) || byte.class.equals(clazz) || char.class.equals(clazz) || short.class.equals(clazz) || int.class.equals(clazz)) return opcode("IRETURN");
-        if (long.class.equals(clazz)) return opcode("LRETURN");
-        if (float.class.equals(clazz)) return opcode("FRETURN");
-        if (double.class.equals(clazz)) return opcode("DRETURN");
-        return opcode("ARETURN");
     }
 
     private static Class<?>[] prepend(final Class<?>[] classes, final Class<?> other) {

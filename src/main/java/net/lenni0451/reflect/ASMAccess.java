@@ -81,6 +81,34 @@ public class ASMAccess {
         else return desc(clazz.getName());
     }
 
+    public static String desc(final Method method) {
+        return desc(method.getParameterTypes(), method.getReturnType());
+    }
+
+    public static String desc(final Class<?>[] parameterTypes, final Class<?> returnType) {
+        StringBuilder builder = new StringBuilder("(");
+        for (Class<?> parameterType : parameterTypes) builder.append(desc(parameterType));
+        builder.append(")").append(desc(returnType));
+        return builder.toString();
+    }
+
+    public static int getLoadOpcode(final Class<?> clazz) {
+        if (boolean.class.equals(clazz) || byte.class.equals(clazz) || char.class.equals(clazz) || short.class.equals(clazz) || int.class.equals(clazz)) return opcode("ILOAD");
+        if (long.class.equals(clazz)) return opcode("LLOAD");
+        if (float.class.equals(clazz)) return opcode("FLOAD");
+        if (double.class.equals(clazz)) return opcode("DLOAD");
+        return opcode("ALOAD");
+    }
+
+    public static int getReturnOpcode(final Class<?> clazz) {
+        if (void.class.equals(clazz)) return opcode("RETURN");
+        if (boolean.class.equals(clazz) || byte.class.equals(clazz) || char.class.equals(clazz) || short.class.equals(clazz) || int.class.equals(clazz)) return opcode("IRETURN");
+        if (long.class.equals(clazz)) return opcode("LRETURN");
+        if (float.class.equals(clazz)) return opcode("FRETURN");
+        if (double.class.equals(clazz)) return opcode("DRETURN");
+        return opcode("ARETURN");
+    }
+
     public static ASMAccess create(final int access, final String name, final String signature, final String superName, final String[] interfaces) {
         return new ASMAccess(access, name, signature, superName, interfaces);
     }
