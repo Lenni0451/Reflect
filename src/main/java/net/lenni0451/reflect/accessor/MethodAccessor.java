@@ -33,7 +33,7 @@ public class MethodAccessor {
      * @return The invoker instance implementation
      */
     public static <I> I makeInvoker(@Nonnull final Class<I> invokerClass, final Object instance, @Nonnull final Method method) {
-        String newClassName = dash(method.getDeclaringClass().getName()) + "$MethodInvoker";
+        String newClassName = dash(method.getDeclaringClass()) + "$MethodInvoker";
         boolean staticMethod = Modifier.isStatic(method.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, method, false);
         ASMAccess acc = ASMAccess.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
@@ -105,7 +105,7 @@ public class MethodAccessor {
      */
     public static <I> I makeDynamicInvoker(@Nonnull final Class<I> invokerClass, @Nonnull final Method method) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
-        String newClassName = dash(method.getDeclaringClass().getName()) + "$DynamicMethodInvoker";
+        String newClassName = dash(method.getDeclaringClass()) + "$DynamicMethodInvoker";
         Method invokerMethod = findInvokerMethod(invokerClass, method, true);
         ASMAccess acc = ASMAccess.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
 
@@ -177,7 +177,7 @@ public class MethodAccessor {
             Class<?> suppliedType = supplied[i];
             Class<?> targetType = target[i];
             mv.visitVarInsn(getLoadOpcode(suppliedType), stack);
-            if (!suppliedType.equals(targetType)) mv.visitTypeInsn(opcode("CHECKCAST"), dash(targetType.getName()));
+            if (!suppliedType.equals(targetType)) mv.visitTypeInsn(opcode("CHECKCAST"), dash(targetType));
             stack += getStackSize(suppliedType);
         }
     }
