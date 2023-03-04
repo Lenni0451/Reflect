@@ -5,12 +5,9 @@ import net.lenni0451.reflect.Constructors;
 import net.lenni0451.reflect.Methods;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,12 +65,12 @@ public class MethodAccessor {
         boolean interfaceMethod = Modifier.isInterface(method.getDeclaringClass().getModifiers());
         MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), buildDescriptor(invokerMethod), null, null);
         if (staticMethod) {
-            pushArgs(mv, method.getParameterTypes(), invokerMethod.getParameterTypes(), 0);
+            pushArgs(mv, invokerMethod.getParameterTypes(), method.getParameterTypes());
             mv.visitMethodInsn(opcode("INVOKESTATIC"), methodClass, method.getName(), methodDesc, interfaceMethod);
         } else {
             mv.visitVarInsn(opcode("ALOAD"), 0);
             mv.visitFieldInsn(opcode("GETFIELD"), newClassName, "instance", desc(instance.getClass()));
-            pushArgs(mv, method.getParameterTypes(), invokerMethod.getParameterTypes(), 1);
+            pushArgs(mv, invokerMethod.getParameterTypes(), method.getParameterTypes());
             if (interfaceMethod) {
                 mv.visitMethodInsn(opcode("INVOKEINTERFACE"), methodClass, method.getName(), methodDesc, true);
             } else {
@@ -120,7 +117,7 @@ public class MethodAccessor {
         mv.visitEnd();
 
         mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), buildDescriptor(invokerMethod), null, null);
-        pushArgs(mv, prepend(method.getParameterTypes(), method.getDeclaringClass()), invokerMethod.getParameterTypes(), 1);
+        pushArgs(mv, invokerMethod.getParameterTypes(), prepend(method.getParameterTypes(), method.getDeclaringClass()));
         if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
             mv.visitMethodInsn(opcode("INVOKEINTERFACE"), dash(method.getDeclaringClass()), method.getName(), buildDescriptor(method), true);
         } else {
@@ -131,11 +128,6 @@ public class MethodAccessor {
         mv.visitMaxs(invokerMethod.getParameterCount() + 1, invokerMethod.getParameterCount() + 1);
         mv.visitEnd();
 
-        try {
-            Files.write(new File("C:/Users/User/Desktop/funyssss.class").toPath(), acc.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         Class<?> clazz = acc.defineMetafactory(method.getDeclaringClass());
         Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz);
         return (I) Constructors.invoke(constructor);
@@ -174,12 +166,13 @@ public class MethodAccessor {
         Class<?>[] parameterTypes = method.getParameterTypes();
 
         StringBuilder builder = new StringBuilder("(");
-        for (Class<?> parameterType : parameterTypes) builder.append(desc(parameterType.getName()));
+        for (Class<?> parameterType : parameterTypes) builder.append(desc(parameterType));
         builder.append(")").append(desc(returnType));
         return builder.toString();
     }
 
-    private static void pushArgs(final MethodVisitorAccess mv, final Class<?>[] supplied, final Class<?>[] target, int stack) {
+    private static void pushArgs(final MethodVisitorAccess mv, final Class<?>[] supplied, final Class<?>[] target) {
+        int stack = 1;
         for (int i = 0; i < supplied.length; i++) {
             Class<?> suppliedType = supplied[i];
             Class<?> targetType = target[i];
