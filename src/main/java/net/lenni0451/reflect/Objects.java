@@ -2,6 +2,9 @@ package net.lenni0451.reflect;
 
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
+/**
+ * This class contains some methods to do unsafe operations.
+ */
 public class Objects {
 
     private static final String INVALID_OOP_SIZE = "OOP size is not 4 or 8";
