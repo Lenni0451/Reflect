@@ -2,6 +2,7 @@ package net.lenni0451.reflect;
 
 import sun.misc.Unsafe;
 
+import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
@@ -19,6 +20,11 @@ public class JavaBypass {
      * The instance of the trusted lookup.
      */
     public static final MethodHandles.Lookup TRUSTED_LOOKUP = getTrustedLookup();
+    /**
+     * The instance of the internal unsafe class.
+     */
+    @Nullable
+    public static final Object INTERNAL_UNSAFE = getInternalUnsafe();
 
     /**
      * Get the unsafe instance.<br>
@@ -56,6 +62,25 @@ public class JavaBypass {
         } catch (Throwable ignored) {
         }
         throw new IllegalStateException("Unable to get trusted lookup");
+    }
+
+    /**
+     * Get the internal unsafe instance.<br>
+     * You should use the static instance {@link #INTERNAL_UNSAFE} instead.<br>
+     * The internal unsafe was added in Java 11 and has more low level access.
+     *
+     * @return The internal unsafe instance
+     */
+    @Nullable
+    public static Object getInternalUnsafe() {
+        try {
+            Class<?> unsafeClass = Class.forName("jdk.internal.misc.Unsafe");
+            for (Field field : unsafeClass.getDeclaredFields()) {
+                if (field.getType().equals(unsafeClass)) return TRUSTED_LOOKUP.unreflectGetter(field).invoke();
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     /**
