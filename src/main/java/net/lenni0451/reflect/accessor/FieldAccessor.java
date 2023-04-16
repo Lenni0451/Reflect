@@ -1,8 +1,8 @@
 package net.lenni0451.reflect.accessor;
 
-import net.lenni0451.reflect.ASMAccess;
 import net.lenni0451.reflect.Constructors;
 import net.lenni0451.reflect.Methods;
+import net.lenni0451.reflect.wrapper.ASMWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static net.lenni0451.reflect.ASMAccess.*;
+import static net.lenni0451.reflect.wrapper.ASMWrapper.*;
 
 /**
  * Generate a getter/setter instance for a field.<br>
@@ -39,12 +39,12 @@ public class FieldAccessor {
         String newClassName = dash(field.getDeclaringClass()) + "$FieldSetter";
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getType()}, void.class);
-        ASMAccess acc = ASMAccess.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
+        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
 
         //noinspection Convert2MethodRef
         addConstructor(acc, newClassName, () -> instance.getClass(), field);
 
-        ASMAccess.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
+        ASMWrapper.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         if (staticField) {
             mv.visitVarInsn(getLoadOpcode(invokerMethod.getParameterTypes()[0]), 1);
             if (!invokerMethod.getParameterTypes()[0].equals(field.getType())) mv.visitTypeInsn(opcode("CHECKCAST"), dash(field.getType()));
@@ -85,11 +85,11 @@ public class FieldAccessor {
         if (Modifier.isStatic(field.getModifiers())) throw new IllegalArgumentException("Dynamic setter can only be used for non-static fields");
         String newClassName = dash(field.getDeclaringClass()) + "$DynamicFieldSetter";
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass(), field.getType()}, void.class);
-        ASMAccess acc = ASMAccess.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{desc(invokerClass)});
+        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{desc(invokerClass)});
 
         addConstructor(acc, newClassName, null, field);
 
-        ASMAccess.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
+        ASMWrapper.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         mv.visitVarInsn(opcode("ALOAD"), 1);
         if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mv.visitTypeInsn(opcode("CHECKCAST"), dash(field.getDeclaringClass()));
         mv.visitVarInsn(getLoadOpcode(invokerMethod.getParameterTypes()[1]), 2);
@@ -120,12 +120,12 @@ public class FieldAccessor {
         String newClassName = dash(field.getDeclaringClass()) + "$FieldGetter";
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[0], field.getType());
-        ASMAccess acc = ASMAccess.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
+        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
 
         //noinspection Convert2MethodRef
         addConstructor(acc, newClassName, () -> instance.getClass(), field);
 
-        ASMAccess.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
+        ASMWrapper.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         if (staticField) {
             mv.visitFieldInsn(opcode("GETSTATIC"), dash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
         } else {
@@ -163,11 +163,11 @@ public class FieldAccessor {
         if (Modifier.isStatic(field.getModifiers())) throw new IllegalArgumentException("Dynamic setter can only be used for non-static fields");
         String newClassName = dash(field.getDeclaringClass()) + "$DynamicFieldGetter";
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass()}, field.getType());
-        ASMAccess acc = ASMAccess.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
+        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
 
         addConstructor(acc, newClassName, null, field);
 
-        ASMAccess.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
+        ASMWrapper.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         mv.visitVarInsn(opcode("ALOAD"), 1);
         if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mv.visitTypeInsn(opcode("CHECKCAST"), dash(field.getDeclaringClass()));
         mv.visitFieldInsn(opcode("GETFIELD"), dash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
@@ -206,9 +206,9 @@ public class FieldAccessor {
         return methods.get(0);
     }
 
-    private static void addConstructor(final ASMAccess acc, final String newClassName, @Nullable final Supplier<Class<?>> instanceType, final Field field) {
+    private static void addConstructor(final ASMWrapper acc, final String newClassName, @Nullable final Supplier<Class<?>> instanceType, final Field field) {
         if (Modifier.isStatic(field.getModifiers()) || instanceType == null) {
-            ASMAccess.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), "<init>", "()V", null, null);
+            ASMWrapper.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), "<init>", "()V", null, null);
             mv.visitVarInsn(opcode("ALOAD"), 0);
             mv.visitMethodInsn(opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false);
             mv.visitInsn(opcode("RETURN"));
@@ -218,7 +218,7 @@ public class FieldAccessor {
             String instanceTypeDesc = desc(instanceType.get());
             acc.visitField(opcode("ACC_PRIVATE") | opcode("ACC_FINAL"), "instance", instanceTypeDesc, null, null);
 
-            ASMAccess.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), "<init>", "(" + instanceTypeDesc + ")V", null, null);
+            ASMWrapper.MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), "<init>", "(" + instanceTypeDesc + ")V", null, null);
             mv.visitVarInsn(opcode("ALOAD"), 0);
             mv.visitMethodInsn(opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false);
             mv.visitVarInsn(opcode("ALOAD"), 0);

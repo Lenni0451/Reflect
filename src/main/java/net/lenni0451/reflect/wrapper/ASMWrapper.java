@@ -1,5 +1,6 @@
-package net.lenni0451.reflect;
+package net.lenni0451.reflect.wrapper;
 
+import net.lenni0451.reflect.*;
 import net.lenni0451.reflect.stream.RStream;
 import sun.misc.Unsafe;
 
@@ -18,7 +19,7 @@ import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
  * If ASM is present on the classpath it will be used instead.
  */
 @SuppressWarnings("unchecked")
-public class ASMAccess {
+public class ASMWrapper {
 
     private static final Unsafe UNSAFE = JavaBypass.UNSAFE;
     private static final MethodHandles.Lookup LOOKUP = JavaBypass.TRUSTED_LOOKUP;
@@ -30,7 +31,7 @@ public class ASMAccess {
     private static final Map<String, Integer> opcodes = new HashMap<>();
 
     static {
-        Modules.copyModule(System.class, ASMAccess.class);
+        Modules.copyModule(System.class, ASMWrapper.class);
         Modules.copyModule(System.class, MethodVisitorAccess.class);
 
         CLASS_Opcodes = forName("org.objectweb.asm.Opcodes", "jdk.internal.org.objectweb.asm.Opcodes");
@@ -109,14 +110,14 @@ public class ASMAccess {
         return opcode("ARETURN");
     }
 
-    public static ASMAccess create(final int access, final String name, final String signature, final String superName, final String[] interfaces) {
-        return new ASMAccess(access, name, signature, superName, interfaces);
+    public static ASMWrapper create(final int access, final String name, final String signature, final String superName, final String[] interfaces) {
+        return new ASMWrapper(access, name, signature, superName, interfaces);
     }
 
 
     private final Object classWriter;
 
-    private <E extends Throwable> ASMAccess(final int access, final String name, final String signature, final String superName, final String[] interfaces) throws E {
+    private <E extends Throwable> ASMWrapper(final int access, final String name, final String signature, final String superName, final String[] interfaces) throws E {
         this.classWriter = RStream
                 .of(CLASS_ClassWriter)
                 .constructors()
