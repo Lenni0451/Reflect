@@ -1,5 +1,7 @@
 package net.lenni0451.reflect;
 
+import java.lang.reflect.Array;
+
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
 /**
@@ -84,7 +86,8 @@ public class Objects {
      */
     public static long getKlass(final Class<?> clazz) {
         try {
-            return getKlass(UNSAFE.allocateInstance(clazz));
+            if (clazz.isArray()) return getKlass(Array.newInstance(clazz.getComponentType(), 0));
+            else return getKlass(UNSAFE.allocateInstance(clazz));
         } catch (Throwable t) {
             UNSAFE.throwException(t);
             return 0;
@@ -112,6 +115,18 @@ public class Objects {
      * @return The casted object
      */
     public static <T> T cast(final Object o, final Class<T> target) {
+        return cast(o, getKlass(target));
+    }
+
+    /**
+     * Cast the given object to the given object.
+     *
+     * @param o      The object
+     * @param target The target object
+     * @param <T>    The type of the object
+     * @return The casted object
+     */
+    public static <T> T cast(final Object o, final Object target) {
         return cast(o, getKlass(target));
     }
 
