@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.function.Supplier;
 
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
@@ -16,6 +17,13 @@ import static net.lenni0451.reflect.JavaBypass.UNSAFE;
  * This class contains some useful methods for working with class loaders.
  */
 public class ClassLoaders {
+
+    private static final Class<?> classOptionClass = Classes.byName("java.lang.invoke.MethodHandles$Lookup$ClassOption");
+    private static Method unsafeDefineAnonymousClass = Methods.getDeclaredMethod(Unsafe.class, "defineAnonymousClass", Class.class, byte[].class, Object[].class);
+    private static Method lookupDefineHiddenClass = ((Supplier<Method>) () -> {
+        if (classOptionClass == null) return null;
+        return Methods.getDeclaredMethod(MethodHandles.Lookup.class, "defineHiddenClass", byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass());
+    }).get();
 
     /**
      * Add a URL to the system classpath.
@@ -91,21 +99,28 @@ public class ClassLoaders {
 
     /**
      * Define an anonymous class.<br>
-     * This is java version independent.
+     * In Java 15 and above the <code>MethodHandles.Lookup#defineHiddenClass</code> method is used. On older versions the <code>Unsafe#defineAnonymousClass</code> method is used.<br>
+     * The flags are case-insensitive and only used on Java 15 and above.
      *
      * @param parent   The parent class
      * @param bytecode The bytecode of the class
+     * @param flags    The flags to use
      * @return The defined class
      */
-    public static Class<?> defineAnonymousClass(final Class<?> parent, final byte[] bytecode) {
-        Method unsafeDefineAnonymousClass = Methods.getDeclaredMethod(Unsafe.class, "defineAnonymousClass", Class.class, byte[].class, Object[].class);
-        if (unsafeDefineAnonymousClass != null) return Methods.invoke(UNSAFE, unsafeDefineAnonymousClass, parent, bytecode, new Object[0]);
-
-        Class<?> classOptionClass = Classes.forName("java.lang.invoke.MethodHandles$Lookup$ClassOption");
-        Object emptyClassOptionArray = Array.newInstance(classOptionClass, 0);
-        Method lookupDefineHiddenClass = Methods.getDeclaredMethod(MethodHandles.Lookup.class, "defineHiddenClass", byte[].class, boolean.class, emptyClassOptionArray.getClass());
-        MethodHandles.Lookup lookup = Methods.invoke(TRUSTED_LOOKUP.in(parent), lookupDefineHiddenClass, bytecode, false, emptyClassOptionArray);
-        return lookup.lookupClass();
+    public static Class<?> defineAnonymousClass(final Class<?> parent, final byte[] bytecode, final String... flags) {
+        if (classOptionClass == null) {
+            return Methods.invoke(UNSAFE, unsafeDefineAnonymousClass, parent, bytecode, new Object[0]);
+        } else {
+            Object classOptions = Array.newInstance(classOptionClass, flags.length);
+            for (int i = 0; i < flags.length; i++) {
+                String flag = flags[i];
+                Object classOption = Enums.valueOfIgnoreCase(classOptionClass, flag);
+                if (classOption == null) throw new IllegalArgumentException("Unknown class option: " + flag);
+                Array.set(classOptions, i, classOption);
+            }
+            MethodHandles.Lookup lookup = Methods.invoke(TRUSTED_LOOKUP.in(parent), lookupDefineHiddenClass, bytecode, false, classOptions);
+            return lookup.lookupClass();
+        }
     }
 
 }
