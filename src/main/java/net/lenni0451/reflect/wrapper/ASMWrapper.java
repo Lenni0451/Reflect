@@ -1,18 +1,17 @@
 package net.lenni0451.reflect.wrapper;
 
-import net.lenni0451.reflect.*;
+import net.lenni0451.reflect.ClassLoaders;
+import net.lenni0451.reflect.JavaBypass;
+import net.lenni0451.reflect.Modules;
 import net.lenni0451.reflect.stream.RStream;
 import sun.misc.Unsafe;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 
 /**
  * A wrapper for the java internal ASM library.<br>
@@ -171,16 +170,7 @@ public class ASMWrapper {
     }
 
     public Class<?> defineMetafactory(final Class<?> parent) {
-        Method unsafeDefineAnonymousClass = Methods.getDeclaredMethod(Unsafe.class, "defineAnonymousClass", Class.class, byte[].class, Object[].class);
-        if (unsafeDefineAnonymousClass != null) return Methods.invoke(UNSAFE, unsafeDefineAnonymousClass, parent, this.toByteArray(), new Object[0]);
-
-        Class<?> classOptionClass = Classes.forName("java.lang.invoke.MethodHandles$Lookup$ClassOption");
-        Object classOptionArray = Array.newInstance(classOptionClass, 2);
-        Array.set(classOptionArray, 0, classOptionClass.getEnumConstants()[0]);
-        Array.set(classOptionArray, 1, classOptionClass.getEnumConstants()[1]);
-        Method lookupDefineHiddenClass = Methods.getDeclaredMethod(MethodHandles.Lookup.class, "defineHiddenClass", byte[].class, boolean.class, classOptionArray.getClass());
-        MethodHandles.Lookup lookup = Methods.invoke(TRUSTED_LOOKUP.in(parent), lookupDefineHiddenClass, toByteArray(), false, classOptionArray);
-        return lookup.lookupClass();
+        return ClassLoaders.defineAnonymousClass(parent, this.toByteArray(), "NESTMATE", "STRONG");
     }
 
 
