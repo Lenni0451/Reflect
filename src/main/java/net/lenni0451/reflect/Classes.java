@@ -3,8 +3,6 @@ package net.lenni0451.reflect;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
-import static net.lenni0451.reflect.JavaBypass.UNSAFE;
-
 /**
  * This class contains some useful methods for working with classes.
  */
@@ -44,45 +42,47 @@ public class Classes {
 
     /**
      * Get a class by its name.<br>
-     * A wrapper for {@link Class#forName(String)} without direct exceptions.
+     * A wrapper for {@link Class#forName(String)} returning null instead of throwing an exception.
      *
      * @param name The name of the class
-     * @return The class
+     * @return The class or null if it doesn't exist
      */
-    public static Class<?> forName(final String name) {
+    @Nullable
+    public static Class<?> byName(final String name) {
         try {
             return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            UNSAFE.throwException(e);
+        } catch (ClassNotFoundException ignored) {
         }
         return null;
     }
 
     /**
-     * Get a class by its name from a given class loader.
+     * Get a class by its name from a given class loader.<br>
+     * The <code>initialize</code> parameter is set to true.
      *
-     * @param loader The class loader to get the class from
      * @param name   The name of the class
-     * @return The class
+     * @param loader The class loader to get the class from
+     * @return The class or null if it doesn't exist
      */
-    public static Class<?> forName(final ClassLoader loader, final String name) {
-        return forName(loader, name, true);
+    @Nullable
+    public static Class<?> byName(final String name, final ClassLoader loader) {
+        return byName(name, true, loader);
     }
 
     /**
      * Get a class by its name from a given class loader.<br>
-     * A wrapper for {@link Class#forName(String, boolean, ClassLoader)} without direct exceptions.
+     * A wrapper for {@link Class#forName(String, boolean, ClassLoader)} returning null instead of throwing an exception.
      *
-     * @param loader     The class loader to get the class from
      * @param name       The name of the class
      * @param initialize Whether to initialize the class
-     * @return The class
+     * @param loader     The class loader to get the class from
+     * @return The class or null if it doesn't exist
      */
-    public static Class<?> forName(final ClassLoader loader, final String name, final boolean initialize) {
+    @Nullable
+    public static Class<?> byName(final String name, final boolean initialize, final ClassLoader loader) {
         try {
             return Class.forName(name, initialize, loader);
-        } catch (ClassNotFoundException e) {
-            UNSAFE.throwException(e);
+        } catch (ClassNotFoundException ignored) {
         }
         return null;
     }
