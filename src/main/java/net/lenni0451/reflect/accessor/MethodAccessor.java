@@ -33,10 +33,10 @@ public class MethodAccessor {
      * @return The invoker instance implementation
      */
     public static <I> I makeInvoker(@Nonnull final Class<I> invokerClass, final Object instance, @Nonnull final Method method) {
-        String newClassName = dash(method.getDeclaringClass()) + "$MethodInvoker";
+        String newClassName = slash(method.getDeclaringClass()) + "$MethodInvoker";
         boolean staticMethod = Modifier.isStatic(method.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, method, false);
-        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
+        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)});
 
         if (staticMethod) {
             MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), "<init>", "()V", null, null);
@@ -60,7 +60,7 @@ public class MethodAccessor {
             mv.visitEnd();
         }
 
-        String methodClass = dash(method.getDeclaringClass());
+        String methodClass = slash(method.getDeclaringClass());
         String methodDesc = desc(method);
         boolean interfaceMethod = Modifier.isInterface(method.getDeclaringClass().getModifiers());
         MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
@@ -77,7 +77,7 @@ public class MethodAccessor {
                 mv.visitMethodInsn(opcode("INVOKEVIRTUAL"), methodClass, method.getName(), methodDesc, false);
             }
         }
-        if (!method.getReturnType().equals(invokerMethod.getReturnType())) mv.visitTypeInsn(opcode("CHECKCAST"), dash(invokerMethod.getReturnType()));
+        if (!method.getReturnType().equals(invokerMethod.getReturnType())) mv.visitTypeInsn(opcode("CHECKCAST"), slash(invokerMethod.getReturnType()));
         mv.visitInsn(getReturnOpcode(invokerMethod.getReturnType()));
         mv.visitMaxs(invokerMethod.getParameterCount() + 1, invokerMethod.getParameterCount() + 1);
         mv.visitEnd();
@@ -105,9 +105,9 @@ public class MethodAccessor {
      */
     public static <I> I makeDynamicInvoker(@Nonnull final Class<I> invokerClass, @Nonnull final Method method) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
-        String newClassName = dash(method.getDeclaringClass()) + "$DynamicMethodInvoker";
+        String newClassName = slash(method.getDeclaringClass()) + "$DynamicMethodInvoker";
         Method invokerMethod = findInvokerMethod(invokerClass, method, true);
-        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{dash(invokerClass)});
+        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)});
 
         MethodVisitorAccess mv = acc.visitMethod(opcode("ACC_PUBLIC"), "<init>", "()V", null, null);
         mv.visitVarInsn(opcode("ALOAD"), 0);
@@ -119,11 +119,11 @@ public class MethodAccessor {
         mv = acc.visitMethod(opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null);
         pushArgs(mv, invokerMethod.getParameterTypes(), prepend(method.getParameterTypes(), method.getDeclaringClass()));
         if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
-            mv.visitMethodInsn(opcode("INVOKEINTERFACE"), dash(method.getDeclaringClass()), method.getName(), desc(method), true);
+            mv.visitMethodInsn(opcode("INVOKEINTERFACE"), slash(method.getDeclaringClass()), method.getName(), desc(method), true);
         } else {
-            mv.visitMethodInsn(opcode("INVOKEVIRTUAL"), dash(method.getDeclaringClass()), method.getName(), desc(method), false);
+            mv.visitMethodInsn(opcode("INVOKEVIRTUAL"), slash(method.getDeclaringClass()), method.getName(), desc(method), false);
         }
-        if (!method.getReturnType().equals(invokerMethod.getReturnType())) mv.visitTypeInsn(opcode("CHECKCAST"), dash(invokerMethod.getReturnType()));
+        if (!method.getReturnType().equals(invokerMethod.getReturnType())) mv.visitTypeInsn(opcode("CHECKCAST"), slash(invokerMethod.getReturnType()));
         mv.visitInsn(getReturnOpcode(invokerMethod.getReturnType()));
         mv.visitMaxs(invokerMethod.getParameterCount() + 1, invokerMethod.getParameterCount() + 1);
         mv.visitEnd();
@@ -167,7 +167,7 @@ public class MethodAccessor {
             Class<?> suppliedType = supplied[i];
             Class<?> targetType = target[i];
             mv.visitVarInsn(getLoadOpcode(suppliedType), stack);
-            if (!suppliedType.equals(targetType)) mv.visitTypeInsn(opcode("CHECKCAST"), dash(targetType));
+            if (!suppliedType.equals(targetType)) mv.visitTypeInsn(opcode("CHECKCAST"), slash(targetType));
             stack += getStackSize(suppliedType);
         }
     }

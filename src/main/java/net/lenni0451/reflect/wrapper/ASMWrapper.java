@@ -6,6 +6,9 @@ import net.lenni0451.reflect.Modules;
 import net.lenni0451.reflect.stream.RStream;
 import sun.misc.Unsafe;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -17,7 +20,7 @@ import java.util.Map;
  * A wrapper for the java internal ASM library.<br>
  * If ASM is present on the classpath it will be used instead.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public class ASMWrapper {
 
     private static final Unsafe UNSAFE = JavaBypass.UNSAFE;
@@ -51,22 +54,55 @@ public class ASMWrapper {
         throw new IllegalStateException("Could not find any of the classes: " + String.join(", ", names));
     }
 
+    /**
+     * Get an opcode by its name.
+     *
+     * @param name The name of the opcode
+     * @return The opcode
+     * @throws NullPointerException If the opcode does not exist
+     */
     public static int opcode(final String name) {
         return opcodes.get(name);
     }
 
-    public static String dash(final String className) {
+    /**
+     * Replace all dots with slashes.
+     *
+     * @param className The class name
+     * @return The class name with replaced dots
+     */
+    public static String slash(final String className) {
         return className.replace('.', '/');
     }
 
-    public static String dash(final Class<?> clazz) {
-        return dash(clazz.getName());
+    /**
+     * Get the name of the class with slashes instead of dots.
+     *
+     * @param clazz The class
+     * @return The class name with slashes
+     */
+    public static String slash(final Class<?> clazz) {
+        return slash(clazz.getName());
     }
 
+    /**
+     * Get a descriptor for the given class name.<br>
+     * Dots in the class name will automatically be replaced with slashes.
+     *
+     * @param className The class name
+     * @return The descriptor
+     */
     public static String desc(final String className) {
-        return "L" + dash(className) + ";";
+        return "L" + slash(className) + ";";
     }
 
+    /**
+     * Get the descriptor for the given class.<br>
+     * This also supports primitive types and arrays.
+     *
+     * @param clazz The class
+     * @return The descriptor
+     */
     public static String desc(final Class<?> clazz) {
         if (void.class.equals(clazz)) return "V";
         else if (boolean.class.equals(clazz)) return "Z";
@@ -81,10 +117,23 @@ public class ASMWrapper {
         else return desc(clazz.getName());
     }
 
+    /**
+     * Get the descriptor for the given method.
+     *
+     * @param method The method
+     * @return The descriptor
+     */
     public static String desc(final Method method) {
         return desc(method.getParameterTypes(), method.getReturnType());
     }
 
+    /**
+     * Get the descriptor for the given parameter types and return type.
+     *
+     * @param parameterTypes The parameter types
+     * @param returnType     The return type
+     * @return The descriptor
+     */
     public static String desc(final Class<?>[] parameterTypes, final Class<?> returnType) {
         StringBuilder builder = new StringBuilder("(");
         for (Class<?> parameterType : parameterTypes) builder.append(desc(parameterType));
@@ -92,6 +141,12 @@ public class ASMWrapper {
         return builder.toString();
     }
 
+    /**
+     * Get the fitting return opcode for the given type.
+     *
+     * @param clazz The type
+     * @return The opcode
+     */
     public static int getLoadOpcode(final Class<?> clazz) {
         if (boolean.class.equals(clazz) || byte.class.equals(clazz) || char.class.equals(clazz) || short.class.equals(clazz) || int.class.equals(clazz)) return opcode("ILOAD");
         if (long.class.equals(clazz)) return opcode("LLOAD");
@@ -100,6 +155,13 @@ public class ASMWrapper {
         return opcode("ALOAD");
     }
 
+    /**
+     * Get the fitting return opcode for the given type.<br>
+     * {@link Void} will return {@code RETURN}.
+     *
+     * @param clazz The type
+     * @return The opcode
+     */
     public static int getReturnOpcode(final Class<?> clazz) {
         if (void.class.equals(clazz)) return opcode("RETURN");
         if (boolean.class.equals(clazz) || byte.class.equals(clazz) || char.class.equals(clazz) || short.class.equals(clazz) || int.class.equals(clazz)) return opcode("IRETURN");
@@ -109,7 +171,17 @@ public class ASMWrapper {
         return opcode("ARETURN");
     }
 
-    public static ASMWrapper create(final int access, final String name, final String signature, final String superName, final String[] interfaces) {
+    /**
+     * Create a new ASM wrapper with the given class properties.
+     *
+     * @param access     The access flags
+     * @param name       The class name
+     * @param signature  The signature
+     * @param superName  The super class name
+     * @param interfaces The interfaces
+     * @return The ASM wrapper
+     */
+    public static ASMWrapper create(final int access, @Nonnull final String name, @Nullable final String signature, @Nonnull final String superName, @Nullable final String[] interfaces) {
         return new ASMWrapper(access, name, signature, superName, interfaces);
     }
 
@@ -121,7 +193,7 @@ public class ASMWrapper {
                 .of(CLASS_ClassWriter)
                 .constructors()
                 .by(int.class)
-                .newInstance(2);
+                .newInstance(2/*COMPUTE_FRAMES*/);
 
         try {
             MethodHandle visit = LOOKUP.findVirtual(CLASS_ClassWriter, "visit", MethodType.methodType(void.class, int.class, int.class, String.class, String.class, String.class, String[].class));
@@ -131,7 +203,16 @@ public class ASMWrapper {
         }
     }
 
-    public <E extends Throwable> void visitField(final int access, final String name, final String descriptor, final String signature, final Object value) throws E {
+    /**
+     * Visit a field in the class.
+     *
+     * @param access     The access flags
+     * @param name       The field name
+     * @param descriptor The field descriptor
+     * @param signature  The field signature
+     * @param value      The field value
+     */
+    public void visitField(final int access, @Nonnull final String name, @Nonnull final String descriptor, @Nullable final String signature, @Nullable final Object value) {
         try {
             MethodHandle visitField = LOOKUP.findVirtual(CLASS_ClassWriter, "visitField", MethodType.methodType(CLASS_FieldVisitor, int.class, String.class, String.class, String.class, Object.class));
             MethodHandle visitEnd = LOOKUP.findVirtual(CLASS_FieldVisitor, "visitEnd", MethodType.methodType(void.class));
@@ -139,11 +220,21 @@ public class ASMWrapper {
             Object fieldVisitor = visitField.invoke(this.classWriter, access, name, descriptor, signature, value);
             visitEnd.invoke(fieldVisitor);
         } catch (Throwable t) {
-            throw (E) t;
+            UNSAFE.throwException(t);
         }
     }
 
-    public <E extends Throwable> MethodVisitorAccess visitMethod(final int access, final String name, final String descriptor, final String signature, final String[] exceptions) throws E {
+    /**
+     * Visit a method in the class.
+     *
+     * @param access     The access flags
+     * @param name       The method name
+     * @param descriptor The method descriptor
+     * @param signature  The method signature
+     * @param exceptions The exceptions
+     * @return The method visitor
+     */
+    public MethodVisitorAccess visitMethod(final int access, final String name, final String descriptor, final String signature, final String[] exceptions) {
         try {
             MethodHandle visitMethod = LOOKUP.findVirtual(CLASS_ClassWriter, "visitMethod", MethodType.methodType(CLASS_MethodVisitor, int.class, String.class, String.class, String.class, String[].class));
             MethodHandle visitCode = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitCode", MethodType.methodType(void.class));
@@ -152,28 +243,50 @@ public class ASMWrapper {
             visitCode.invoke(methodVisitor);
             return new MethodVisitorAccess(methodVisitor);
         } catch (Throwable t) {
-            throw (E) t;
+            UNSAFE.throwException(t);
+            return new MethodVisitorAccess(null);
         }
     }
 
-    public <E extends Throwable> byte[] toByteArray() throws E {
+    /**
+     * Get the byte array of the generated class.
+     *
+     * @return The byte array
+     */
+    public byte[] toByteArray() {
         try {
             MethodHandle toByteArray = LOOKUP.findVirtual(CLASS_ClassWriter, "toByteArray", MethodType.methodType(byte[].class));
             return (byte[]) toByteArray.invoke(this.classWriter);
         } catch (Throwable t) {
-            throw (E) t;
+            UNSAFE.throwException(t);
+            return new byte[0];
         }
     }
 
+    /**
+     * Define the class anonymously.
+     *
+     * @param parent The parent class
+     * @return The defined class
+     */
     public Class<?> defineAnonymously(final Class<?> parent) {
         return ClassLoaders.defineAnonymousClass(parent, this.toByteArray());
     }
 
+    /**
+     * Define the class as a strong nestmate (like the {@link LambdaMetafactory}).
+     *
+     * @param parent The parent class
+     * @return The defined class
+     */
     public Class<?> defineMetafactory(final Class<?> parent) {
         return ClassLoaders.defineAnonymousClass(parent, this.toByteArray(), "NESTMATE", "STRONG");
     }
 
 
+    /**
+     * A wrapper for the ASM method visitor.
+     */
     public static class MethodVisitorAccess {
         private final Object methodVisitor;
 
@@ -181,102 +294,168 @@ public class ASMWrapper {
             this.methodVisitor = methodVisitor;
         }
 
-        public <E extends Throwable> void visitInsn(final int opcode) throws E {
+        /**
+         * Visit an insn node.
+         *
+         * @param opcode The opcode
+         */
+        public void visitInsn(final int opcode) {
             try {
                 MethodHandle visitInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitInsn", MethodType.methodType(void.class, int.class));
                 visitInsn.invoke(this.methodVisitor, opcode);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitIntInsn(final int opcode, final int operand) throws E {
+        /**
+         * Visit an int insn node.
+         *
+         * @param opcode  The opcode
+         * @param operand The operand
+         */
+        public void visitIntInsn(final int opcode, final int operand) {
             try {
                 MethodHandle visitIntInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitIntInsn", MethodType.methodType(void.class, int.class, int.class));
                 visitIntInsn.invoke(this.methodVisitor, opcode, operand);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitVarInsn(final int opcode, final int varIndex) throws E {
+        /**
+         * Visit a var insn node.
+         *
+         * @param opcode   The opcode
+         * @param varIndex The var index
+         */
+        public void visitVarInsn(final int opcode, final int varIndex) {
             try {
                 MethodHandle visitVarInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitVarInsn", MethodType.methodType(void.class, int.class, int.class));
                 visitVarInsn.invoke(this.methodVisitor, opcode, varIndex);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitTypeInsn(final int opcode, final String type) throws E {
+        /**
+         * Visit a type insn node.
+         *
+         * @param opcode The opcode
+         * @param type   The type
+         */
+        public void visitTypeInsn(final int opcode, final String type) {
             try {
                 MethodHandle visitTypeInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitTypeInsn", MethodType.methodType(void.class, int.class, String.class));
                 visitTypeInsn.invoke(this.methodVisitor, opcode, type);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitFieldInsn(final int opcode, final String owner, final String name, final String descriptor) throws E {
+        /**
+         * Visit a field insn node.
+         *
+         * @param opcode     The opcode
+         * @param owner      The owner
+         * @param name       The name
+         * @param descriptor The descriptor
+         */
+        public void visitFieldInsn(final int opcode, final String owner, final String name, final String descriptor) {
             try {
                 MethodHandle visitFieldInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitFieldInsn", MethodType.methodType(void.class, int.class, String.class, String.class, String.class));
                 visitFieldInsn.invoke(this.methodVisitor, opcode, owner, name, descriptor);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitMethodInsn(final int opcode, final String owner, final String name, final String descriptor, final boolean isInterface) throws E {
+        /**
+         * Visit a method insn node.
+         *
+         * @param opcode      The opcode
+         * @param owner       The owner
+         * @param name        The name
+         * @param descriptor  The descriptor
+         * @param isInterface Whether the method is an interface method
+         */
+        public void visitMethodInsn(final int opcode, final String owner, final String name, final String descriptor, final boolean isInterface) {
             try {
                 MethodHandle visitMethodInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMethodInsn", MethodType.methodType(void.class, int.class, String.class, String.class, String.class, boolean.class));
                 visitMethodInsn.invoke(this.methodVisitor, opcode, owner, name, descriptor, isInterface);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitLdcInsn(final Object value) throws E {
+        /**
+         * Visit a ldc insn node.
+         *
+         * @param value The value
+         */
+        public void visitLdcInsn(final Object value) {
             try {
                 MethodHandle visitLdcInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitLdcInsn", MethodType.methodType(void.class, Object.class));
                 visitLdcInsn.invoke(this.methodVisitor, value);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitIincInsn(final int varIndex, final int increment) throws E {
+        /**
+         * Visit an iinc insn node.
+         *
+         * @param varIndex  The var index
+         * @param increment The increment
+         */
+        public void visitIincInsn(final int varIndex, final int increment) {
             try {
                 MethodHandle visitIincInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitIincInsn", MethodType.methodType(void.class, int.class, int.class));
                 visitIincInsn.invoke(this.methodVisitor, varIndex, increment);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) throws E {
+        /**
+         * Visit a multi a new array insn.
+         *
+         * @param descriptor    The descriptor
+         * @param numDimensions The number of dimensions
+         */
+        public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
             try {
                 MethodHandle visitMultiANewArrayInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMultiANewArrayInsn", MethodType.methodType(void.class, String.class, int.class));
                 visitMultiANewArrayInsn.invoke(this.methodVisitor, descriptor, numDimensions);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitMaxs(final int maxStack, final int maxLocals) throws E {
+        /**
+         * Visit the method maxs.
+         *
+         * @param maxStack  The max stack
+         * @param maxLocals The max locals
+         */
+        public void visitMaxs(final int maxStack, final int maxLocals) {
             try {
                 MethodHandle visitMaxs = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMaxs", MethodType.methodType(void.class, int.class, int.class));
                 visitMaxs.invoke(this.methodVisitor, maxStack, maxLocals);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
 
-        public <E extends Throwable> void visitEnd() throws E {
+        /**
+         * Visit the method end.
+         */
+        public void visitEnd() {
             try {
                 MethodHandle visitEnd = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitEnd", MethodType.methodType(void.class));
                 visitEnd.invoke(this.methodVisitor);
             } catch (Throwable t) {
-                throw (E) t;
+                UNSAFE.throwException(t);
             }
         }
     }
