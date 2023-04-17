@@ -1,5 +1,6 @@
 package net.lenni0451.reflect;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -54,6 +55,23 @@ public class Enums {
             Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, "enumConstants"), null);
             Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, "enumConstantDirectory"), null);
         }
+    }
+
+    /**
+     * Get an enum value by its name ignoring the case.<br>
+     * This method will return null if the enum value doesn't exist.
+     *
+     * @param enumClass The enum class
+     * @param name      The name of the enum value
+     * @return The enum value or null if it doesn't exist
+     */
+    @Nullable
+    public static Object valueOfIgnoreCase(final Class<?> enumClass, final String name) {
+        for (Object constant : enumClass.getEnumConstants()) {
+            Enum<?> enumConstant = (Enum<?>) constant;
+            if (enumConstant.name().equalsIgnoreCase(name)) return constant;
+        }
+        return null;
     }
 
 }
