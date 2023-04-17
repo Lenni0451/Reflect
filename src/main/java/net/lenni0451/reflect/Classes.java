@@ -17,8 +17,8 @@ public class Classes {
      */
     public static Class<?>[] getDeclaredClasses(final Class<?> clazz) {
         try {
-            Method getDeclaredClasses0 = Class.class.getDeclaredMethod("getDeclaredClasses0");
-            return Methods.invoke(clazz, getDeclaredClasses0, false);
+            Method getDeclaredClasses0 = Methods.getDeclaredMethod(Class.class, "getDeclaredClasses0");
+            return Methods.invoke(clazz, getDeclaredClasses0);
         } catch (Throwable ignored) {
         }
         return new Class<?>[0];

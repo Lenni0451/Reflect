@@ -47,7 +47,7 @@ public class Fields {
      */
     public static Field[] getDeclaredFields(final Class<?> clazz) {
         try {
-            Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+            Method getDeclaredFields0 = Methods.getDeclaredMethod(Class.class, "getDeclaredFields0", boolean.class);
             return Methods.invoke(clazz, getDeclaredFields0, false);
         } catch (Throwable ignored) {
         }

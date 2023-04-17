@@ -24,7 +24,7 @@ public class Constructors {
      */
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
         try {
-            Method getDeclaredConstructors0 = Class.class.getDeclaredMethod("getDeclaredConstructors0", boolean.class);
+            Method getDeclaredConstructors0 = Methods.getDeclaredMethod(Class.class, "getDeclaredConstructors0", boolean.class);
             return Methods.invoke(clazz, getDeclaredConstructors0, false);
         } catch (Throwable ignored) {
         }
