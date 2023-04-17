@@ -1,20 +1,20 @@
 package net.lenni0451.reflect.wrapper;
 
 import net.lenni0451.reflect.ClassLoaders;
-import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.Modules;
 import net.lenni0451.reflect.stream.RStream;
-import sun.misc.Unsafe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
+import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
 /**
  * A wrapper for the java internal ASM library.<br>
@@ -23,8 +23,6 @@ import java.util.Map;
 @SuppressWarnings({"unchecked", "unused"})
 public class ASMWrapper {
 
-    private static final Unsafe UNSAFE = JavaBypass.UNSAFE;
-    private static final MethodHandles.Lookup LOOKUP = JavaBypass.TRUSTED_LOOKUP;
     private static final Class<?> CLASS_Opcodes;
     private static final Class<?> CLASS_ClassWriter;
     private static final Class<?> CLASS_FieldVisitor;
@@ -196,7 +194,7 @@ public class ASMWrapper {
                 .newInstance(2/*COMPUTE_FRAMES*/);
 
         try {
-            MethodHandle visit = LOOKUP.findVirtual(CLASS_ClassWriter, "visit", MethodType.methodType(void.class, int.class, int.class, String.class, String.class, String.class, String[].class));
+            MethodHandle visit = TRUSTED_LOOKUP.findVirtual(CLASS_ClassWriter, "visit", MethodType.methodType(void.class, int.class, int.class, String.class, String.class, String.class, String[].class));
             visit.invoke(this.classWriter, opcode("V1_8"), access, name, signature, superName, interfaces);
         } catch (Throwable t) {
             throw (E) t;
@@ -214,8 +212,8 @@ public class ASMWrapper {
      */
     public void visitField(final int access, @Nonnull final String name, @Nonnull final String descriptor, @Nullable final String signature, @Nullable final Object value) {
         try {
-            MethodHandle visitField = LOOKUP.findVirtual(CLASS_ClassWriter, "visitField", MethodType.methodType(CLASS_FieldVisitor, int.class, String.class, String.class, String.class, Object.class));
-            MethodHandle visitEnd = LOOKUP.findVirtual(CLASS_FieldVisitor, "visitEnd", MethodType.methodType(void.class));
+            MethodHandle visitField = TRUSTED_LOOKUP.findVirtual(CLASS_ClassWriter, "visitField", MethodType.methodType(CLASS_FieldVisitor, int.class, String.class, String.class, String.class, Object.class));
+            MethodHandle visitEnd = TRUSTED_LOOKUP.findVirtual(CLASS_FieldVisitor, "visitEnd", MethodType.methodType(void.class));
 
             Object fieldVisitor = visitField.invoke(this.classWriter, access, name, descriptor, signature, value);
             visitEnd.invoke(fieldVisitor);
@@ -236,8 +234,8 @@ public class ASMWrapper {
      */
     public MethodVisitorAccess visitMethod(final int access, final String name, final String descriptor, final String signature, final String[] exceptions) {
         try {
-            MethodHandle visitMethod = LOOKUP.findVirtual(CLASS_ClassWriter, "visitMethod", MethodType.methodType(CLASS_MethodVisitor, int.class, String.class, String.class, String.class, String[].class));
-            MethodHandle visitCode = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitCode", MethodType.methodType(void.class));
+            MethodHandle visitMethod = TRUSTED_LOOKUP.findVirtual(CLASS_ClassWriter, "visitMethod", MethodType.methodType(CLASS_MethodVisitor, int.class, String.class, String.class, String.class, String[].class));
+            MethodHandle visitCode = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitCode", MethodType.methodType(void.class));
 
             Object methodVisitor = visitMethod.invoke(this.classWriter, access, name, descriptor, signature, exceptions);
             visitCode.invoke(methodVisitor);
@@ -255,7 +253,7 @@ public class ASMWrapper {
      */
     public byte[] toByteArray() {
         try {
-            MethodHandle toByteArray = LOOKUP.findVirtual(CLASS_ClassWriter, "toByteArray", MethodType.methodType(byte[].class));
+            MethodHandle toByteArray = TRUSTED_LOOKUP.findVirtual(CLASS_ClassWriter, "toByteArray", MethodType.methodType(byte[].class));
             return (byte[]) toByteArray.invoke(this.classWriter);
         } catch (Throwable t) {
             UNSAFE.throwException(t);
@@ -301,7 +299,7 @@ public class ASMWrapper {
          */
         public void visitInsn(final int opcode) {
             try {
-                MethodHandle visitInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitInsn", MethodType.methodType(void.class, int.class));
+                MethodHandle visitInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitInsn", MethodType.methodType(void.class, int.class));
                 visitInsn.invoke(this.methodVisitor, opcode);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -316,7 +314,7 @@ public class ASMWrapper {
          */
         public void visitIntInsn(final int opcode, final int operand) {
             try {
-                MethodHandle visitIntInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitIntInsn", MethodType.methodType(void.class, int.class, int.class));
+                MethodHandle visitIntInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitIntInsn", MethodType.methodType(void.class, int.class, int.class));
                 visitIntInsn.invoke(this.methodVisitor, opcode, operand);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -331,7 +329,7 @@ public class ASMWrapper {
          */
         public void visitVarInsn(final int opcode, final int varIndex) {
             try {
-                MethodHandle visitVarInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitVarInsn", MethodType.methodType(void.class, int.class, int.class));
+                MethodHandle visitVarInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitVarInsn", MethodType.methodType(void.class, int.class, int.class));
                 visitVarInsn.invoke(this.methodVisitor, opcode, varIndex);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -346,7 +344,7 @@ public class ASMWrapper {
          */
         public void visitTypeInsn(final int opcode, final String type) {
             try {
-                MethodHandle visitTypeInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitTypeInsn", MethodType.methodType(void.class, int.class, String.class));
+                MethodHandle visitTypeInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitTypeInsn", MethodType.methodType(void.class, int.class, String.class));
                 visitTypeInsn.invoke(this.methodVisitor, opcode, type);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -363,7 +361,7 @@ public class ASMWrapper {
          */
         public void visitFieldInsn(final int opcode, final String owner, final String name, final String descriptor) {
             try {
-                MethodHandle visitFieldInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitFieldInsn", MethodType.methodType(void.class, int.class, String.class, String.class, String.class));
+                MethodHandle visitFieldInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitFieldInsn", MethodType.methodType(void.class, int.class, String.class, String.class, String.class));
                 visitFieldInsn.invoke(this.methodVisitor, opcode, owner, name, descriptor);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -381,7 +379,7 @@ public class ASMWrapper {
          */
         public void visitMethodInsn(final int opcode, final String owner, final String name, final String descriptor, final boolean isInterface) {
             try {
-                MethodHandle visitMethodInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMethodInsn", MethodType.methodType(void.class, int.class, String.class, String.class, String.class, boolean.class));
+                MethodHandle visitMethodInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMethodInsn", MethodType.methodType(void.class, int.class, String.class, String.class, String.class, boolean.class));
                 visitMethodInsn.invoke(this.methodVisitor, opcode, owner, name, descriptor, isInterface);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -395,7 +393,7 @@ public class ASMWrapper {
          */
         public void visitLdcInsn(final Object value) {
             try {
-                MethodHandle visitLdcInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitLdcInsn", MethodType.methodType(void.class, Object.class));
+                MethodHandle visitLdcInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitLdcInsn", MethodType.methodType(void.class, Object.class));
                 visitLdcInsn.invoke(this.methodVisitor, value);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -410,7 +408,7 @@ public class ASMWrapper {
          */
         public void visitIincInsn(final int varIndex, final int increment) {
             try {
-                MethodHandle visitIincInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitIincInsn", MethodType.methodType(void.class, int.class, int.class));
+                MethodHandle visitIincInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitIincInsn", MethodType.methodType(void.class, int.class, int.class));
                 visitIincInsn.invoke(this.methodVisitor, varIndex, increment);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -425,7 +423,7 @@ public class ASMWrapper {
          */
         public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
             try {
-                MethodHandle visitMultiANewArrayInsn = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMultiANewArrayInsn", MethodType.methodType(void.class, String.class, int.class));
+                MethodHandle visitMultiANewArrayInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMultiANewArrayInsn", MethodType.methodType(void.class, String.class, int.class));
                 visitMultiANewArrayInsn.invoke(this.methodVisitor, descriptor, numDimensions);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -440,7 +438,7 @@ public class ASMWrapper {
          */
         public void visitMaxs(final int maxStack, final int maxLocals) {
             try {
-                MethodHandle visitMaxs = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMaxs", MethodType.methodType(void.class, int.class, int.class));
+                MethodHandle visitMaxs = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitMaxs", MethodType.methodType(void.class, int.class, int.class));
                 visitMaxs.invoke(this.methodVisitor, maxStack, maxLocals);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
@@ -452,7 +450,7 @@ public class ASMWrapper {
          */
         public void visitEnd() {
             try {
-                MethodHandle visitEnd = LOOKUP.findVirtual(CLASS_MethodVisitor, "visitEnd", MethodType.methodType(void.class));
+                MethodHandle visitEnd = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitEnd", MethodType.methodType(void.class));
                 visitEnd.invoke(this.methodVisitor);
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
