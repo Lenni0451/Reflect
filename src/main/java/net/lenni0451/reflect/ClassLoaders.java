@@ -99,7 +99,7 @@ public class ClassLoaders {
 
     /**
      * Define an anonymous class.<br>
-     * In Java 15 and above the <code>MethodHandles.Lookup#defineHiddenClass</code> method is used. On older versions the <code>Unsafe#defineAnonymousClass</code> method is used.<br>
+     * In Java 15 and above the {@code MethodHandles.Lookup#defineHiddenClass} method is used. On older versions the <code>Unsafe#defineAnonymousClass</code> method is used.<br>
      * The flags are case-insensitive and only used on Java 15 and above.
      *
      * @param parent   The parent class

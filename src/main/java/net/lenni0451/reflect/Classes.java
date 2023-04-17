@@ -58,7 +58,7 @@ public class Classes {
 
     /**
      * Get a class by its name from a given class loader.<br>
-     * The <code>initialize</code> parameter is set to true.
+     * The {@code initialize} parameter is set to true.
      *
      * @param name   The name of the class
      * @param loader The class loader to get the class from
