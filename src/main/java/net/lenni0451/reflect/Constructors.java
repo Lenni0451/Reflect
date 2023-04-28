@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredConstructors0;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
@@ -24,7 +25,7 @@ public class Constructors {
      */
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
         try {
-            Method getDeclaredConstructors0 = Methods.getDeclaredMethod(Class.class, "getDeclaredConstructors0", boolean.class);
+            Method getDeclaredConstructors0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
             return Methods.invoke(clazz, getDeclaredConstructors0, false);
         } catch (Throwable ignored) {
         }

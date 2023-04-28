@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredMethods0;
+
 /**
  * This class contains some useful methods for working with methods.
  */
@@ -21,7 +23,7 @@ public class Methods {
      */
     public static Method[] getDeclaredMethods(final Class<?> clazz) {
         try {
-            Method getDeclaredMethods0 = Class.class.getDeclaredMethod("getDeclaredMethods0", boolean.class);
+            Method getDeclaredMethods0 = Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
             return Methods.invoke(clazz, getDeclaredMethods0, false);
         } catch (Throwable ignored) {
         }

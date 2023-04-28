@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredFields0;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
 /**
@@ -47,7 +48,7 @@ public class Fields {
      */
     public static Field[] getDeclaredFields(final Class<?> clazz) {
         try {
-            Method getDeclaredFields0 = Methods.getDeclaredMethod(Class.class, "getDeclaredFields0", boolean.class);
+            Method getDeclaredFields0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
             return Methods.invoke(clazz, getDeclaredFields0, false);
         } catch (Throwable ignored) {
         }

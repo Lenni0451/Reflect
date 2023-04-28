@@ -29,6 +29,14 @@ javadoc {
     failOnError = false
 }
 
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    maxParallelForks Runtime.runtime.availableProcessors()
+}
+
 publishing {
     repositories {
         maven {
@@ -95,3 +103,4 @@ signing {
 project.tasks.withType(PublishToMavenRepository).forEach {
     it.dependsOn(project.tasks.withType(Sign))
 }
+build.dependsOn(test)

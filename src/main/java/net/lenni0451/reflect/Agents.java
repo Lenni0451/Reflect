@@ -10,6 +10,9 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import static net.lenni0451.reflect.JVMConstants.CLASS_InstrumentationImpl;
+import static net.lenni0451.reflect.JVMConstants.METHOD_InstrumentationImpl_loadAgent;
+
 /**
  * This class contains some useful methods for working with agents.
  */
@@ -100,9 +103,11 @@ public class Agents {
      * @throws IllegalStateException  If the loadAgent method does not exist
      */
     public static void load(final File agentJar) throws ClassNotFoundException {
-        Class<?> instrumentationImpl = Class.forName("sun.instrument.InstrumentationImpl");
-        Method method = Methods.getDeclaredMethod(instrumentationImpl, "loadAgent", String.class);
-        if (method == null) throw new IllegalStateException("Loading an Agent during runtime is not possible because loadAgent method does not exist");
+        Class<?> instrumentationImpl = Class.forName(CLASS_InstrumentationImpl);
+        Method method = Methods.getDeclaredMethod(instrumentationImpl, METHOD_InstrumentationImpl_loadAgent, String.class);
+        if (method == null) {
+            throw new IllegalStateException("Loading an Agent during runtime is not possible because the " + METHOD_InstrumentationImpl_loadAgent + " method does not exist");
+        }
         Methods.invoke(null, method, agentJar.getAbsolutePath());
     }
 

@@ -3,6 +3,8 @@ package net.lenni0451.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import static net.lenni0451.reflect.JVMConstants.*;
+
 /**
  * This class contains some useful methods for working with modules.
  */
@@ -28,10 +30,10 @@ public class Modules {
      * @param clazz The class to open the module of
      */
     public static void openModule(final Class<?> clazz) {
-        Field moduleField = Fields.getDeclaredField(Class.class, "module");
+        Field moduleField = Fields.getDeclaredField(Class.class, FIELD_Class_module);
         if (moduleField == null) return;
-        Field everyoneModuleField = Fields.getDeclaredField(moduleField.getType(), "EVERYONE_MODULE");
-        Method implAddExportsOrOpens = Methods.getDeclaredMethod(moduleField.getType(), "implAddExportsOrOpens", String.class, moduleField.getType(), boolean.class, boolean.class);
+        Field everyoneModuleField = Fields.getDeclaredField(moduleField.getType(), FIELD_Module_EVERYONE_MODULE);
+        Method implAddExportsOrOpens = Methods.getDeclaredMethod(moduleField.getType(), METHOD_Module_implAddExportsOrOpens, String.class, moduleField.getType(), boolean.class, boolean.class);
 
         Object everyone = Fields.get(null, everyoneModuleField);
         Object module = Fields.get(clazz, moduleField);

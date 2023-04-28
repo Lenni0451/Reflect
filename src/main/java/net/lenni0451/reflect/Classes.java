@@ -3,6 +3,8 @@ package net.lenni0451.reflect;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
+import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
+
 /**
  * This class contains some useful methods for working with classes.
  */
@@ -17,7 +19,7 @@ public class Classes {
      */
     public static Class<?>[] getDeclaredClasses(final Class<?> clazz) {
         try {
-            Method getDeclaredClasses0 = Methods.getDeclaredMethod(Class.class, "getDeclaredClasses0");
+            Method getDeclaredClasses0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0);
             return Methods.invoke(clazz, getDeclaredClasses0);
         } catch (Throwable ignored) {
         }

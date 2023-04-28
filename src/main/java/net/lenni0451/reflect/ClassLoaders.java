@@ -10,6 +10,7 @@ import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.function.Supplier;
 
+import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
@@ -18,11 +19,11 @@ import static net.lenni0451.reflect.JavaBypass.UNSAFE;
  */
 public class ClassLoaders {
 
-    private static final Class<?> classOptionClass = Classes.byName("java.lang.invoke.MethodHandles$Lookup$ClassOption");
-    private static Method unsafeDefineAnonymousClass = Methods.getDeclaredMethod(Unsafe.class, "defineAnonymousClass", Class.class, byte[].class, Object[].class);
-    private static Method lookupDefineHiddenClass = ((Supplier<Method>) () -> {
+    private static final Class<?> classOptionClass = Classes.byName(CLASS_MethodHandles_Lookup_ClassOption);
+    private static final Method unsafeDefineAnonymousClass = Methods.getDeclaredMethod(Unsafe.class, METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class);
+    private static final Method lookupDefineHiddenClass = ((Supplier<Method>) () -> {
         if (classOptionClass == null) return null;
-        return Methods.getDeclaredMethod(MethodHandles.Lookup.class, "defineHiddenClass", byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass());
+        return Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass());
     }).get();
 
     /**
@@ -32,11 +33,11 @@ public class ClassLoaders {
      */
     public static void addToSystemClassPath(final URL url) {
         ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-        Field ucpField = Fields.getDeclaredField(systemClassLoader.getClass(), "ucp");
-        if (ucpField == null) ucpField = Fields.getDeclaredField(systemClassLoader.getClass().getSuperclass(), "ucp");
+        Field ucpField = Fields.getDeclaredField(systemClassLoader.getClass(), FIELD_URLClassLoader_ucp);
+        if (ucpField == null) ucpField = Fields.getDeclaredField(systemClassLoader.getClass().getSuperclass(), FIELD_URLClassLoader_ucp);
         if (ucpField == null) throw new IllegalStateException("Unable to find URLClassPath field of system classloader");
         Object urlClassPath = Fields.getObject(systemClassLoader, ucpField);
-        Method addURLMethod = Methods.getDeclaredMethod(ucpField.getType(), "addURL", URL.class);
+        Method addURLMethod = Methods.getDeclaredMethod(ucpField.getType(), METHOD_URLClassPath_addURL, URL.class);
         Methods.invoke(urlClassPath, addURLMethod, url);
     }
 
@@ -47,11 +48,11 @@ public class ClassLoaders {
      */
     public static URL[] getSystemClassPath() {
         ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-        Field ucpField = Fields.getDeclaredField(systemClassLoader.getClass(), "ucp");
-        if (ucpField == null) ucpField = Fields.getDeclaredField(systemClassLoader.getClass().getSuperclass(), "ucp");
+        Field ucpField = Fields.getDeclaredField(systemClassLoader.getClass(), FIELD_URLClassLoader_ucp);
+        if (ucpField == null) ucpField = Fields.getDeclaredField(systemClassLoader.getClass().getSuperclass(), FIELD_URLClassLoader_ucp);
         if (ucpField == null) throw new IllegalStateException("Unable to find URLClassPath field of system classloader");
         Object urlClassPath = Fields.getObject(systemClassLoader, ucpField);
-        Method getURLsMethod = Methods.getDeclaredMethod(urlClassPath.getClass(), "getURLs");
+        Method getURLsMethod = Methods.getDeclaredMethod(urlClassPath.getClass(), METHOD_URLClassPath_getURLs);
         return Methods.invoke(urlClassPath, getURLsMethod);
     }
 
@@ -93,7 +94,7 @@ public class ClassLoaders {
      * @return The defined class
      */
     public static Class<?> defineClass(final ClassLoader classLoader, final String name, final byte[] bytecode, final int offset, final int length, final ProtectionDomain protectionDomain) {
-        Method method = Methods.getDeclaredMethod(ClassLoader.class, "defineClass", String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
+        Method method = Methods.getDeclaredMethod(ClassLoader.class, METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
         return Methods.invoke(classLoader, method, name, bytecode, offset, length, protectionDomain);
     }
 

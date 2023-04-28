@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import static net.lenni0451.reflect.JVMConstants.*;
+
 /**
  * This class contains some useful methods for working with enums.
  */
@@ -45,15 +47,15 @@ public class Enums {
      */
     public static <T extends Enum<T>> void addEnumInstance(final Class<T> enumClass, final T enumValue) {
         { //Add the enum value to the enum class
-            Field values = Fields.getDeclaredField(enumClass, "$VALUES");
+            Field values = Fields.getDeclaredField(enumClass, FIELD_Enum_$VALUES);
             Object[] valuesArray = Fields.getObject(null, values);
             valuesArray = Arrays.copyOf(valuesArray, valuesArray.length + 1);
             valuesArray[valuesArray.length - 1] = enumValue;
             Fields.setObject(null, values, valuesArray);
         }
         { //Clear the enum value cache of the enum class
-            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, "enumConstants"), null);
-            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, "enumConstantDirectory"), null);
+            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants), null);
+            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory), null);
         }
     }
 
