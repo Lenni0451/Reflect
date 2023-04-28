@@ -85,7 +85,7 @@ public class FieldAccessor {
         if (Modifier.isStatic(field.getModifiers())) throw new IllegalArgumentException("Dynamic setter can only be used for non-static fields");
         String newClassName = slash(field.getDeclaringClass()) + "$DynamicFieldSetter";
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass(), field.getType()}, void.class);
-        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{desc(invokerClass)});
+        ASMWrapper acc = ASMWrapper.create(opcode("ACC_SUPER") | opcode("ACC_FINAL") | opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)});
 
         addConstructor(acc, newClassName, null, field);
 
