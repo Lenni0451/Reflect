@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
+import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
 /**
  * This class contains some useful methods for working with classes.
@@ -85,6 +86,58 @@ public class Classes {
         try {
             return Class.forName(name, initialize, loader);
         } catch (ClassNotFoundException ignored) {
+        }
+        return null;
+    }
+
+    /**
+     * Get a class by its name.<br>
+     * A wrapper for {@link Class#forName(String)} sneaky throwing an exception.
+     *
+     * @param name The name of the class
+     * @return The class or null if it doesn't exist
+     * @throws ClassNotFoundException If the class could not be found
+     */
+    @Nullable
+    public static Class<?> forName(final String name) {
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            UNSAFE.throwException(e);
+        }
+        return null;
+    }
+
+    /**
+     * Get a class by its name from a given class loader.<br>
+     * The {@code initialize} parameter is set to true.
+     *
+     * @param name   The name of the class
+     * @param loader The class loader to get the class from
+     * @return The class or null if it doesn't exist
+     * @throws ClassNotFoundException If the class could not be found
+     */
+    @Nullable
+    public static Class<?> forName(final String name, final ClassLoader loader) {
+        return forName(name, true, loader);
+    }
+
+    /**
+     * Get a class by its name from a given class loader.<br>
+     * A wrapper for {@link Class#forName(String, boolean, ClassLoader)} sneaky throwing an exception.
+     *
+     * @param name       The name of the class
+     * @param initialize Whether to initialize the class
+     * @param loader     The class loader to get the class from
+     * @return The class or null if it doesn't exist
+     * @throws ClassNotFoundException If the class could not be found
+     */
+    @Nullable
+    public static Class<?> forName(final String name, final boolean initialize, final ClassLoader loader) {
+        try {
+            return Class.forName(name, initialize, loader);
+        } catch (ClassNotFoundException e) {
+            UNSAFE.throwException(e);
         }
         return null;
     }

@@ -96,8 +96,7 @@ public class ClassLoaders {
         } while (nonExistentFile != null);
 
         //Move the loader for that URL to the front of the list
-        Class<?> jarLoaderClass = Classes.byName(ucp.getClass().getName() + "$JarLoader");
-        if (jarLoaderClass == null) throw new IllegalStateException("Unable to find JarLoader class");
+        Class<?> jarLoaderClass = Classes.forName(ucp.getClass().getName() + "$JarLoader");
         List<Object> loaders = RStream.of(ucp).fields().by("loaders").get();
         for (Object loader : loaders) {
             if (jarLoaderClass.equals(loader.getClass())) {
