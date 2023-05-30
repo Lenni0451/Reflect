@@ -1,5 +1,6 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.stream.RStream;
 import sun.misc.Unsafe;
 
 import java.lang.invoke.MethodHandles;
@@ -8,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.ProtectionDomain;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static net.lenni0451.reflect.JVMConstants.*;
@@ -54,6 +56,58 @@ public class ClassLoaders {
         Object urlClassPath = Fields.getObject(systemClassLoader, ucpField);
         Method getURLsMethod = Methods.getDeclaredMethod(urlClassPath.getClass(), METHOD_URLClassPath_getURLs);
         return Methods.invoke(urlClassPath, getURLsMethod);
+    }
+
+    /**
+     * Load a URL into the context class loader and move it to the front of the classpath.<br>
+     * This allows overriding classes in the classpath with classes from an external jar.
+     *
+     * @param url The URL to load
+     */
+    public static void loadToFront(final URL url) {
+        //First add the URL into the classpath
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Object ucp;
+        try {
+            ucp = RStream.of(classLoader).withSuper().fields().by("ucp").get();
+            RStream.of(ucp).methods().by("addURL", URL.class).invokeArgs(url);
+        } catch (Throwable t) {
+            throw new IllegalStateException("Unable to find URLClassPath of classloader", t);
+        }
+
+        //Move the URL to the front of the classpath, so it gets loaded first
+        MOVE_URL_UP:
+        {
+            List<URL> path = RStream.of(ucp).fields().by("path").get();
+            for (int i = 0; i < path.size(); i++) {
+                if (url.equals(path.get(i))) {
+                    path.add(0, path.remove(i));
+                    break MOVE_URL_UP;
+                }
+            }
+            throw new IllegalStateException("Unable to find URL in classpath");
+        }
+
+        //Force the ClassLoader to load all URLs in the classpath
+        URL nonExistentFile;
+        do {
+            //A deadlock could occur here theoretically, but it is very impossible
+            nonExistentFile = classLoader.getResource("THIS_FILE_SHOULD_NEVER_EXIST_" + System.nanoTime());
+        } while (nonExistentFile != null);
+
+        //Move the loader for that URL to the front of the list
+        Class<?> jarLoaderClass = Classes.byName(ucp.getClass().getName() + "$JarLoader");
+        if (jarLoaderClass == null) throw new IllegalStateException("Unable to find JarLoader class");
+        List<Object> loaders = RStream.of(ucp).fields().by("loaders").get();
+        for (Object loader : loaders) {
+            if (jarLoaderClass.equals(loader.getClass())) {
+                URL loaderUrl = RStream.of(loader).fields().filter(URL.class).by(0).get();
+                if (url.equals(loaderUrl)) {
+                    loaders.add(0, loaders.remove(loaders.size() - 1));
+                    break;
+                }
+            }
+        }
     }
 
 
