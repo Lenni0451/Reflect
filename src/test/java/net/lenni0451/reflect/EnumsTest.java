@@ -10,10 +10,12 @@ class EnumsTest {
 
     @Test
     void addEnumInstance() {
+        assertEquals(7, DayOfWeek.class.getEnumConstants().length);
         DayOfWeek dayOfWeek = assertDoesNotThrow(() -> Enums.newInstance(DayOfWeek.class, "KYJSDAY", 8, new Class<?>[0], new Object[0]));
         assertNotNull(dayOfWeek);
         assertDoesNotThrow(() -> Enums.addEnumInstance(DayOfWeek.class, dayOfWeek));
         assertEquals(8, DayOfWeek.values().length);
+        assertEquals(8, DayOfWeek.class.getEnumConstants().length);
         assertEquals(DayOfWeek.values()[7], dayOfWeek);
     }
 
