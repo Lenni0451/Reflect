@@ -139,6 +139,7 @@ public class Objects {
      * @return The casted object
      */
     public static <T> T cast(final Object o, final long klass) {
+        if (JVMConstants.OPENJ9_RUNTIME) throw new UnsupportedOperationException("OpenJ9 is not supported");
         if (OOP_SIZE == 4) UNSAFE.putInt(o, KLASS_OFFSET, (int) klass);
         else if (OOP_SIZE == 8) UNSAFE.putLong(o, KLASS_OFFSET, klass);
         else throw new IllegalStateException(INVALID_OOP_SIZE);

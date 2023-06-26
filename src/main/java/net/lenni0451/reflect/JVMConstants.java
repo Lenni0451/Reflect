@@ -2,7 +2,7 @@ package net.lenni0451.reflect;
 
 public class JVMConstants {
 
-    public static final boolean OPENJ9_RUNTIME = System.getProperty("java.vm.name").contains("OpenJ9");
+    public static final boolean OPENJ9_RUNTIME = System.getProperty("java.vm.name").toLowerCase().contains("openj9");
 
     public static final String CLASS_InstrumentationImpl = calc("sun.instrument.InstrumentationImpl");
     public static final String CLASS_MethodHandles_Lookup_ClassOption = calc("java.lang.invoke.MethodHandles$Lookup$ClassOption");
