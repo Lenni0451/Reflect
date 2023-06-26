@@ -1,7 +1,6 @@
 package net.lenni0451.reflect.wrapper;
 
 import net.lenni0451.reflect.ClassLoaders;
-import net.lenni0451.reflect.Modules;
 import net.lenni0451.reflect.stream.RStream;
 
 import javax.annotation.Nonnull;
@@ -31,9 +30,6 @@ public class ASMWrapper {
     private static final Map<String, Integer> opcodes = new HashMap<>();
 
     static {
-        Modules.copyModule(System.class, ASMWrapper.class);
-        Modules.copyModule(System.class, MethodVisitorAccess.class);
-
         CLASS_Opcodes = forName("org.objectweb.asm.Opcodes", "jdk.internal.org.objectweb.asm.Opcodes");
         CLASS_ClassWriter = forName("org.objectweb.asm.ClassWriter", "jdk.internal.org.objectweb.asm.ClassWriter");
         CLASS_FieldVisitor = forName("org.objectweb.asm.FieldVisitor", "jdk.internal.org.objectweb.asm.FieldVisitor");
