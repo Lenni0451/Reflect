@@ -23,8 +23,13 @@ public class Methods {
      */
     public static Method[] getDeclaredMethods(final Class<?> clazz) {
         try {
-            Method getDeclaredMethods0 = Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
-            return Methods.invoke(clazz, getDeclaredMethods0, false);
+            if (JVMConstants.OPENJ9_RUNTIME) {
+                Method getDeclaredMethodsImpl = Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
+                return Methods.invoke(clazz, getDeclaredMethodsImpl);
+            } else {
+                Method getDeclaredMethods0 = Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
+                return Methods.invoke(clazz, getDeclaredMethods0, false);
+            }
         } catch (Throwable ignored) {
         }
         return new Method[0];

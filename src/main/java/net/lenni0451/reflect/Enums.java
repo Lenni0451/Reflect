@@ -54,8 +54,12 @@ public class Enums {
             Fields.setObject(null, values, valuesArray);
         }
         { //Clear the enum value cache of the enum class
-            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants), null);
-            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory), null);
+            if (OPENJ9_RUNTIME) {
+                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Cass_EnumVars), null);
+            } else {
+                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants), null);
+                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory), null);
+            }
         }
     }
 

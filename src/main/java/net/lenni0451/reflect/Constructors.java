@@ -25,8 +25,13 @@ public class Constructors {
      */
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
         try {
-            Method getDeclaredConstructors0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
-            return Methods.invoke(clazz, getDeclaredConstructors0, false);
+            if (JVMConstants.OPENJ9_RUNTIME) {
+                Method getDeclaredConstructorsImpl = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
+                return Methods.invoke(clazz, getDeclaredConstructorsImpl);
+            } else {
+                Method getDeclaredConstructors0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
+                return Methods.invoke(clazz, getDeclaredConstructors0, false);
+            }
         } catch (Throwable ignored) {
         }
         return new Constructor[0];

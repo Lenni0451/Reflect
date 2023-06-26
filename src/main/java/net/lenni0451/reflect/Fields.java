@@ -48,8 +48,13 @@ public class Fields {
      */
     public static Field[] getDeclaredFields(final Class<?> clazz) {
         try {
-            Method getDeclaredFields0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
-            return Methods.invoke(clazz, getDeclaredFields0, false);
+            if (JVMConstants.OPENJ9_RUNTIME) {
+                Method getDeclaredFieldsImpl = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
+                return Methods.invoke(clazz, getDeclaredFieldsImpl);
+            } else {
+                Method getDeclaredFields0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
+                return Methods.invoke(clazz, getDeclaredFields0, false);
+            }
         } catch (Throwable ignored) {
         }
         return new Field[0];
