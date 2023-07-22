@@ -21,9 +21,20 @@ class ASMWrapperTest {
         c.visitMaxs(1, 1);
         c.visitEnd();
 
+        ASMWrapper.LabelAccess start = w.label();
+        ASMWrapper.LabelAccess end = w.label();
+        ASMWrapper.LabelAccess handler = w.label();
+
         ASMWrapper.MethodVisitorAccess g = w.visitMethod(opcode("ACC_PUBLIC"), "get", "()Ljava/lang/Object;", null, null);
+        g.visitJumpInsn(opcode("GOTO"), start);
+        g.visitLabel(start);
         g.visitLdcInsn("Hello World");
         g.visitInsn(opcode("ARETURN"));
+        g.visitLabel(end);
+        g.visitLabel(handler);
+        g.visitInsn(opcode("ACONST_NULL"));
+        g.visitInsn(opcode("ARETURN"));
+        g.visitTryCatchBlock(start, end, handler, "java/lang/Exception");
         g.visitMaxs(1, 1);
         g.visitEnd();
 

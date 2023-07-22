@@ -26,6 +26,7 @@ public class ASMWrapper {
     private static final Class<?> CLASS_ClassWriter;
     private static final Class<?> CLASS_FieldVisitor;
     private static final Class<?> CLASS_MethodVisitor;
+    private static final Class<?> CLASS_Label;
 
     private static final Map<String, Integer> opcodes = new HashMap<>();
 
@@ -34,6 +35,7 @@ public class ASMWrapper {
         CLASS_ClassWriter = forName("org.objectweb.asm.ClassWriter", "jdk.internal.org.objectweb.asm.ClassWriter");
         CLASS_FieldVisitor = forName("org.objectweb.asm.FieldVisitor", "jdk.internal.org.objectweb.asm.FieldVisitor");
         CLASS_MethodVisitor = forName("org.objectweb.asm.MethodVisitor", "jdk.internal.org.objectweb.asm.MethodVisitor");
+        CLASS_Label = forName("org.objectweb.asm.Label", "jdk.internal.org.objectweb.asm.Label");
 
         RStream.of(CLASS_Opcodes).fields().filter(true).filter(int.class).forEach(f -> opcodes.put(f.name(), f.<Integer>get()));
     }
@@ -243,6 +245,21 @@ public class ASMWrapper {
     }
 
     /**
+     * Get a new label.
+     *
+     * @return The label
+     */
+    public LabelAccess label() {
+        try {
+            MethodHandle constructor = TRUSTED_LOOKUP.findConstructor(CLASS_Label, MethodType.methodType(void.class));
+            return new LabelAccess(constructor.invoke());
+        } catch (Throwable t) {
+            UNSAFE.throwException(t);
+            return new LabelAccess(null);
+        }
+    }
+
+    /**
      * Get the byte array of the generated class.
      *
      * @return The byte array
@@ -286,6 +303,15 @@ public class ASMWrapper {
 
         private MethodVisitorAccess(final Object methodVisitor) {
             this.methodVisitor = methodVisitor;
+        }
+
+        /**
+         * Check if the method visitor is null.
+         *
+         * @return If the method visitor is null
+         */
+        public boolean isNull() {
+            return this.methodVisitor == null;
         }
 
         /**
@@ -383,6 +409,35 @@ public class ASMWrapper {
         }
 
         /**
+         * Visit a jump insn node.
+         *
+         * @param opcode The opcode
+         * @param target The target label
+         */
+        public void visitJumpInsn(final int opcode, final LabelAccess target) {
+            try {
+                MethodHandle visitJumpInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitJumpInsn", MethodType.methodType(void.class, int.class, CLASS_Label));
+                visitJumpInsn.invoke(this.methodVisitor, opcode, target.label);
+            } catch (Throwable t) {
+                UNSAFE.throwException(t);
+            }
+        }
+
+        /**
+         * Visit a label.
+         *
+         * @param label The label
+         */
+        public void visitLabel(final LabelAccess label) {
+            try {
+                MethodHandle visitLabel = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitLabel", MethodType.methodType(void.class, CLASS_Label));
+                visitLabel.invoke(this.methodVisitor, label.label);
+            } catch (Throwable t) {
+                UNSAFE.throwException(t);
+            }
+        }
+
+        /**
          * Visit a ldc insn node.
          *
          * @param value The value
@@ -427,6 +482,23 @@ public class ASMWrapper {
         }
 
         /**
+         * Visit a try catch block.
+         *
+         * @param start   The start label
+         * @param end     The end label
+         * @param handler The handler label
+         * @param type    The type
+         */
+        public void visitTryCatchBlock(final LabelAccess start, final LabelAccess end, final LabelAccess handler, final String type) {
+            try {
+                MethodHandle visitTryCatchBlock = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitTryCatchBlock", MethodType.methodType(void.class, CLASS_Label, CLASS_Label, CLASS_Label, String.class));
+                visitTryCatchBlock.invoke(this.methodVisitor, start.label, end.label, handler.label, type);
+            } catch (Throwable t) {
+                UNSAFE.throwException(t);
+            }
+        }
+
+        /**
          * Visit the method maxs.
          *
          * @param maxStack  The max stack
@@ -451,6 +523,26 @@ public class ASMWrapper {
             } catch (Throwable t) {
                 UNSAFE.throwException(t);
             }
+        }
+    }
+
+    /**
+     * A wrapper for the ASM label.
+     */
+    public static class LabelAccess {
+        private final Object label;
+
+        private LabelAccess(final Object label) {
+            this.label = label;
+        }
+
+        /**
+         * Check if the label is null.
+         *
+         * @return If the label is null
+         */
+        public boolean isNull() {
+            return this.label == null;
         }
     }
 
