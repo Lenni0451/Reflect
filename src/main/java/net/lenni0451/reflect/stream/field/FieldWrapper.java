@@ -88,7 +88,7 @@ public class FieldWrapper {
     }
 
     /**
-     * Set the value of the {@link Field}
+     * Set the value of the {@link Field}.
      *
      * @param value The value to set the {@link Field} to
      * @throws IllegalStateException If trying to set a non-static {@link Field} if no instance is provided
@@ -99,7 +99,7 @@ public class FieldWrapper {
     }
 
     /**
-     * Set the value of the {@link Field} with the given owner
+     * Set the value of the {@link Field} with the given owner.
      *
      * @param instance The instance of the owner
      * @param value    The value to set the {@link Field} to
@@ -109,7 +109,7 @@ public class FieldWrapper {
     }
 
     /**
-     * Copy the value of the {@link Field} to the given target
+     * Copy the value of the {@link Field} to the given target.
      *
      * @param target The target to copy the value to
      */
@@ -120,7 +120,7 @@ public class FieldWrapper {
     }
 
     /**
-     * Copy the value of the {@link Field} to the given target with the given owner
+     * Copy the value of the {@link Field} to the given target with the given owner.
      *
      * @param instance The instance of the owner
      * @param target   The target to copy the value to

@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "maven-publish"
     id "signing"
+    id "checkstyle"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
@@ -10,7 +11,6 @@ compileJava.options.encoding = compileTestJava.options.encoding = javadoc.option
 archivesBaseName = project.maven_name
 group = project.maven_group
 version = project.maven_version
-
 
 repositories {
     mavenCentral()
@@ -99,6 +99,11 @@ publishing {
     }
 }
 
+checkstyle {
+    toolVersion = "9.3" //Latest version for Java 8
+    configFile = rootProject.file("config/checkstyle.xml")
+}
+
 signing {
     sign configurations.archives
     sign publishing.publications.maven
@@ -108,3 +113,4 @@ project.tasks.withType(PublishToMavenRepository).forEach {
     it.dependsOn(project.tasks.withType(Sign))
 }
 build.dependsOn(test)
+build.dependsOn(check)

@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="fileExtensions" value="java, json, xml, properties"/>
+    <property name="severity" value="warning"/>
+
+    <module name="NewlineAtEndOfFile"/>
+    <module name="FileTabCharacter"/>
+    <module name="TreeWalker">
+        <!-- Annotation Checks -->
+        <property name="tabWidth" value="4"/>
+        <module name="AnnotationLocation">
+            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+        </module>
+        <module name="MissingOverride"/>
+
+        <!-- Block Checks -->
+        <module name="EmptyBlock"/>
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expect(?>ed)?|ignored?"/>
+        </module>
+        <module name="LeftCurly">
+            <property name="ignoreEnums" value="false"/>
+        </module>
+        <!--<module name="NeedBraces">-->
+        <!--    <property name="allowSingleLineStatement" value="true"/>-->
+        <!--</module>-->
+        <module name="RightCurly"/>
+
+        <!-- Class Design Checks -->
+        <module name="InnerTypeLast"/>
+        <module name="MutableException"/>
+        <module name="OneTopLevelClass"/>
+
+        <!-- Coding Checks -->
+        <module name="AvoidNoArgumentSuperConstructorCall"/>
+        <module name="CovariantEquals"/>
+        <!--<module name="DeclarationOrder">-->
+        <!--    <property name="ignoreModifiers" value="true"/>-->
+        <!--</module>-->
+        <module name="DefaultComesLast">
+            <property name="skipIfLastAndSharedWithCase" value="true"/>
+        </module>
+        <module name="EmptyStatement"/>
+        <!--<module name="FinalLocalVariable">-->
+        <!--    <property name="tokens" value="PARAMETER_DEF"/>-->
+        <!--</module>-->
+        <module name="IllegalType"/>
+        <module name="InnerAssignment"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="NoClone"/>
+        <module name="NoFinalizer"/>
+        <module name="OneStatementPerLine"/>
+        <module name="OverloadMethodsDeclarationOrder"/>
+        <module name="RequireThis">
+            <property name="validateOnlyOverlapping" value="false"/>
+        </module>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="StringLiteralEquality"/>
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
+        <module name="UnnecessarySemicolonInTryWithResources"/>
+
+        <!-- Javadoc Comments Checks -->
+        <module name="InvalidJavadocPosition"/>
+        <module name="JavadocContentLocationCheck"/>
+        <module name="JavadocMissingLeadingAsterisk"/>
+        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+        <module name="JavadocStyle"/>
+        <module name="JavadocTagContinuationIndentation"/>
+        <module name="NonEmptyAtclauseDescription"/>
+        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+        <module name="SingleLineJavadoc"/>
+
+        <!-- Miscellaneous Checks -->
+        <module name="ArrayTypeStyle"/>
+        <!--<module name="CommentsIndentation"/>-->
+        <module name="Indentation"/>
+        <module name="OuterTypeFilename"/>
+        <module name="UpperEll"/>
+        <module name="ModifierOrder"/>
+        <module name="ClassTypeParameterName">
+            <property name="format" value="^[A-Z]+$"/>
+        </module>
+        <!--<module name="ConstantName"/>-->
+        <module name="InterfaceTypeParameterName">
+            <property name="format" value="^[A-Z]+$"/>
+        </module>
+        <module name="LambdaParameterName"/>
+        <module name="LocalVariableName"/>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="MethodTypeParameterName">
+            <property name="format" value="^[A-Z]+$"/>
+        </module>
+        <module name="PackageName"/>
+        <module name="ParameterName"/>
+        <module name="PatternVariableName"/>
+        <module name="RecordComponentName"/>
+        <module name="RecordTypeParameterName">
+            <property name="format" value="^[A-Z]+$"/>
+        </module>
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-zA-Z0-9_]+$"/>
+        </module>
+        <module name="TypeName"/>
+
+        <!-- Whitespace Checks -->
+        <module name="EmptyForInitializerPad"/>
+        <module name="EmptyForIteratorPad"/>
+        <module name="EmptyLineSeparator">
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+        </module>
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
+        <module name="NoLineWrap"/>
+        <module name="NoWhitespaceAfter"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+        <module name="OperatorWrap">
+            <property name="option" value="eol"/>
+        </module>
+        <module name="ParenPad"/>
+        <module name="SeparatorWrap">
+            <property name="option" value="nl"/>
+            <property name="tokens" value="DOT"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="option" value="eol"/>
+            <property name="tokens" value="COMMA"/>
+        </module>
+        <module name="SingleSpaceSeparator"/>
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
+            <property name="allowEmptyCatches" value="true"/>
+        </module>
+    </module>
+</module>

@@ -88,7 +88,7 @@ class FieldsTest {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             FieldsClass that = (FieldsClass) o;
-            return bool == that.bool && b == that.b && s == that.s && c == that.c && i == that.i && l == that.l && Float.compare(that.f, f) == 0 && Double.compare(that.d, d) == 0 && Objects.equals(str, that.str);
+            return this.bool == that.bool && this.b == that.b && this.s == that.s && this.c == that.c && this.i == that.i && this.l == that.l && Float.compare(that.f, this.f) == 0 && Double.compare(that.d, this.d) == 0 && Objects.equals(this.str, that.str);
         }
     }
 
