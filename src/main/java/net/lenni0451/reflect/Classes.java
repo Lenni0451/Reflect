@@ -1,9 +1,13 @@
 package net.lenni0451.reflect;
 
+import sun.misc.Unsafe;
+
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
+import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
 /**
@@ -40,6 +44,35 @@ public class Classes {
             if (c.getSimpleName().equals(simpleName)) return c;
         }
         return null;
+    }
+
+    /**
+     * Ensure that a class is initialized.<br>
+     * Thrown exceptions will be ignored.
+     *
+     * @param clazz The class to initialize
+     */
+    public static void ensureInitialized(Class<?> clazz) {
+        try { //Try using unsafe (deprecated since Java 15)
+            Method ensureClassInitialized = Methods.getDeclaredMethod(Unsafe.class, "ensureClassInitialized", Class.class);
+            if (ensureClassInitialized != null) {
+                Methods.invoke(UNSAFE, ensureClassInitialized, clazz);
+                return;
+            }
+        } catch (Throwable ignored) {
+        }
+        try { //Try using trusted lookup
+            Method ensureClassInitialized = Methods.getDeclaredMethod(MethodHandles.Lookup.class, "ensureInitialized", Class.class);
+            if (ensureClassInitialized != null) {
+                Methods.invoke(TRUSTED_LOOKUP.in(clazz), ensureClassInitialized, clazz);
+                return;
+            }
+        } catch (Throwable ignored) {
+        }
+        try { //Fallback to forName()
+            forName(clazz.getName(), true, clazz.getClassLoader());
+        } catch (Throwable ignored) {
+        }
     }
 
 

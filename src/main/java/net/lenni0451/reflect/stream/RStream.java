@@ -1,5 +1,6 @@
 package net.lenni0451.reflect.stream;
 
+import net.lenni0451.reflect.Classes;
 import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.constructor.ConstructorStream;
 import net.lenni0451.reflect.stream.field.FieldStream;
@@ -90,6 +91,8 @@ public class RStream {
     private RStream(@Nonnull final Class<?> clazz, @Nullable final Object instance) {
         this.clazz = clazz;
         this.instance = instance;
+
+        Classes.ensureInitialized(this.clazz);
     }
 
     /**
