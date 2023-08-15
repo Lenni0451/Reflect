@@ -59,9 +59,7 @@ public class FieldStream {
      */
     public FieldWrapper by(final String name) {
         for (FieldWrapper field : this.fields) {
-            if (field.name().equals(name)) {
-                return field;
-            }
+            if (field.name().equals(name)) return field;
         }
         JavaBypass.UNSAFE.throwException(new NoSuchFieldException());
         return null;
