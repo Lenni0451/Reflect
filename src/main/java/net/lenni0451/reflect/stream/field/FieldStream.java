@@ -5,9 +5,7 @@ import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.RStream;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -93,6 +91,28 @@ public class FieldStream {
     public FieldStream filter(final Predicate<FieldWrapper> filter) {
         this.fields.removeIf(filter.negate());
         return this;
+    }
+
+    /**
+     * Filter the fields by the given names.<br>
+     * The current stream will be modified.
+     *
+     * @param names The names of the fields
+     * @return This stream
+     */
+    public FieldStream filter(final Collection<String> names) {
+        return this.filter(f -> names.contains(f.name()));
+    }
+
+    /**
+     * Filter the fields by the given names.<br>
+     * The current stream will be modified.
+     *
+     * @param names The names of the fields
+     * @return This stream
+     */
+    public FieldStream filter(final String... names) {
+        return this.filter(Arrays.asList(names));
     }
 
     /**

@@ -161,6 +161,17 @@ public class MethodStream {
     }
 
     /**
+     * Filter the methods by the given names.<br>
+     * The current stream will be modified.
+     *
+     * @param names The names of the methods
+     * @return This stream
+     */
+    public MethodStream filter(final String... names) {
+        return this.filter(Arrays.asList(names));
+    }
+
+    /**
      * Filter the methods by the given parameter types.<br>
      * The current stream will be modified.
      *
