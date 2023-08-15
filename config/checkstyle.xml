@@ -21,7 +21,7 @@
         <!-- Block Checks -->
         <module name="EmptyBlock"/>
         <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="expect(?>ed)?|ignored?"/>
+            <property name="exceptionVariableName" value="expect(?>ed)?|ignored?|impossible"/>
         </module>
         <module name="LeftCurly">
             <property name="ignoreEnums" value="false"/>
@@ -50,12 +50,12 @@
         <!--    <property name="tokens" value="PARAMETER_DEF"/>-->
         <!--</module>-->
         <module name="IllegalType"/>
-        <module name="InnerAssignment"/>
+        <!--<module name="InnerAssignment"/>-->
         <module name="MultipleVariableDeclarations"/>
         <module name="NoClone"/>
         <module name="NoFinalizer"/>
         <module name="OneStatementPerLine"/>
-        <module name="OverloadMethodsDeclarationOrder"/>
+        <!--<module name="OverloadMethodsDeclarationOrder"/>-->
         <module name="RequireThis">
             <property name="validateOnlyOverlapping" value="false"/>
         </module>
@@ -79,10 +79,11 @@
         <!-- Miscellaneous Checks -->
         <module name="ArrayTypeStyle"/>
         <!--<module name="CommentsIndentation"/>-->
-        <module name="Indentation"/>
+        <module name="Indentation">
+            <property name="arrayInitIndent" value="8"/>
+        </module>
         <module name="OuterTypeFilename"/>
         <module name="UpperEll"/>
-        <module name="ModifierOrder"/>
         <module name="ClassTypeParameterName">
             <property name="format" value="^[A-Z]+$"/>
         </module>
@@ -90,36 +91,75 @@
         <module name="InterfaceTypeParameterName">
             <property name="format" value="^[A-Z]+$"/>
         </module>
-        <module name="LambdaParameterName"/>
-        <module name="LocalVariableName"/>
-        <module name="MemberName"/>
-        <module name="MethodName"/>
+        <module name="LambdaParameterName">
+            <property name="format" value="^[a-z_$][a-zA-Z0-9_$]*$"/>
+        </module>
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z_$][a-zA-Z0-9_$]*$"/>
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^[a-z_$][a-zA-Z0-9_$]*$"/>
+        </module>
+        <module name="MethodName">
+            <property name="format" value="^[a-z_$][a-zA-Z0-9_$]*$"/>
+        </module>
         <module name="MethodTypeParameterName">
             <property name="format" value="^[A-Z]+$"/>
         </module>
         <module name="PackageName"/>
-        <module name="ParameterName"/>
-        <module name="PatternVariableName"/>
-        <module name="RecordComponentName"/>
+        <module name="ParameterName">
+            <property name="format" value="^[a-z_$][a-zA-Z0-9_$]*$"/>
+        </module>
+        <module name="PatternVariableName">
+            <property name="format" value="^[a-z_$][a-zA-Z0-9_$]*$"/>
+        </module>
+        <module name="RecordComponentName">
+            <property name="format" value="^[a-z_$][a-zA-Z0-9_$]*$"/>
+        </module>
         <module name="RecordTypeParameterName">
             <property name="format" value="^[A-Z]+$"/>
         </module>
         <module name="StaticVariableName">
-            <property name="format" value="^[a-zA-Z0-9_]+$"/>
+            <property name="format" value="^[a-zA-Z0-9_$]+$"/>
         </module>
-        <module name="TypeName"/>
+        <module name="TypeName">
+            <property name="format" value="^[A-Z_$][a-zA-Z0-9_$]*$"/>
+        </module>
+
+        <!-- Regexp Checks -->
+        <module name="Regexp">
+            <property name="format" value="[\t ]+$"/>
+            <property name="message" value="Left over spaces at end of line"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+        <module name="Regexp">
+            <property name="format" value="^\s*\n\s*\n\s*\n"/>
+            <property name="message" value="More than two empty lines"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+        <!-- Sadly there is no easy way to enforce a newline after the class header. A regex like this could be a temp solution:
+        (^|\s+)(class|interface|enum|@interface|record)\s+.*\{[\t ]*\n[\t ]*(?!\s|;|}|$) -->
+        <module name="Regexp">
+            <property name="format" value="(\s*\n|\{)\s*\n}\s*\Z"/>
+            <property name="message" value="Missing empty line before last closing brace"/>
+        </module>
 
         <!-- Whitespace Checks -->
         <module name="EmptyForInitializerPad"/>
         <module name="EmptyForIteratorPad"/>
         <module name="EmptyLineSeparator">
             <property name="allowNoEmptyLineBetweenFields" value="true"/>
+            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+            <property name="tokens" value="IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF, STATIC_INIT,
+            INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF, COMPACT_CTOR_DEF"/>
         </module>
         <module name="GenericWhitespace"/>
         <module name="MethodParamPad"/>
         <module name="NoLineWrap"/>
         <module name="NoWhitespaceAfter"/>
-        <module name="NoWhitespaceBefore"/>
+        <module name="NoWhitespaceBefore">
+            <property name="allowLineBreaks" value="true"/>
+        </module>
         <module name="NoWhitespaceBeforeCaseDefaultColon"/>
         <module name="OperatorWrap">
             <property name="option" value="eol"/>
