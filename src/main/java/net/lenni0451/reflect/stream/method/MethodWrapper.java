@@ -56,6 +56,13 @@ public class MethodWrapper {
     }
 
     /**
+     * @return The amount of parameters of the method
+     */
+    public int parameterCount() {
+        return this.method.getParameterCount();
+    }
+
+    /**
      * @return The owner (declaring) class of the method
      */
     public Class<?> owner() {

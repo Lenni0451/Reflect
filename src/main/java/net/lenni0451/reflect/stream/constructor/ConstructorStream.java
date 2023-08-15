@@ -4,6 +4,7 @@ import net.lenni0451.reflect.Constructors;
 import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.RStream;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,9 +51,15 @@ public class ConstructorStream {
      * @return The constructor wrapper
      * @throws NoSuchMethodException If the constructor doesn't exist
      */
-    public ConstructorWrapper by(final Class<?>... parameterTypes) {
-        for (ConstructorWrapper constructor : this.constructors) {
-            if (Arrays.equals(constructor.parameterTypes(), parameterTypes)) return constructor;
+    public ConstructorWrapper by(@Nullable final Class<?>... parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            for (ConstructorWrapper constructor : this.constructors) {
+                if (constructor.parameterTypes().length == 0) return constructor;
+            }
+        } else {
+            for (ConstructorWrapper constructor : this.constructors) {
+                if (Arrays.equals(constructor.parameterTypes(), parameterTypes)) return constructor;
+            }
         }
         JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         return null;
@@ -95,8 +102,12 @@ public class ConstructorStream {
      * @param parameterTypes The parameter types of the constructor
      * @return This stream
      */
-    public ConstructorStream filter(final Class<?>... parameterTypes) {
-        return this.filter(constructor -> Arrays.equals(constructor.parameterTypes(), parameterTypes));
+    public ConstructorStream filter(@Nullable final Class<?>... parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            return this.filter(constructor -> constructor.parameterCount() == 0);
+        } else {
+            return this.filter(constructor -> Arrays.equals(constructor.parameterTypes(), parameterTypes));
+        }
     }
 
     /**

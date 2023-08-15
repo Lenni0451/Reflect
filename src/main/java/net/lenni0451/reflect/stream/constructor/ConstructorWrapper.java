@@ -42,6 +42,13 @@ public class ConstructorWrapper {
     }
 
     /**
+     * @return The amount of parameters of the constructor
+     */
+    public int parameterCount() {
+        return this.constructor.getParameterCount();
+    }
+
+    /**
      * @return The owner (declaring) class of the constructor
      */
     public Class<?> owner() {

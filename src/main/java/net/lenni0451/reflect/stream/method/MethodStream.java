@@ -4,6 +4,7 @@ import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.stream.RStream;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,9 +75,15 @@ public class MethodStream {
      * @return The method wrapper
      * @throws NoSuchMethodException If the method doesn't exist
      */
-    public MethodWrapper by(final Class<?>... parameterTypes) {
-        for (MethodWrapper method : this.methods) {
-            if (Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
+    public MethodWrapper by(@Nullable final Class<?>... parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            for (MethodWrapper method : this.methods) {
+                if (method.parameterCount() == 0) return method;
+            }
+        } else {
+            for (MethodWrapper method : this.methods) {
+                if (Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
+            }
         }
         JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         return null;
@@ -90,9 +97,15 @@ public class MethodStream {
      * @return The method wrapper
      * @throws NoSuchMethodException If the method doesn't exist
      */
-    public MethodWrapper by(final String name, final Class<?>... parameterTypes) {
-        for (MethodWrapper method : this.methods) {
-            if (method.name().equals(name) && Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
+    public MethodWrapper by(final String name, @Nullable final Class<?>... parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            for (MethodWrapper method : this.methods) {
+                if (method.name().equals(name) && method.parameterCount() == 0) return method;
+            }
+        } else {
+            for (MethodWrapper method : this.methods) {
+                if (method.name().equals(name) && Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
+            }
         }
         JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
         return null;
@@ -146,8 +159,12 @@ public class MethodStream {
      * @param parameterTypes The parameter types of the method
      * @return This stream
      */
-    public MethodStream filter(final Class<?>... parameterTypes) {
-        return this.filter(method -> Arrays.equals(method.parameterTypes(), parameterTypes));
+    public MethodStream filter(@Nullable final Class<?>... parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            return this.filter(method -> method.parameterCount() == 0);
+        } else {
+            return this.filter(method -> Arrays.equals(method.parameterTypes(), parameterTypes));
+        }
     }
 
     /**
