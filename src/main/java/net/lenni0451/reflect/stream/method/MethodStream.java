@@ -6,10 +6,7 @@ import net.lenni0451.reflect.stream.RStream;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -150,6 +147,17 @@ public class MethodStream {
      */
     public MethodStream filter(final String name) {
         return this.filter(method -> method.name().equals(name));
+    }
+
+    /**
+     * Filter the methods by the given names.<br>
+     * The current stream will be modified.
+     *
+     * @param names The names of the methods
+     * @return This stream
+     */
+    public MethodStream filter(final Collection<String> names) {
+        return this.filter(method -> names.contains(method.name()));
     }
 
     /**
