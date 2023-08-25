@@ -408,7 +408,6 @@ public class Fields {
      * @param <T>      The type of the field
      * @return The value of the field
      */
-    @Nullable
     public static <T> T getObject(final Object instance, final Field field) {
         return (T) UNSAFE.getObject(instance(instance, field), offset(field));
     }
@@ -453,7 +452,6 @@ public class Fields {
      * @param <T>      The type of the field
      * @return The value of the field
      */
-    @Nullable
     public static <T> T get(final Object instance, final Field field) {
         if (field.getType().equals(boolean.class)) return (T) Boolean.valueOf(getBoolean(instance, field));
         else if (field.getType().equals(byte.class)) return (T) Byte.valueOf(getByte(instance, field));
