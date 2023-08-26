@@ -56,7 +56,7 @@ public class Enums {
         }
         { //Clear the enum value cache of the enum class
             if (OPENJ9_RUNTIME) {
-                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Cass_EnumVars), null);
+                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_EnumVars), null);
             } else {
                 Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants), null);
                 Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory), null);

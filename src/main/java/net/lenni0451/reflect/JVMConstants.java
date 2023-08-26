@@ -15,7 +15,7 @@ public class JVMConstants {
     public static final String FIELD_Enum_$VALUES = calc("$VALUES");
     public static final String FIELD_Class_enumConstants = calc("enumConstants");
     public static final String FIELD_Class_enumConstantDirectory = calc("enumConstantDirectory");
-    public static final String FIELD_Cass_EnumVars = calc("enumVars");
+    public static final String FIELD_Class_EnumVars = calc("enumVars");
     public static final String FIELD_Reflection_fieldFilterMap = calc("fieldFilterMap");
     public static final String FIELD_Reflection_methodFilterMap = calc("methodFilterMap");
     public static final String FIELD_Class_module = calc("module");
