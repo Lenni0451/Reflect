@@ -1,6 +1,7 @@
 package net.lenni0451.reflect.stream.method;
 
 import net.lenni0451.reflect.Methods;
+import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.general.ModifierWrapper;
 
 import java.lang.reflect.Method;
@@ -90,6 +91,29 @@ public class MethodWrapper {
     }
 
     /**
+     * Invoke the method without any arguments and wrap it in a new {@link RStream}.<br>
+     * The cached instance of the owner will be used if required.
+     *
+     * @return The result of the invocation or null if the method is void
+     * @throws IllegalStateException If the method is not static and no instance is cached
+     */
+    public RStream stream() {
+        return RStream.of(this.<Object>invoke());
+    }
+
+    /**
+     * Invoke the method without any arguments and wrap it in a new {@link RStream}.<br>
+     * The cached instance of the owner will be used if required.
+     *
+     * @param clazz The class used for the stream
+     * @return The result of the invocation or null if the method is void
+     * @throws IllegalStateException If the method is not static and no instance is cached
+     */
+    public RStream stream(final Class<?> clazz) {
+        return RStream.of(clazz, this.invoke());
+    }
+
+    /**
      * Invoke the method with the given arguments.<br>
      * The cached instance of the owner will be used if required.
      *
@@ -104,6 +128,31 @@ public class MethodWrapper {
     }
 
     /**
+     * Invoke the method with the given arguments and wrap it in a new {@link RStream}.<br>
+     * The cached instance of the owner will be used if required.
+     *
+     * @param args The arguments to pass to the method
+     * @return The result of the invocation or null if the method is void
+     * @throws IllegalStateException If the method is not static and no instance is cached
+     */
+    public RStream streamArgs(final Object... args) {
+        return RStream.of(this.<Object>invokeArgs(args));
+    }
+
+    /**
+     * Invoke the method with the given arguments and wrap it in a new {@link RStream}.<br>
+     * The cached instance of the owner will be used if required.
+     *
+     * @param clazz The class used for the stream
+     * @param args  The arguments to pass to the method
+     * @return The result of the invocation or null if the method is void
+     * @throws IllegalStateException If the method is not static and no instance is cached
+     */
+    public RStream streamArgs(final Class<?> clazz, final Object... args) {
+        return RStream.of(clazz, this.invokeArgs(args));
+    }
+
+    /**
      * Invoke the method of the given instance with the given arguments.
      *
      * @param instance The instance to invoke the method on
@@ -113,6 +162,29 @@ public class MethodWrapper {
      */
     public <T> T invokeInstance(final Object instance, final Object... args) {
         return Methods.invoke(instance, this.method, args);
+    }
+
+    /**
+     * Invoke the method of the given instance with the given arguments and wrap it in a new {@link RStream}.
+     *
+     * @param instance The instance to invoke the method on
+     * @param args     The arguments to pass to the method
+     * @return The result of the invocation or null if the method is void
+     */
+    public RStream streamInstance(final Object instance, final Object... args) {
+        return RStream.of(this.<Object>invokeInstance(instance, args));
+    }
+
+    /**
+     * Invoke the method of the given instance with the given arguments and wrap it in a new {@link RStream}.
+     *
+     * @param clazz    The class used for the stream
+     * @param instance The instance to invoke the method on
+     * @param args     The arguments to pass to the method
+     * @return The result of the invocation or null if the method is void
+     */
+    public RStream streamInstance(final Class<?> clazz, final Object instance, final Object... args) {
+        return RStream.of(clazz, this.invokeInstance(instance, args));
     }
 
 }

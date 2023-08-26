@@ -1,6 +1,7 @@
 package net.lenni0451.reflect.stream.constructor;
 
 import net.lenni0451.reflect.Constructors;
+import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.general.ModifierWrapper;
 
 import java.lang.reflect.Constructor;
@@ -72,6 +73,27 @@ public class ConstructorWrapper {
      */
     public <T> T newInstance(final Object... args) {
         return (T) Constructors.invoke(this.constructor, args);
+    }
+
+    /**
+     * Create a new instance of the owner class with the given arguments and wrap it in a new {@link RStream}.
+     *
+     * @param args The arguments to pass to the constructor
+     * @return The new instance
+     */
+    public RStream streamInstance(final Object... args) {
+        return RStream.of(this.<Object>newInstance(args));
+    }
+
+    /**
+     * Create a new instance of the owner class with the given arguments and wrap it in a new {@link RStream}.
+     *
+     * @param clazz The class used for the stream
+     * @param args  The arguments to pass to the constructor
+     * @return The new instance
+     */
+    public RStream streamInstance(final Class<?> clazz, final Object... args) {
+        return RStream.of(clazz, this.newInstance(args));
     }
 
 }

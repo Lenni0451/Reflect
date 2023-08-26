@@ -1,6 +1,7 @@
 package net.lenni0451.reflect.stream.field;
 
 import net.lenni0451.reflect.Fields;
+import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.general.ModifierWrapper;
 
 import java.lang.reflect.Field;
@@ -77,6 +78,29 @@ public class FieldWrapper {
     }
 
     /**
+     * Get the value of the field and wrap it in a new {@link RStream}.<br>
+     * The cached instance of the owner will be used if required.
+     *
+     * @return The value of the field
+     * @throws IllegalStateException If the field is not static and no instance is cached
+     */
+    public RStream stream() {
+        return RStream.of(this.<Object>get());
+    }
+
+    /**
+     * Get the value of the field and wrap it in a new {@link RStream}.<br>
+     * The cached instance of the owner will be used if required.
+     *
+     * @param clazz The class used for the stream
+     * @return The value of the field
+     * @throws IllegalStateException If the field is not static and no instance is cached
+     */
+    public RStream stream(final Class<?> clazz) {
+        return RStream.of(clazz, this.get());
+    }
+
+    /**
      * Get the value of the field with the given instance.
      *
      * @param instance The instance of the owner
@@ -85,6 +109,27 @@ public class FieldWrapper {
      */
     public <T> T get(final Object instance) {
         return Fields.get(instance, this.field);
+    }
+
+    /**
+     * Get the value of the field with the given instance and wrap it in a new {@link RStream}.
+     *
+     * @param instance The instance of the owner
+     * @return The value of the field
+     */
+    public RStream stream(final Object instance) {
+        return RStream.of(this.<Object>get(instance));
+    }
+
+    /**
+     * Get the value of the field with the given instance and wrap it in a new {@link RStream}.
+     *
+     * @param clazz    The class used for the stream
+     * @param instance The instance of the owner
+     * @return The value of the field
+     */
+    public RStream stream(final Class<?> clazz, final Object instance) {
+        return RStream.of(clazz, this.get(instance));
     }
 
     /**

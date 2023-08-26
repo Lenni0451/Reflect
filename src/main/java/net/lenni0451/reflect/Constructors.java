@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredConstructors0;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
-import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
 /**
  * This class contains some useful methods for working with constructors.
@@ -66,9 +65,8 @@ public class Constructors {
         try {
             return (T) TRUSTED_LOOKUP.unreflectConstructor(constructor).asSpreader(Object[].class, args.length).invoke(args);
         } catch (Throwable t) {
-            UNSAFE.throwException(new RuntimeException("Unable to invoke constructor", t));
+            throw new RuntimeException("Unable to invoke constructor", t);
         }
-        return null;
     }
 
 }
