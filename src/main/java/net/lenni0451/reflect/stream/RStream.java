@@ -84,10 +84,6 @@ public class RStream {
     private final Object instance;
     private boolean withSuper;
 
-    private FieldStream fieldStream;
-    private MethodStream methodStream;
-    private ConstructorStream constructorStream;
-
     private RStream(@Nonnull final Class<?> clazz, @Nullable final Object instance) {
         this.clazz = clazz;
         this.instance = instance;
@@ -119,8 +115,6 @@ public class RStream {
     public RStream withSuper() {
         if (this.withSuper) return this;
         this.withSuper = true;
-        this.fieldStream = null;
-        this.methodStream = null;
         return this;
     }
 
@@ -129,24 +123,21 @@ public class RStream {
      * @return A stream with all fields of this class.
      */
     public FieldStream fields() {
-        if (this.fieldStream == null) this.fieldStream = new FieldStream(this, this.withSuper);
-        return this.fieldStream;
+        return new FieldStream(this, this.withSuper);
     }
 
     /**
      * @return A stream with all constructors of this class.
      */
     public ConstructorStream constructors() {
-        if (this.constructorStream == null) this.constructorStream = new ConstructorStream(this);
-        return this.constructorStream;
+        return new ConstructorStream(this);
     }
 
     /**
      * @return A stream with all methods of this class.
      */
     public MethodStream methods() {
-        if (this.methodStream == null) this.methodStream = new MethodStream(this, this.withSuper);
-        return this.methodStream;
+        return new MethodStream(this, this.withSuper);
     }
 
 }
