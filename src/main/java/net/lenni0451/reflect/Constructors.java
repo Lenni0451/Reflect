@@ -60,6 +60,7 @@ public class Constructors {
      * @param args        The arguments to pass to the constructor
      * @param <T>         The type of the class
      * @return The instance of the class
+     * @throws RuntimeException If the constructor could not be invoked
      */
     public static <T> T invoke(final Constructor<T> constructor, final Object... args) {
         try {

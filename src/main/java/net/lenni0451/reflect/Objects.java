@@ -25,6 +25,7 @@ public class Objects {
      *
      * @param o The object
      * @return The memory address
+     * @throws IllegalStateException If the OOP size is not 4 or 8
      */
     public static long toAddress(final Object o) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
@@ -43,6 +44,7 @@ public class Objects {
      * @param address The memory address
      * @param <T>     The type of the object
      * @return The object
+     * @throws IllegalStateException If the OOP size is not 4 or 8
      */
     public static <T> T fromAddress(final long address) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
@@ -83,6 +85,8 @@ public class Objects {
      *
      * @param clazz The class
      * @return The class pointer
+     * @throws IllegalStateException  If the OOP size is not 4 or 8
+     * @throws InstantiationException If the class can not be allocated
      */
     public static long getKlass(final Class<?> clazz) {
         try {
@@ -99,6 +103,7 @@ public class Objects {
      *
      * @param o The object
      * @return The class pointer
+     * @throws IllegalStateException If the OOP size is not 4 or 8
      */
     public static long getKlass(final Object o) {
         if (OOP_SIZE == 4) return UNSAFE.getInt(o, KLASS_OFFSET) & 0xFFFFFFFFL;
@@ -113,6 +118,10 @@ public class Objects {
      * @param target The target class
      * @param <T>    The type of the object
      * @return The casted object
+     * @throws IllegalStateException         If the OOP size is not 4 or 8
+     * @throws InstantiationException        If the class can not be allocated
+     * @throws ClassCastException            If the object can not be casted
+     * @throws UnsupportedOperationException If the JVM is OpenJ9
      */
     public static <T> T cast(final Object o, final Class<T> target) {
         return cast(o, getKlass(target));
@@ -125,6 +134,9 @@ public class Objects {
      * @param target The target object
      * @param <T>    The type of the object
      * @return The casted object
+     * @throws IllegalStateException         If the OOP size is not 4 or 8
+     * @throws ClassCastException            If the object can not be casted
+     * @throws UnsupportedOperationException If the JVM is OpenJ9
      */
     public static <T> T cast(final Object o, final Object target) {
         return cast(o, getKlass(target));
@@ -137,6 +149,9 @@ public class Objects {
      * @param klass The class pointer
      * @param <T>   The type of the object
      * @return The casted object
+     * @throws IllegalStateException         If the OOP size is not 4 or 8
+     * @throws ClassCastException            If the object can not be casted
+     * @throws UnsupportedOperationException If the JVM is OpenJ9
      */
     public static <T> T cast(final Object o, final long klass) {
         if (JVMConstants.OPENJ9_RUNTIME) throw new UnsupportedOperationException("OpenJ9 is not supported");

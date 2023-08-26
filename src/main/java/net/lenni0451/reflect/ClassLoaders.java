@@ -32,6 +32,7 @@ public class ClassLoaders {
      * Add a URL to the system classpath.
      *
      * @param url The URL to add
+     * @throws IllegalStateException If the url class path could not be found
      */
     public static void addToSystemClassPath(final URL url) {
         ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
@@ -47,6 +48,7 @@ public class ClassLoaders {
      * Get all URLs of the system classpath.
      *
      * @return The system classpath
+     * @throws IllegalStateException If the url class path could not be found
      */
     public static URL[] getSystemClassPath() {
         ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
@@ -63,6 +65,7 @@ public class ClassLoaders {
      * This allows overriding classes in the classpath with classes from an external jar.
      *
      * @param url The URL to load
+     * @throws IllegalStateException If the url class path could not be found or the URL could not be found in the classpath
      */
     public static void loadToFront(final URL url) {
         //First add the URL into the classpath
@@ -160,6 +163,7 @@ public class ClassLoaders {
      * @param bytecode The bytecode of the class
      * @param flags    The flags to use
      * @return The defined class
+     * @throws IllegalArgumentException If a flag is unknown
      */
     public static Class<?> defineAnonymousClass(final Class<?> parent, final byte[] bytecode, final String... flags) {
         if (classOptionClass == null) {

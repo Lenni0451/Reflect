@@ -22,6 +22,7 @@ public class Enums {
      * @param arguments     The arguments of the constructor
      * @param <T>           The enum type
      * @return The new enum value
+     * @throws RuntimeException If the enum constructor could not be invoked
      */
     public static <T extends Enum<T>> T newInstance(final Class<T> enumClass, final String name, final int ordinal, final Class<?>[] argumentTypes, final Object[] arguments) {
         Class<?>[] types = new Class<?>[arguments.length + 2];
