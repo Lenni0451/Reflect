@@ -47,20 +47,28 @@ public class Enums {
      * @param <T>       The enum type
      */
     public static <T extends Enum<T>> void addEnumInstance(final Class<T> enumClass, final T enumValue) {
-        { //Add the enum value to the enum class
-            Field values = Fields.getDeclaredField(enumClass, FIELD_Enum_$VALUES);
-            Object[] valuesArray = Fields.getObject(null, values);
-            valuesArray = Arrays.copyOf(valuesArray, valuesArray.length + 1);
-            valuesArray[valuesArray.length - 1] = enumValue;
-            Fields.setObject(null, values, valuesArray);
-        }
-        { //Clear the enum value cache of the enum class
-            if (OPENJ9_RUNTIME) {
-                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_EnumVars), null);
-            } else {
-                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants), null);
-                Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory), null);
-            }
+        //Add the enum value to the enum class
+        Field values = Fields.getDeclaredField(enumClass, FIELD_Enum_$VALUES);
+        Object[] valuesArray = Fields.getObject(null, values);
+        valuesArray = Arrays.copyOf(valuesArray, valuesArray.length + 1);
+        valuesArray[valuesArray.length - 1] = enumValue;
+        Fields.setObject(null, values, valuesArray);
+
+        clearEnumCache(enumClass);
+    }
+
+    /**
+     * Clear the enum value cache of an enum class.<br>
+     * This will force the JVM to re-calculate the enum values when calling {@link Class#getEnumConstants()}.
+     *
+     * @param enumClass The enum class
+     */
+    public static void clearEnumCache(final Class<?> enumClass) {
+        if (OPENJ9_RUNTIME) {
+            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_EnumVars), null);
+        } else {
+            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants), null);
+            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory), null);
         }
     }
 
