@@ -6,7 +6,7 @@
 <module name="Checker">
     <property name="charset" value="UTF-8"/>
     <property name="fileExtensions" value="java, json, xml, properties"/>
-    <property name="severity" value="warning"/>
+    <property name="severity" value="error"/>
 
     <module name="NewlineAtEndOfFile"/>
     <module name="FileTabCharacter"/>
@@ -161,9 +161,9 @@
             <property name="allowLineBreaks" value="true"/>
         </module>
         <module name="NoWhitespaceBeforeCaseDefaultColon"/>
-        <module name="OperatorWrap">
-            <property name="option" value="eol"/>
-        </module>
+        <!--<module name="OperatorWrap">-->
+        <!--    <property name="option" value="nl"/>-->
+        <!--</module>-->
         <module name="ParenPad"/>
         <module name="SeparatorWrap">
             <property name="option" value="nl"/>
