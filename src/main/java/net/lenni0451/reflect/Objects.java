@@ -1,5 +1,8 @@
 package net.lenni0451.reflect;
 
+import com.sun.management.HotSpotDiagnosticMXBean;
+
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
@@ -17,39 +20,83 @@ public class Objects {
     public static final int OOP_SIZE = CompressedOopsClass.getOopSize();
     public static final int OBJECT_HEADER_SIZE = BooleanHeaderClass.getHeaderSize();
     public static final int ARRAY_HEADER_SIZE = OBJECT_HEADER_SIZE + 4;
+    public static final int OBJECT_ALIGNMENT = getObjectAlignment();
     public static final boolean COMPRESSED_OOPS = ADDRESS_SIZE != OOP_SIZE;
+    public static final int COMPRESSED_OOP_SHIFT = log2p(OBJECT_ALIGNMENT);
+    public static final long COMPRESSED_OOP_BASE = toNativeAddress(null);
     public static final long KLASS_OFFSET = Objects.OBJECT_HEADER_SIZE - Objects.OOP_SIZE;
 
     /**
-     * Get the memory address of an object.
-     *
-     * @param o The object
-     * @return The memory address
-     * @throws IllegalStateException If the OOP size is not 4 or 8
+     * <b>Use {@link Objects#toJvmAddress(Object)}.</b>
      */
+    @Deprecated
     public static long toAddress(final Object o) {
-        Object[] array = OBJECT_ARRAY_CACHE.get();
-        array[0] = o;
-        long address;
-        if (OOP_SIZE == 4) address = UNSAFE.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
-        else if (OOP_SIZE == 8) address = UNSAFE.getLong(array, ARRAY_BASE_OFFSET);
-        else throw new IllegalStateException(INVALID_OOP_SIZE);
-        array[0] = null;
-        return address;
+        return toJvmAddress(o);
     }
 
     /**
-     * Get the object at the given memory address.
+     * Get the jvm address of an object.
      *
-     * @param address The memory address
-     * @param <T>     The type of the object
+     * @param o The object
+     * @return The jvm address
+     * @throws IllegalStateException If the OOP size is not 4 or 8
+     */
+    public static long toJvmAddress(final Object o) {
+        Object[] array = OBJECT_ARRAY_CACHE.get();
+        array[0] = o;
+        long jvmAddress;
+        if (OOP_SIZE == 4) jvmAddress = UNSAFE.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
+        else if (OOP_SIZE == 8) jvmAddress = UNSAFE.getLong(array, ARRAY_BASE_OFFSET);
+        else throw new IllegalStateException(INVALID_OOP_SIZE);
+        array[0] = null;
+        return jvmAddress;
+    }
+
+    /**
+     * Get the native address of an object.
+     *
+     * @param o The object
+     * @return The native address
+     * @throws IllegalStateException If the OOP size is not 4 or 8
+     */
+    public static long toNativeAddress(final Object o) {
+        return toNativeAddress(toJvmAddress(o));
+    }
+
+    /**
+     * Convert a jvm address to a native address.
+     *
+     * @param jvmAddress The jvm address
+     * @return The native address
+     */
+    public static long toNativeAddress(final long jvmAddress) {
+        if (COMPRESSED_OOPS) {
+            return COMPRESSED_OOP_BASE + (jvmAddress << COMPRESSED_OOP_SHIFT);
+        } else {
+            return jvmAddress;
+        }
+    }
+
+    /**
+     * <b>Use {@link Objects#fromJvmAddress(long)}.</b>
+     */
+    @Deprecated
+    public static <T> T fromAddress(final long jvmAddress) {
+        return fromJvmAddress(jvmAddress);
+    }
+
+    /**
+     * Get the object at the given jvm address.
+     *
+     * @param jvmAddress The jvm address
+     * @param <T>        The type of the object
      * @return The object
      * @throws IllegalStateException If the OOP size is not 4 or 8
      */
-    public static <T> T fromAddress(final long address) {
+    public static <T> T fromJvmAddress(final long jvmAddress) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
-        if (OOP_SIZE == 4) UNSAFE.putInt(array, ARRAY_BASE_OFFSET, (int) address);
-        else if (OOP_SIZE == 8) UNSAFE.putLong(array, ARRAY_BASE_OFFSET, address);
+        if (OOP_SIZE == 4) UNSAFE.putInt(array, ARRAY_BASE_OFFSET, (int) jvmAddress);
+        else if (OOP_SIZE == 8) UNSAFE.putLong(array, ARRAY_BASE_OFFSET, jvmAddress);
         else throw new IllegalStateException(INVALID_OOP_SIZE);
         Object o = array[0];
         array[0] = null;
@@ -77,7 +124,7 @@ public class Objects {
      * @param size       The size of the memory to copy
      */
     public static void copyMemory(final Object from, final long fromOffset, final Object to, final long toOffset, final long size) {
-        UNSAFE.copyMemory(toAddress(from) + fromOffset, toAddress(to) + toOffset, size);
+        UNSAFE.copyMemory(toJvmAddress(from) + fromOffset, toJvmAddress(to) + toOffset, size);
     }
 
     /**
@@ -161,6 +208,21 @@ public class Objects {
         return (T) o;
     }
 
+
+    private static int getObjectAlignment() {
+        final HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
+        if (mxBean != null) {
+            return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
+        }
+
+        return 8; // Default to 8 and hope for the best
+    }
+
+    private static int log2p(int i) {
+        int result = 0;
+        while ((i >>= 1) != 0) result++;
+        return result;
+    }
 
     private static class CompressedOopsClass {
         public Object o1;
