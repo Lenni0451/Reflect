@@ -1,5 +1,8 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.exceptions.MethodInvocationException;
+import net.lenni0451.reflect.exceptions.MethodNotFoundException;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
@@ -15,11 +18,11 @@ public class Methods {
 
     /**
      * Get all declared methods of a class.<br>
-     * The reflection filter of the class will be ignored.<br>
-     * An empty array will be returned if the method could not be invoked.
+     * The reflection filter of the class will be ignored.
      *
      * @param clazz The class to get the methods from
      * @return An array of all declared methods of the class
+     * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredMethods0} method could not be found
      */
     public static Method[] getDeclaredMethods(final Class<?> clazz) {
         try {
@@ -30,9 +33,9 @@ public class Methods {
                 Method getDeclaredMethods0 = Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
                 return Methods.invoke(clazz, getDeclaredMethods0, false);
             }
-        } catch (Throwable ignored) {
+        } catch (NoSuchMethodException e) {
+            throw new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean");
         }
-        return new Method[0];
     }
 
     /**
@@ -62,14 +65,14 @@ public class Methods {
      * @param args     The arguments to pass to the method
      * @param <T>      The return type of the method
      * @return The return value of the method (null if void)
-     * @throws RuntimeException If the method could not be invoked
+     * @throws MethodInvocationException If the method could not be invoked
      */
     public static <T> T invoke(@Nullable final Object instance, final Method method, final Object... args) {
         try {
             if (Modifier.isStatic(method.getModifiers())) return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
             else return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
         } catch (Throwable t) {
-            throw new RuntimeException("Unable to invoke method " + method.getName(), t);
+            throw new MethodInvocationException(method).cause(t);
         }
     }
 
@@ -85,14 +88,15 @@ public class Methods {
      * @param <S>        The type of the super class
      * @param <T>        The return type of the method
      * @return The return value of the method (null if void)
-     * @throws RuntimeException If the method could not be invoked
+     * @throws IllegalStateException     If the method is static
+     * @throws MethodInvocationException If the method could not be invoked
      */
     public static <I extends S, S, T> T invokeSuper(@Nonnull final I instance, @Nonnull final Class<S> superClass, final Method method, final Object... args) {
+        if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Cannot invoke static super method");
         try {
-            if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Cannot invoke static super method");
-            else return (T) JavaBypass.TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance).invokeWithArguments(args);
+            return (T) JavaBypass.TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance).invokeWithArguments(args);
         } catch (Throwable t) {
-            throw new RuntimeException("Unable to invoke method " + method.getName(), t);
+            throw new MethodInvocationException(method).cause(t);
         }
     }
 

@@ -1,5 +1,8 @@
 package net.lenni0451.reflect;
 
+import lombok.SneakyThrows;
+import net.lenni0451.reflect.exceptions.InvalidOOPSizeException;
+
 import java.lang.reflect.Array;
 
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
@@ -9,7 +12,6 @@ import static net.lenni0451.reflect.JavaBypass.UNSAFE;
  */
 public class Objects {
 
-    private static final String INVALID_OOP_SIZE = "OOP size is not 4 or 8";
     private static final ThreadLocal<Object[]> OBJECT_ARRAY_CACHE = ThreadLocal.withInitial(() -> new Object[1]);
     public static final long ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(Object[].class);
     public static final int ARRAY_INDEX_SCALE = UNSAFE.arrayIndexScale(Object[].class);
@@ -25,7 +27,7 @@ public class Objects {
      *
      * @param o The object
      * @return The memory address
-     * @throws IllegalStateException If the OOP size is not 4 or 8
+     * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
      */
     public static long toAddress(final Object o) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
@@ -33,7 +35,7 @@ public class Objects {
         long address;
         if (OOP_SIZE == 4) address = UNSAFE.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
         else if (OOP_SIZE == 8) address = UNSAFE.getLong(array, ARRAY_BASE_OFFSET);
-        else throw new IllegalStateException(INVALID_OOP_SIZE);
+        else throw new InvalidOOPSizeException();
         array[0] = null;
         return address;
     }
@@ -44,13 +46,13 @@ public class Objects {
      * @param address The memory address
      * @param <T>     The type of the object
      * @return The object
-     * @throws IllegalStateException If the OOP size is not 4 or 8
+     * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
      */
     public static <T> T fromAddress(final long address) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
         if (OOP_SIZE == 4) UNSAFE.putInt(array, ARRAY_BASE_OFFSET, (int) address);
         else if (OOP_SIZE == 8) UNSAFE.putLong(array, ARRAY_BASE_OFFSET, address);
-        else throw new IllegalStateException(INVALID_OOP_SIZE);
+        else throw new InvalidOOPSizeException();
         Object o = array[0];
         array[0] = null;
         return (T) o;
@@ -85,17 +87,12 @@ public class Objects {
      *
      * @param clazz The class
      * @return The class pointer
-     * @throws IllegalStateException  If the OOP size is not 4 or 8
-     * @throws InstantiationException If the class can not be allocated
+     * @throws InstantiationException  If the class can not be allocated
      */
+    @SneakyThrows
     public static long getKlass(final Class<?> clazz) {
-        try {
-            if (clazz.isArray()) return getKlass(Array.newInstance(clazz.getComponentType(), 0));
-            else return getKlass(UNSAFE.allocateInstance(clazz));
-        } catch (Throwable t) {
-            UNSAFE.throwException(t);
-            return 0;
-        }
+        if (clazz.isArray()) return getKlass(Array.newInstance(clazz.getComponentType(), 0));
+        else return getKlass(UNSAFE.allocateInstance(clazz));
     }
 
     /**
@@ -103,12 +100,12 @@ public class Objects {
      *
      * @param o The object
      * @return The class pointer
-     * @throws IllegalStateException If the OOP size is not 4 or 8
+     * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
      */
     public static long getKlass(final Object o) {
         if (OOP_SIZE == 4) return UNSAFE.getInt(o, KLASS_OFFSET) & 0xFFFFFFFFL;
         else if (OOP_SIZE == 8) return UNSAFE.getLong(o, KLASS_OFFSET);
-        else throw new IllegalStateException(INVALID_OOP_SIZE);
+        else throw new InvalidOOPSizeException();
     }
 
     /**
@@ -118,10 +115,6 @@ public class Objects {
      * @param target The target class
      * @param <T>    The type of the object
      * @return The casted object
-     * @throws IllegalStateException         If the OOP size is not 4 or 8
-     * @throws InstantiationException        If the class can not be allocated
-     * @throws ClassCastException            If the object can not be casted
-     * @throws UnsupportedOperationException If the JVM is OpenJ9
      */
     public static <T> T cast(final Object o, final Class<T> target) {
         return cast(o, getKlass(target));
@@ -134,9 +127,6 @@ public class Objects {
      * @param target The target object
      * @param <T>    The type of the object
      * @return The casted object
-     * @throws IllegalStateException         If the OOP size is not 4 or 8
-     * @throws ClassCastException            If the object can not be casted
-     * @throws UnsupportedOperationException If the JVM is OpenJ9
      */
     public static <T> T cast(final Object o, final Object target) {
         return cast(o, getKlass(target));
@@ -149,7 +139,6 @@ public class Objects {
      * @param klass The class pointer
      * @param <T>   The type of the object
      * @return The casted object
-     * @throws IllegalStateException         If the OOP size is not 4 or 8
      * @throws ClassCastException            If the object can not be casted
      * @throws UnsupportedOperationException If the JVM is OpenJ9
      */
@@ -157,7 +146,7 @@ public class Objects {
         if (JVMConstants.OPENJ9_RUNTIME) throw new UnsupportedOperationException("OpenJ9 is not supported");
         if (OOP_SIZE == 4) UNSAFE.putInt(o, KLASS_OFFSET, (int) klass);
         else if (OOP_SIZE == 8) UNSAFE.putLong(o, KLASS_OFFSET, klass);
-        else throw new IllegalStateException(INVALID_OOP_SIZE);
+        else throw new InvalidOOPSizeException();
         return (T) o;
     }
 

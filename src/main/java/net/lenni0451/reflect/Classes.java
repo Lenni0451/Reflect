@@ -1,5 +1,7 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.exceptions.MethodInvocationException;
+import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import sun.misc.Unsafe;
 
 import javax.annotation.Nullable;
@@ -21,14 +23,15 @@ public class Classes {
      *
      * @param clazz The class to get the declared classes from
      * @return An array of all declared classes of the class
+     * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredClasses0} method could not be found
      */
     public static Class<?>[] getDeclaredClasses(final Class<?> clazz) {
         try {
             Method getDeclaredClasses0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0);
             return Methods.invoke(clazz, getDeclaredClasses0);
         } catch (Throwable ignored) {
+            throw new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0);
         }
-        return new Class<?>[0];
     }
 
     /**

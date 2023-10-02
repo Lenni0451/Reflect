@@ -12,7 +12,8 @@ public class Modules {
 
     /**
      * Copy the module from one class to another.<br>
-     * This allows the usage of jdk internal classes which are normally protected by restricted module access.
+     * This allows the usage of jdk internal classes which are normally protected by restricted module access.<br>
+     * In Java 8 this method does nothing.
      *
      * @param from The class to copy the module from
      * @param to   The class to copy the module to
@@ -25,7 +26,8 @@ public class Modules {
 
     /**
      * Open a module of a class to everyone<br>
-     * This allows the usage of jdk internal classes which are normally protected by restricted module access.
+     * This allows the usage of jdk internal classes which are normally protected by restricted module access.<br>
+     * In Java 8 this method does nothing.
      *
      * @param clazz The class to open the module of
      */

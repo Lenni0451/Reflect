@@ -1,5 +1,7 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.exceptions.MethodNotFoundException;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -45,19 +47,22 @@ public class Fields {
      *
      * @param clazz The class to get the fields from
      * @return An array of all declared fields of the class
+     * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredFields0} method could not be found
      */
     public static Field[] getDeclaredFields(final Class<?> clazz) {
         try {
             if (JVMConstants.OPENJ9_RUNTIME) {
                 Method getDeclaredFieldsImpl = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
+                if (getDeclaredFieldsImpl == null) throw new NoSuchMethodException();
                 return Methods.invoke(clazz, getDeclaredFieldsImpl);
             } else {
                 Method getDeclaredFields0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
+                if (getDeclaredFields0 == null) throw new NoSuchMethodException();
                 return Methods.invoke(clazz, getDeclaredFields0, false);
             }
-        } catch (Throwable ignored) {
+        } catch (NoSuchMethodException e) {
+            throw new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean");
         }
-        return new Field[0];
     }
 
     /**

@@ -22,7 +22,6 @@ public class Enums {
      * @param arguments     The arguments of the constructor
      * @param <T>           The enum type
      * @return The new enum value
-     * @throws RuntimeException If the enum constructor could not be invoked
      */
     public static <T extends Enum<T>> T newInstance(final Class<T> enumClass, final String name, final int ordinal, final Class<?>[] argumentTypes, final Object[] arguments) {
         Class<?>[] types = new Class<?>[arguments.length + 2];
@@ -40,7 +39,8 @@ public class Enums {
 
     /**
      * Add a new enum value to an enum class.<br>
-     * The enum value will be added to the enum class and the enum value cache will be cleared.
+     * The enum value will be added to the enum class and the enum value cache will be cleared.<br>
+     * The ordinal of the enum value will be ignored. The value will be added at the end of the enum.
      *
      * @param enumClass The enum class
      * @param enumValue The enum value to add

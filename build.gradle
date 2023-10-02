@@ -18,10 +18,14 @@ repositories {
 
 dependencies {
     compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+    compileOnly "org.projectlombok:lombok:1.18.28"
+    annotationProcessor "org.projectlombok:lombok:1.18.28"
 
+    testCompileOnly "org.projectlombok:lombok:1.18.28"
     testImplementation platform("org.junit:junit-bom:5.9.0")
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.ow2.asm:asm:9.5"
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.28"
 }
 
 java {

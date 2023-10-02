@@ -1,5 +1,8 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
+import net.lenni0451.reflect.exceptions.MethodNotFoundException;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -21,19 +24,22 @@ public class Constructors {
      * @param clazz The class to get the constructors from
      * @param <T>   The type of the class
      * @return An array of all declared constructors of the class
+     * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredConstructors0} method could not be found
      */
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
         try {
             if (JVMConstants.OPENJ9_RUNTIME) {
                 Method getDeclaredConstructorsImpl = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
+                if (getDeclaredConstructorsImpl == null) throw new NoSuchMethodException();
                 return Methods.invoke(clazz, getDeclaredConstructorsImpl);
             } else {
                 Method getDeclaredConstructors0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
+                if (getDeclaredConstructors0 == null) throw new NoSuchMethodException();
                 return Methods.invoke(clazz, getDeclaredConstructors0, false);
             }
-        } catch (Throwable ignored) {
+        } catch (NoSuchMethodException e) {
+            throw new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean");
         }
-        return new Constructor[0];
     }
 
     /**
@@ -47,7 +53,9 @@ public class Constructors {
      */
     @Nullable
     public static <T> Constructor<T> getDeclaredConstructor(final Class<T> clazz, final Class<?>... parameterTypes) {
-        for (Constructor<T> constructor : getDeclaredConstructors(clazz)) if (Arrays.equals(constructor.getParameterTypes(), parameterTypes)) return constructor;
+        for (Constructor<T> constructor : getDeclaredConstructors(clazz)) {
+            if (Arrays.equals(constructor.getParameterTypes(), parameterTypes)) return constructor;
+        }
         return null;
     }
 
@@ -66,7 +74,7 @@ public class Constructors {
         try {
             return (T) TRUSTED_LOOKUP.unreflectConstructor(constructor).asSpreader(Object[].class, args.length).invoke(args);
         } catch (Throwable t) {
-            throw new RuntimeException("Unable to invoke constructor", t);
+            throw new ConstructorInvocationException(constructor).cause(t);
         }
     }
 

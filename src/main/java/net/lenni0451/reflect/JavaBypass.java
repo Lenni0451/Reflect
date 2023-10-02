@@ -36,6 +36,7 @@ public class JavaBypass {
      * @throws IllegalStateException If the unsafe instance could not be gotten
      */
     public static Unsafe getUnsafe() {
+        Throwable cause = null;
         try {
             for (Field field : Unsafe.class.getDeclaredFields()) {
                 if (field.getType().equals(Unsafe.class)) {
@@ -43,9 +44,10 @@ public class JavaBypass {
                     return (Unsafe) field.get(null);
                 }
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable t) {
+            cause = t;
         }
-        throw new IllegalStateException("Unable to get Unsafe instance");
+        throw new IllegalStateException("Unable to get Unsafe instance", cause);
     }
 
     /**
@@ -56,14 +58,16 @@ public class JavaBypass {
      * @throws IllegalStateException If the trusted lookup instance could not be gotten
      */
     public static MethodHandles.Lookup getTrustedLookup() {
+        Throwable cause = null;
         try {
             MethodHandles.lookup(); //Load class before getting the trusted lookup
             Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
             long lookupFieldOffset = UNSAFE.staticFieldOffset(lookupField);
             return (MethodHandles.Lookup) UNSAFE.getObject(MethodHandles.Lookup.class, lookupFieldOffset);
-        } catch (Throwable ignored) {
+        } catch (Throwable t) {
+            cause = t;
         }
-        throw new IllegalStateException("Unable to get trusted lookup");
+        throw new IllegalStateException("Unable to get trusted lookup", cause);
     }
 
     /**
