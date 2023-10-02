@@ -1,11 +1,10 @@
 package net.lenni0451.reflect;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
-
-import java.lang.management.ManagementFactory;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.InvalidOOPSizeException;
 
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
@@ -37,25 +36,19 @@ public class Objects {
     }
 
     /**
-     * Get the jvm address of an object.
+     * Get the jvm memory address of an object.
      *
      * @param o The object
-     * @return The memory address
+     * @return The jvm memory address
      * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
-     * @return The jvm address
-     * @throws IllegalStateException If the OOP size is not 4 or 8
      */
     public static long toJvmAddress(final Object o) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
         array[0] = o;
-        long address;
-        if (OOP_SIZE == 4) address = UNSAFE.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
-        else if (OOP_SIZE == 8) address = UNSAFE.getLong(array, ARRAY_BASE_OFFSET);
-        else throw new InvalidOOPSizeException();
         long jvmAddress;
         if (OOP_SIZE == 4) jvmAddress = UNSAFE.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
         else if (OOP_SIZE == 8) jvmAddress = UNSAFE.getLong(array, ARRAY_BASE_OFFSET);
-        else throw new IllegalStateException(INVALID_OOP_SIZE);
+        else throw new InvalidOOPSizeException();
         array[0] = null;
         return jvmAddress;
     }
@@ -94,21 +87,18 @@ public class Objects {
     }
 
     /**
-     * Get the object at the given jvm address.
+     * Get the object at the given jvm memory address.
      *
-     * @param jvmAddress The jvm address
+     * @param jvmAddress The jvm memory address
      * @param <T>        The type of the object
      * @return The object
      * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
      */
     public static <T> T fromJvmAddress(final long jvmAddress) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
-        if (OOP_SIZE == 4) UNSAFE.putInt(array, ARRAY_BASE_OFFSET, (int) address);
-        else if (OOP_SIZE == 8) UNSAFE.putLong(array, ARRAY_BASE_OFFSET, address);
-        else throw new InvalidOOPSizeException();
         if (OOP_SIZE == 4) UNSAFE.putInt(array, ARRAY_BASE_OFFSET, (int) jvmAddress);
         else if (OOP_SIZE == 8) UNSAFE.putLong(array, ARRAY_BASE_OFFSET, jvmAddress);
-        else throw new IllegalStateException(INVALID_OOP_SIZE);
+        else throw new InvalidOOPSizeException();
         Object o = array[0];
         array[0] = null;
         return (T) o;
@@ -143,7 +133,7 @@ public class Objects {
      *
      * @param clazz The class
      * @return The class pointer
-     * @throws InstantiationException  If the class can not be allocated
+     * @throws InstantiationException If the class can not be allocated
      */
     @SneakyThrows
     public static long getKlass(final Class<?> clazz) {
