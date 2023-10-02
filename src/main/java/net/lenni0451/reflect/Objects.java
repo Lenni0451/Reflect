@@ -54,6 +54,17 @@ public class Objects {
     }
 
     /**
+     * Convert a native address to a jvm address.
+     *
+     * @param nativeAddress The native address
+     * @return The jvm address
+     */
+    public static long toJVMAddress(final long nativeAddress) {
+        if (COMPRESSED_OOPS) return (nativeAddress - COMPRESSED_OOP_BASE) >>> COMPRESSED_OOP_SHIFT;
+        else return nativeAddress;
+    }
+
+    /**
      * Get the native address of an object.
      *
      * @param o The object
@@ -71,11 +82,8 @@ public class Objects {
      * @return The native address
      */
     public static long toNativeAddress(final long jvmAddress) {
-        if (COMPRESSED_OOPS) {
-            return COMPRESSED_OOP_BASE + (jvmAddress << COMPRESSED_OOP_SHIFT);
-        } else {
-            return jvmAddress;
-        }
+        if (COMPRESSED_OOPS) return COMPRESSED_OOP_BASE + (jvmAddress << COMPRESSED_OOP_SHIFT);
+        else return jvmAddress;
     }
 
     /**

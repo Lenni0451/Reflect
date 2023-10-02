@@ -12,10 +12,16 @@ class ObjectsTest {
 
     @Test
     void toFromAddress() {
-        String s = "Hello World";
-        long address = assertDoesNotThrow(() -> Objects.toJVMAddress(s));
-        String s2 = assertDoesNotThrow(() -> Objects.fromJVMAddress(address));
-        assertEquals(s, s2);
+        String in = "Hello World";
+        long jvmAddress = assertDoesNotThrow(() -> Objects.toJVMAddress(in));
+        long nativeAddress = assertDoesNotThrow(() -> Objects.toNativeAddress(in));
+        assertEquals(jvmAddress, Objects.toJVMAddress(nativeAddress));
+        assertEquals(nativeAddress, Objects.toNativeAddress(jvmAddress));
+
+        String fromJVMAddress = assertDoesNotThrow(() -> Objects.fromJVMAddress(jvmAddress));
+        String fromNativeAddress = assertDoesNotThrow(() -> Objects.fromJVMAddress(Objects.toJVMAddress(nativeAddress)));
+        assertEquals(in, fromJVMAddress);
+        assertEquals(in, fromNativeAddress);
     }
 
     @Test
