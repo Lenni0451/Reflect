@@ -28,11 +28,11 @@ public class Objects {
     public static final long KLASS_OFFSET = Objects.OBJECT_HEADER_SIZE - Objects.OOP_SIZE;
 
     /**
-     * <b>Use {@link Objects#toJvmAddress(Object)}.</b>
+     * <b>Use {@link Objects#toJVMAddress(Object)}.</b>
      */
     @Deprecated
     public static long toAddress(final Object o) {
-        return toJvmAddress(o);
+        return toJVMAddress(o);
     }
 
     /**
@@ -42,7 +42,7 @@ public class Objects {
      * @return The jvm memory address
      * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
      */
-    public static long toJvmAddress(final Object o) {
+    public static long toJVMAddress(final Object o) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
         array[0] = o;
         long jvmAddress;
@@ -61,7 +61,7 @@ public class Objects {
      * @throws IllegalStateException If the OOP size is not 4 or 8
      */
     public static long toNativeAddress(final Object o) {
-        return toNativeAddress(toJvmAddress(o));
+        return toNativeAddress(toJVMAddress(o));
     }
 
     /**
@@ -79,11 +79,11 @@ public class Objects {
     }
 
     /**
-     * <b>Use {@link Objects#fromJvmAddress(long)}.</b>
+     * <b>Use {@link Objects#fromJVMAddress(long)}.</b>
      */
     @Deprecated
     public static <T> T fromAddress(final long jvmAddress) {
-        return fromJvmAddress(jvmAddress);
+        return fromJVMAddress(jvmAddress);
     }
 
     /**
@@ -94,7 +94,7 @@ public class Objects {
      * @return The object
      * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
      */
-    public static <T> T fromJvmAddress(final long jvmAddress) {
+    public static <T> T fromJVMAddress(final long jvmAddress) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
         if (OOP_SIZE == 4) UNSAFE.putInt(array, ARRAY_BASE_OFFSET, (int) jvmAddress);
         else if (OOP_SIZE == 8) UNSAFE.putLong(array, ARRAY_BASE_OFFSET, jvmAddress);
@@ -125,7 +125,7 @@ public class Objects {
      * @param size       The size of the memory to copy
      */
     public static void copyMemory(final Object from, final long fromOffset, final Object to, final long toOffset, final long size) {
-        UNSAFE.copyMemory(toJvmAddress(from) + fromOffset, toJvmAddress(to) + toOffset, size);
+        UNSAFE.copyMemory(toJVMAddress(from) + fromOffset, toJVMAddress(to) + toOffset, size);
     }
 
     /**
@@ -198,10 +198,8 @@ public class Objects {
 
 
     private static int getObjectAlignment() {
-        final HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
-        if (mxBean != null) {
-            return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
-        }
+        HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
+        if (mxBean != null) return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
 
         return 8; // Default to 8 and hope for the best
     }

@@ -13,8 +13,8 @@ class ObjectsTest {
     @Test
     void toFromAddress() {
         String s = "Hello World";
-        long address = assertDoesNotThrow(() -> Objects.toJvmAddress(s));
-        String s2 = assertDoesNotThrow(() -> Objects.fromJvmAddress(address));
+        long address = assertDoesNotThrow(() -> Objects.toJVMAddress(s));
+        String s2 = assertDoesNotThrow(() -> Objects.fromJVMAddress(address));
         assertEquals(s, s2);
     }
 
