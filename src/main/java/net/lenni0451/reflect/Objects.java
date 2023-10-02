@@ -206,10 +206,12 @@ public class Objects {
 
 
     private static int getObjectAlignment() {
-        HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
-        if (mxBean != null) return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
+        if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
+            HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
+            if (mxBean != null) return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
+        }
 
-        return 8; // Default to 8 and hope for the best
+        return 8; //Default to 8 and hope for the best
     }
 
     private static int log2p(int i) {
