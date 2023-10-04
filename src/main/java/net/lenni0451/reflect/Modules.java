@@ -39,7 +39,7 @@ public class Modules {
 
         Object everyone = Fields.get(null, everyoneModuleField);
         Object module = Fields.get(clazz, moduleField);
-        Methods.invoke(module, implAddExportsOrOpens, Object.class.getPackage().getName(), everyone, true, true);
+        Methods.invoke(module, implAddExportsOrOpens, clazz.getPackage().getName(), everyone, true, true);
     }
 
 }
