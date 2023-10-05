@@ -17,9 +17,11 @@ import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 
 /**
  * A wrapper for the java internal ASM library.<br>
- * If ASM is present on the classpath it will be used instead.
+ * If ASM is present on the classpath it will be used instead.<br>
+ * <b>This will probably stop working in the future, so don't rely on it...</b>
  */
 @SuppressWarnings({"unchecked", "unused"})
+@Deprecated
 public class ASMWrapper {
 
     private static final Class<?> CLASS_Opcodes;
