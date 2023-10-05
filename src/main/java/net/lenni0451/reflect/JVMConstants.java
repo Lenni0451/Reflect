@@ -32,6 +32,7 @@ public class JVMConstants {
     public static final String METHOD_URLClassPath_getURLs = calc("getURLs");
     public static final String METHOD_ClassLoader_defineClass = calc("defineClass");
     public static final String METHOD_Module_implAddExportsOrOpens = calc("implAddExportsOrOpens");
+    public static final String METHOD_Module_getPackages = calc("getPackages");
 
 
     /**
