@@ -8,6 +8,9 @@ jobs:
             matrix:
                 java: ["8", "11", "17", "21"]
                 distribution: ["temurin", "semeru"]
+                exclude:
+                  - java: "21"
+                    distribution: "semeru"
         name: "Java ${{ matrix.java }} (${{ matrix.distribution }})"
         steps:
             - name: "Checkout"
