@@ -1,6 +1,6 @@
 package net.lenni0451.reflect.stream.method;
 
-import net.lenni0451.reflect.JavaBypass;
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.stream.RStream;
 
@@ -56,12 +56,12 @@ public class MethodStream {
      * @return The method wrapper
      * @throws NoSuchMethodException If the method doesn't exist
      */
+    @SneakyThrows
     public MethodWrapper by(final String name) {
         for (MethodWrapper method : this.methods) {
             if (method.name().equals(name)) return method;
         }
-        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
-        return null;
+        throw new NoSuchMethodException();
     }
 
     /**
@@ -72,6 +72,7 @@ public class MethodStream {
      * @return The method wrapper
      * @throws NoSuchMethodException If the method doesn't exist
      */
+    @SneakyThrows
     public MethodWrapper by(@Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             for (MethodWrapper method : this.methods) {
@@ -82,8 +83,7 @@ public class MethodStream {
                 if (Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
             }
         }
-        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
-        return null;
+        throw new NoSuchMethodException();
     }
 
     /**
@@ -94,6 +94,7 @@ public class MethodStream {
      * @return The method wrapper
      * @throws NoSuchMethodException If the method doesn't exist
      */
+    @SneakyThrows
     public MethodWrapper by(final String name, @Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             for (MethodWrapper method : this.methods) {
@@ -104,8 +105,7 @@ public class MethodStream {
                 if (method.name().equals(name) && Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
             }
         }
-        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
-        return null;
+        throw new NoSuchMethodException();
     }
 
     /**
@@ -116,13 +116,13 @@ public class MethodStream {
      * @return The method wrapper
      * @throws NoSuchMethodException If the method doesn't exist
      */
+    @SneakyThrows
     public MethodWrapper by(final int index) {
         try {
             return this.methods.get(index);
         } catch (IndexOutOfBoundsException e) {
-            JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
+            throw new NoSuchMethodException();
         }
-        return null;
     }
 
 

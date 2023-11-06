@@ -1,7 +1,7 @@
 package net.lenni0451.reflect.stream;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.Classes;
-import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.constructor.ConstructorStream;
 import net.lenni0451.reflect.stream.field.FieldStream;
 import net.lenni0451.reflect.stream.method.MethodStream;
@@ -58,13 +58,9 @@ public class RStream {
      * @return The stream instance of the given class by name and instance
      * @throws ClassNotFoundException If the class with the given name doesn't exist
      */
+    @SneakyThrows
     public static RStream of(@Nonnull final String className, @Nullable final Object instance) {
-        try {
-            return of(Class.forName(className), instance);
-        } catch (ClassNotFoundException e) {
-            JavaBypass.UNSAFE.throwException(e);
-        }
-        return null;
+        return of(Class.forName(className), instance);
     }
 
     /**

@@ -1,9 +1,11 @@
 package net.lenni0451.reflect;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.MethodInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import sun.misc.Unsafe;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -134,14 +136,10 @@ public class Classes {
      * @return The class or null if it doesn't exist
      * @throws ClassNotFoundException If the class could not be found
      */
-    @Nullable
+    @Nonnull
+    @SneakyThrows
     public static Class<?> forName(final String name) {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            UNSAFE.throwException(e);
-        }
-        return null;
+        return Class.forName(name);
     }
 
     /**
@@ -153,7 +151,7 @@ public class Classes {
      * @return The class or null if it doesn't exist
      * @throws ClassNotFoundException If the class could not be found
      */
-    @Nullable
+    @Nonnull
     public static Class<?> forName(final String name, final ClassLoader loader) {
         return forName(name, true, loader);
     }
@@ -168,14 +166,10 @@ public class Classes {
      * @return The class or null if it doesn't exist
      * @throws ClassNotFoundException If the class could not be found
      */
-    @Nullable
+    @Nonnull
+    @SneakyThrows
     public static Class<?> forName(final String name, final boolean initialize, final ClassLoader loader) {
-        try {
-            return Class.forName(name, initialize, loader);
-        } catch (ClassNotFoundException e) {
-            UNSAFE.throwException(e);
-        }
-        return null;
+        return Class.forName(name, initialize, loader);
     }
 
 }

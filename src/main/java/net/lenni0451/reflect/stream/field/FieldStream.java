@@ -1,7 +1,7 @@
 package net.lenni0451.reflect.stream.field;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.Fields;
-import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.RStream;
 
 import java.lang.reflect.Field;
@@ -55,12 +55,12 @@ public class FieldStream {
      * @return The field wrapper
      * @throws NoSuchFieldException If the field doesn't exist
      */
+    @SneakyThrows
     public FieldWrapper by(final String name) {
         for (FieldWrapper field : this.fields) {
             if (field.name().equals(name)) return field;
         }
-        JavaBypass.UNSAFE.throwException(new NoSuchFieldException());
-        return null;
+        throw new NoSuchFieldException();
     }
 
     /**
@@ -71,13 +71,13 @@ public class FieldStream {
      * @return The field wrapper
      * @throws NoSuchFieldException If the field doesn't exist
      */
+    @SneakyThrows
     public FieldWrapper by(final int index) {
         try {
             return this.fields.get(index);
         } catch (IndexOutOfBoundsException e) {
-            JavaBypass.UNSAFE.throwException(new NoSuchFieldException());
+            throw new NoSuchFieldException();
         }
-        return null;
     }
 
 

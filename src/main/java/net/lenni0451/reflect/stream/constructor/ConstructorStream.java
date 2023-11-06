@@ -1,7 +1,7 @@
 package net.lenni0451.reflect.stream.constructor;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.Constructors;
-import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.stream.RStream;
 
 import javax.annotation.Nullable;
@@ -51,6 +51,7 @@ public class ConstructorStream {
      * @return The constructor wrapper
      * @throws NoSuchMethodException If the constructor doesn't exist
      */
+    @SneakyThrows
     public ConstructorWrapper by(@Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             for (ConstructorWrapper constructor : this.constructors) {
@@ -61,8 +62,7 @@ public class ConstructorStream {
                 if (Arrays.equals(constructor.parameterTypes(), parameterTypes)) return constructor;
             }
         }
-        JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
-        return null;
+        throw new NoSuchMethodException();
     }
 
     /**
@@ -73,13 +73,13 @@ public class ConstructorStream {
      * @return The constructor wrapper
      * @throws NoSuchMethodException If the constructor doesn't exist
      */
+    @SneakyThrows
     public ConstructorWrapper by(final int index) {
         try {
             return this.constructors.get(index);
         } catch (IndexOutOfBoundsException e) {
-            JavaBypass.UNSAFE.throwException(new NoSuchMethodException());
+            throw new NoSuchMethodException();
         }
-        return null;
     }
 
 

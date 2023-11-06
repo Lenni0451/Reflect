@@ -225,14 +225,9 @@ public class Objects {
         public Object o2;
 
         private static int getOopSize() {
-            try {
-                long o1 = UNSAFE.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o1"));
-                long o2 = UNSAFE.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o2"));
-                return (int) Math.abs(o2 - o1);
-            } catch (Throwable t) {
-                UNSAFE.throwException(t);
-                return 0;
-            }
+            long o1 = UNSAFE.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o1"));
+            long o2 = UNSAFE.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o2"));
+            return (int) Math.abs(o2 - o1);
         }
     }
 
@@ -240,13 +235,8 @@ public class Objects {
         public boolean b;
 
         private static int getHeaderSize() {
-            try {
-                long b = UNSAFE.objectFieldOffset(Fields.getDeclaredField(BooleanHeaderClass.class, "b"));
-                return (int) b;
-            } catch (Throwable t) {
-                UNSAFE.throwException(t);
-                return 0;
-            }
+            long b = UNSAFE.objectFieldOffset(Fields.getDeclaredField(BooleanHeaderClass.class, "b"));
+            return (int) b;
         }
     }
 
