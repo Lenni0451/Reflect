@@ -1,7 +1,7 @@
 package net.lenni0451.reflect.stream.field;
 
-import lombok.SneakyThrows;
 import net.lenni0451.reflect.Fields;
+import net.lenni0451.reflect.exceptions.FieldNotFoundException;
 import net.lenni0451.reflect.stream.RStream;
 
 import java.lang.reflect.Field;
@@ -53,14 +53,13 @@ public class FieldStream {
      *
      * @param name The name of the field
      * @return The field wrapper
-     * @throws NoSuchFieldException If the field doesn't exist
+     * @throws FieldNotFoundException If the field doesn't exist
      */
-    @SneakyThrows
     public FieldWrapper by(final String name) {
         for (FieldWrapper field : this.fields) {
             if (field.name().equals(name)) return field;
         }
-        throw new NoSuchFieldException();
+        throw new FieldNotFoundException(this.parent.clazz().getName(), name);
     }
 
     /**
@@ -69,14 +68,13 @@ public class FieldStream {
      *
      * @param index The index of the field
      * @return The field wrapper
-     * @throws NoSuchFieldException If the field doesn't exist
+     * @throws FieldNotFoundException If the field doesn't exist
      */
-    @SneakyThrows
     public FieldWrapper by(final int index) {
         try {
             return this.fields.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchFieldException();
+            throw new FieldNotFoundException(this.parent.clazz().getName(), String.valueOf(index));
         }
     }
 

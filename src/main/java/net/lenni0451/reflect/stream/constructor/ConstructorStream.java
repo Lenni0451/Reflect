@@ -1,7 +1,7 @@
 package net.lenni0451.reflect.stream.constructor;
 
-import lombok.SneakyThrows;
 import net.lenni0451.reflect.Constructors;
+import net.lenni0451.reflect.exceptions.ConstructorNotFoundException;
 import net.lenni0451.reflect.stream.RStream;
 
 import javax.annotation.Nullable;
@@ -49,9 +49,8 @@ public class ConstructorStream {
      *
      * @param parameterTypes The parameter types of the constructor
      * @return The constructor wrapper
-     * @throws NoSuchMethodException If the constructor doesn't exist
+     * @throws ConstructorNotFoundException If the constructor doesn't exist
      */
-    @SneakyThrows
     public ConstructorWrapper by(@Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             for (ConstructorWrapper constructor : this.constructors) {
@@ -62,7 +61,7 @@ public class ConstructorStream {
                 if (Arrays.equals(constructor.parameterTypes(), parameterTypes)) return constructor;
             }
         }
-        throw new NoSuchMethodException();
+        throw new ConstructorNotFoundException(this.parent.clazz().getName(), parameterTypes);
     }
 
     /**
@@ -71,14 +70,13 @@ public class ConstructorStream {
      *
      * @param index The index of the constructor
      * @return The constructor wrapper
-     * @throws NoSuchMethodException If the constructor doesn't exist
+     * @throws ConstructorNotFoundException If the constructor doesn't exist
      */
-    @SneakyThrows
     public ConstructorWrapper by(final int index) {
         try {
             return this.constructors.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchMethodException();
+            throw new ConstructorNotFoundException(this.parent.clazz().getName(), String.valueOf(index));
         }
     }
 

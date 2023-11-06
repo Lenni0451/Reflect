@@ -1,6 +1,5 @@
 package net.lenni0451.reflect.stream;
 
-import lombok.SneakyThrows;
 import net.lenni0451.reflect.Classes;
 import net.lenni0451.reflect.stream.constructor.ConstructorStream;
 import net.lenni0451.reflect.stream.field.FieldStream;
@@ -58,9 +57,8 @@ public class RStream {
      * @return The stream instance of the given class by name and instance
      * @throws ClassNotFoundException If the class with the given name doesn't exist
      */
-    @SneakyThrows
     public static RStream of(@Nonnull final String className, @Nullable final Object instance) {
-        return of(Class.forName(className), instance);
+        return of(Classes.forName(className), instance);
     }
 
     /**

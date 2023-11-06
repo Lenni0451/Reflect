@@ -1,7 +1,7 @@
 package net.lenni0451.reflect.stream.method;
 
-import lombok.SneakyThrows;
 import net.lenni0451.reflect.Methods;
+import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import net.lenni0451.reflect.stream.RStream;
 
 import javax.annotation.Nullable;
@@ -54,14 +54,13 @@ public class MethodStream {
      *
      * @param name The name of the method
      * @return The method wrapper
-     * @throws NoSuchMethodException If the method doesn't exist
+     * @throws MethodNotFoundException If the method doesn't exist
      */
-    @SneakyThrows
     public MethodWrapper by(final String name) {
         for (MethodWrapper method : this.methods) {
             if (method.name().equals(name)) return method;
         }
-        throw new NoSuchMethodException();
+        throw new MethodNotFoundException(this.parent.clazz().getName(), name);
     }
 
     /**
@@ -70,9 +69,8 @@ public class MethodStream {
      *
      * @param parameterTypes The parameter types of the method
      * @return The method wrapper
-     * @throws NoSuchMethodException If the method doesn't exist
+     * @throws MethodNotFoundException If the method doesn't exist
      */
-    @SneakyThrows
     public MethodWrapper by(@Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             for (MethodWrapper method : this.methods) {
@@ -83,7 +81,7 @@ public class MethodStream {
                 if (Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
             }
         }
-        throw new NoSuchMethodException();
+        throw new MethodNotFoundException(this.parent.clazz().getName(), null, parameterTypes);
     }
 
     /**
@@ -92,9 +90,8 @@ public class MethodStream {
      * @param name           The name of the method
      * @param parameterTypes The parameter types of the method
      * @return The method wrapper
-     * @throws NoSuchMethodException If the method doesn't exist
+     * @throws MethodNotFoundException If the method doesn't exist
      */
-    @SneakyThrows
     public MethodWrapper by(final String name, @Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             for (MethodWrapper method : this.methods) {
@@ -105,7 +102,7 @@ public class MethodStream {
                 if (method.name().equals(name) && Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
             }
         }
-        throw new NoSuchMethodException();
+        throw new MethodNotFoundException(this.parent.clazz().getName(), name, parameterTypes);
     }
 
     /**
@@ -114,14 +111,13 @@ public class MethodStream {
      *
      * @param index The index of the method
      * @return The method wrapper
-     * @throws NoSuchMethodException If the method doesn't exist
+     * @throws MethodNotFoundException If the method doesn't exist
      */
-    @SneakyThrows
     public MethodWrapper by(final int index) {
         try {
             return this.methods.get(index);
         } catch (IndexOutOfBoundsException e) {
-            throw new NoSuchMethodException();
+            throw new MethodNotFoundException(this.parent.clazz().getName(), String.valueOf(index));
         }
     }
 
