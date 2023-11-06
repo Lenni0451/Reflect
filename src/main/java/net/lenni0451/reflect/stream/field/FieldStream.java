@@ -53,13 +53,36 @@ public class FieldStream {
      *
      * @param name The name of the field
      * @return The field wrapper
+     */
+    public Optional<FieldWrapper> opt(final String name) {
+        for (FieldWrapper field : this.fields) {
+            if (field.name().equals(name)) return Optional.of(field);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get a field by the given index.<br>
+     * The index is the position of the field in the stream.
+     *
+     * @param index The index of the field
+     * @return The field wrapper
+     */
+    public Optional<FieldWrapper> opt(final int index) {
+        if (index < 0 || index > this.fields.size()) return Optional.empty();
+        return Optional.of(this.fields.get(index));
+    }
+
+    /**
+     * Get a field by the given name.<br>
+     * If there are multiple fields with the same name the first one will be returned.
+     *
+     * @param name The name of the field
+     * @return The field wrapper
      * @throws FieldNotFoundException If the field doesn't exist
      */
     public FieldWrapper by(final String name) {
-        for (FieldWrapper field : this.fields) {
-            if (field.name().equals(name)) return field;
-        }
-        throw new FieldNotFoundException(this.parent.clazz().getName(), name);
+        return this.opt(name).orElseThrow(() -> new FieldNotFoundException(this.parent.clazz().getName(), name));
     }
 
     /**
@@ -71,11 +94,7 @@ public class FieldStream {
      * @throws FieldNotFoundException If the field doesn't exist
      */
     public FieldWrapper by(final int index) {
-        try {
-            return this.fields.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw new FieldNotFoundException(this.parent.clazz().getName(), String.valueOf(index));
-        }
+        return this.opt(index).orElseThrow(() -> new FieldNotFoundException(this.parent.clazz().getName(), String.valueOf(index)));
     }
 
 

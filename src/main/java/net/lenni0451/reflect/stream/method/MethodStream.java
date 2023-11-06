@@ -54,13 +54,76 @@ public class MethodStream {
      *
      * @param name The name of the method
      * @return The method wrapper
+     */
+    public Optional<MethodWrapper> opt(final String name) {
+        for (MethodWrapper method : this.methods) {
+            if (method.name().equals(name)) return Optional.of(method);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get a method by the given parameter types.<br>
+     * If there are multiple methods with the same parameter types the first one will be returned.
+     *
+     * @param parameterTypes The parameter types of the method
+     * @return The method wrapper
+     */
+    public Optional<MethodWrapper> opt(@Nullable final Class<?>... parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            for (MethodWrapper method : this.methods) {
+                if (method.parameterCount() == 0) return Optional.of(method);
+            }
+        } else {
+            for (MethodWrapper method : this.methods) {
+                if (Arrays.equals(method.parameterTypes(), parameterTypes)) return Optional.of(method);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get a method by the given name and parameter types.
+     *
+     * @param name           The name of the method
+     * @param parameterTypes The parameter types of the method
+     * @return The method wrapper
+     */
+    public Optional<MethodWrapper> opt(final String name, @Nullable final Class<?>... parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            for (MethodWrapper method : this.methods) {
+                if (method.name().equals(name) && method.parameterCount() == 0) return Optional.of(method);
+            }
+        } else {
+            for (MethodWrapper method : this.methods) {
+                if (method.name().equals(name) && Arrays.equals(method.parameterTypes(), parameterTypes)) return Optional.of(method);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get a method by the given index.<br>
+     * The index is the position of the method in the stream.
+     *
+     * @param index The index of the method
+     * @return The method wrapper
+     */
+    public Optional<MethodWrapper> opt(final int index) {
+        if (index < 0 || index >= this.methods.size()) return Optional.empty();
+        return Optional.of(this.methods.get(index));
+    }
+
+    /**
+     * Get a method by the given name.<br>
+     * If there are multiple methods with the same name the first one will be returned.
+     *
+     * @param name The name of the method
+     * @return The method wrapper
      * @throws MethodNotFoundException If the method doesn't exist
      */
     public MethodWrapper by(final String name) {
-        for (MethodWrapper method : this.methods) {
-            if (method.name().equals(name)) return method;
-        }
-        throw new MethodNotFoundException(this.parent.clazz().getName(), name);
+        return this.opt(name).orElseThrow(() -> new MethodNotFoundException(this.parent.clazz().getName(), name));
     }
 
     /**
@@ -72,16 +135,7 @@ public class MethodStream {
      * @throws MethodNotFoundException If the method doesn't exist
      */
     public MethodWrapper by(@Nullable final Class<?>... parameterTypes) {
-        if (parameterTypes == null || parameterTypes.length == 0) {
-            for (MethodWrapper method : this.methods) {
-                if (method.parameterCount() == 0) return method;
-            }
-        } else {
-            for (MethodWrapper method : this.methods) {
-                if (Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
-            }
-        }
-        throw new MethodNotFoundException(this.parent.clazz().getName(), null, parameterTypes);
+        return this.opt(parameterTypes).orElseThrow(() -> new MethodNotFoundException(this.parent.clazz().getName(), null, parameterTypes));
     }
 
     /**
@@ -93,16 +147,7 @@ public class MethodStream {
      * @throws MethodNotFoundException If the method doesn't exist
      */
     public MethodWrapper by(final String name, @Nullable final Class<?>... parameterTypes) {
-        if (parameterTypes == null || parameterTypes.length == 0) {
-            for (MethodWrapper method : this.methods) {
-                if (method.name().equals(name) && method.parameterCount() == 0) return method;
-            }
-        } else {
-            for (MethodWrapper method : this.methods) {
-                if (method.name().equals(name) && Arrays.equals(method.parameterTypes(), parameterTypes)) return method;
-            }
-        }
-        throw new MethodNotFoundException(this.parent.clazz().getName(), name, parameterTypes);
+        return this.opt(name, parameterTypes).orElseThrow(() -> new MethodNotFoundException(this.parent.clazz().getName(), name, parameterTypes));
     }
 
     /**

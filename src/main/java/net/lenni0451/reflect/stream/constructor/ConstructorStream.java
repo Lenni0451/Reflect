@@ -6,10 +6,7 @@ import net.lenni0451.reflect.stream.RStream;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -49,19 +46,41 @@ public class ConstructorStream {
      *
      * @param parameterTypes The parameter types of the constructor
      * @return The constructor wrapper
-     * @throws ConstructorNotFoundException If the constructor doesn't exist
      */
-    public ConstructorWrapper by(@Nullable final Class<?>... parameterTypes) {
+    public Optional<ConstructorWrapper> opt(@Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             for (ConstructorWrapper constructor : this.constructors) {
-                if (constructor.parameterTypes().length == 0) return constructor;
+                if (constructor.parameterTypes().length == 0) return Optional.of(constructor);
             }
         } else {
             for (ConstructorWrapper constructor : this.constructors) {
-                if (Arrays.equals(constructor.parameterTypes(), parameterTypes)) return constructor;
+                if (Arrays.equals(constructor.parameterTypes(), parameterTypes)) return Optional.of(constructor);
             }
         }
-        throw new ConstructorNotFoundException(this.parent.clazz().getName(), parameterTypes);
+        return Optional.empty();
+    }
+
+    /**
+     * Get a constructor by the given index.<br>
+     * The index is the position of the constructor in the stream.
+     *
+     * @param index The index of the constructor
+     * @return The constructor wrapper
+     */
+    public Optional<ConstructorWrapper> opt(final int index) {
+        if (index < 0 || index > this.constructors.size()) return Optional.empty();
+        return Optional.of(this.constructors.get(index));
+    }
+
+    /**
+     * Get a constructor by the given parameter types.
+     *
+     * @param parameterTypes The parameter types of the constructor
+     * @return The constructor wrapper
+     * @throws ConstructorNotFoundException If the constructor doesn't exist
+     */
+    public ConstructorWrapper by(@Nullable final Class<?>... parameterTypes) {
+        return this.opt(parameterTypes).orElseThrow(() -> new ConstructorNotFoundException(this.parent.clazz().getName(), parameterTypes));
     }
 
     /**
@@ -73,11 +92,7 @@ public class ConstructorStream {
      * @throws ConstructorNotFoundException If the constructor doesn't exist
      */
     public ConstructorWrapper by(final int index) {
-        try {
-            return this.constructors.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw new ConstructorNotFoundException(this.parent.clazz().getName(), String.valueOf(index));
-        }
+        return this.opt(index).orElseThrow(() -> new ConstructorNotFoundException(this.parent.clazz().getName(), String.valueOf(index)));
     }
 
 
