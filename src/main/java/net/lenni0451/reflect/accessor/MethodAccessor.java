@@ -8,8 +8,6 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 
 import static net.lenni0451.reflect.wrapper.ASMWrapper.*;
 
@@ -137,28 +135,29 @@ public class MethodAccessor {
         if (!Modifier.isInterface(invokerClass.getModifiers())) throw new IllegalArgumentException("The invoker class must be an interface");
 
         int abstractMethods = 0;
-        List<Method> methods = new ArrayList<>();
+        Method matched = null;
         for (Method invokerMethod : Methods.getDeclaredMethods(invokerClass)) {
             if (!Modifier.isAbstract(invokerMethod.getModifiers())) continue;
             if (++abstractMethods > 1) throw new IllegalArgumentException("The invoker class must only have one abstract method");
-            if (invokerMethod.getParameterCount() != method.getParameterCount() + (requireInstance ? 1 : 0)) continue;
-            if (!invokerMethod.getReturnType().isAssignableFrom(method.getReturnType())) continue;
+            if (invokerMethod.getParameterCount() != method.getParameterCount() + (requireInstance ? 1 : 0)) {
+                throw new IllegalArgumentException("The invoker method must have " + (method.getParameterCount() + (requireInstance ? 1 : 0)) + " parameters");
+            }
+            if (!invokerMethod.getReturnType().isAssignableFrom(method.getReturnType())) {
+                throw new IllegalArgumentException("The invoker method return type must be of type " + method.getReturnType().getName());
+            }
 
-            boolean hasIncompatibleParameter = false;
             Class<?>[] invokerParameterTypes = invokerMethod.getParameterTypes();
             Class<?>[] methodParameterTypes = method.getParameterTypes();
             for (int i = 0; i < invokerParameterTypes.length; i++) {
                 Class<?> invokerParameterType = invokerParameterTypes[i];
                 Class<?> methodParameterType = (requireInstance && i == 0) ? method.getDeclaringClass() : methodParameterTypes[i - (requireInstance ? 1 : 0)];
                 if (invokerParameterType.isAssignableFrom(methodParameterType)) continue;
-                hasIncompatibleParameter = true;
-                break;
+                throw new IllegalArgumentException("The invoker method parameter " + i + " must be of type " + methodParameterType);
             }
-            if (hasIncompatibleParameter) continue;
-            methods.add(invokerMethod);
+            matched = invokerMethod;
         }
-        if (methods.size() != 1) throw new IllegalArgumentException("Could not find a valid invoker method for: " + method);
-        return methods.get(0);
+        if (matched == null) throw new IllegalArgumentException("Could not find a valid invoker method for: " + method);
+        return matched;
     }
 
     private static void pushArgs(final MethodVisitorAccess mv, final Class<?>[] supplied, final Class<?>[] target) {

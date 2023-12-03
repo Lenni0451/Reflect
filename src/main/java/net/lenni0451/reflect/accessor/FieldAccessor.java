@@ -10,8 +10,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 import static net.lenni0451.reflect.wrapper.ASMWrapper.*;
@@ -185,25 +183,22 @@ public class FieldAccessor {
         if (!Modifier.isInterface(invokerClass.getModifiers())) throw new IllegalArgumentException("The invoker class must be an interface");
 
         int abstractMethods = 0;
-        List<Method> methods = new ArrayList<>();
+        Method matched = null;
         for (Method invokerMethod : Methods.getDeclaredMethods(invokerClass)) {
             if (!Modifier.isAbstract(invokerMethod.getModifiers())) continue;
             if (++abstractMethods > 1) throw new IllegalArgumentException("The invoker class must only have one abstract method");
-            if (invokerMethod.getParameterCount() != parameterTypes.length) continue;
-            if (!invokerMethod.getReturnType().isAssignableFrom(returnType)) continue;
+            if (invokerMethod.getParameterCount() != parameterTypes.length) throw new IllegalArgumentException("The invoker method must have " + parameterTypes.length + " parameters");
+            if (!invokerMethod.getReturnType().isAssignableFrom(returnType)) throw new IllegalArgumentException("The invoker method return type must be of type " + returnType.getName());
 
-            boolean hasIncompatibleParameter = false;
             Class<?>[] invokerParameterTypes = invokerMethod.getParameterTypes();
             for (int i = 0; i < invokerParameterTypes.length; i++) {
                 if (invokerParameterTypes[i].isAssignableFrom(parameterTypes[i])) continue;
-                hasIncompatibleParameter = true;
-                break;
+                throw new IllegalArgumentException("The invoker method parameter " + i + " must be of type " + parameterTypes[i].getName());
             }
-            if (hasIncompatibleParameter) continue;
-            methods.add(invokerMethod);
+            matched = invokerMethod;
         }
-        if (methods.size() != 1) throw new IllegalArgumentException("Could not find a valid invoker method for: " + desc(parameterTypes, returnType));
-        return methods.get(0);
+        if (matched == null) throw new IllegalArgumentException("Could not find a valid invoker method for: " + desc(parameterTypes, returnType));
+        return matched;
     }
 
     private static void addConstructor(final ASMWrapper acc, final String newClassName, @Nullable final Supplier<Class<?>> instanceType, final Field field) {
