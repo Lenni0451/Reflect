@@ -8,6 +8,10 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class Arrays {
 
+    static {
+        if (JVMConstants.OPENJ9_RUNTIME) throw new UnsupportedOperationException("OpenJ9 is not supported");
+    }
+
     /**
      * Set the length of an array.<br>
      * It is recommended to only decrease the length of the array.<br>

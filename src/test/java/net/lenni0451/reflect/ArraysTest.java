@@ -7,6 +7,8 @@ class ArraysTest {
 
     @Test
     void setLength() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         byte[] array = new byte[10];
         Assertions.assertEquals(10, array.length);
         Arrays.setLength(array, 5);
@@ -15,6 +17,8 @@ class ArraysTest {
 
     @Test
     void fillByteArray() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         byte[] expected = new byte[10];
         java.util.Arrays.fill(expected, (byte) (Byte.MAX_VALUE - 1));
 
@@ -25,6 +29,8 @@ class ArraysTest {
 
     @Test
     void fillShortArray() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         short[] expected = new short[10];
         java.util.Arrays.fill(expected, (short) (Short.MAX_VALUE - 1));
 
@@ -38,6 +44,8 @@ class ArraysTest {
 
     @Test
     void fillCharArray() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         char[] expected = new char[10];
         java.util.Arrays.fill(expected, (char) (Character.MAX_VALUE - 1));
 
@@ -51,6 +59,8 @@ class ArraysTest {
 
     @Test
     void fillIntArray() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         int[] expected = new int[10];
         java.util.Arrays.fill(expected, Integer.MAX_VALUE - 1);
 
@@ -64,6 +74,8 @@ class ArraysTest {
 
     @Test
     void fillLongArray() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         long[] expected = new long[10];
         java.util.Arrays.fill(expected, Long.MAX_VALUE - 1);
 
@@ -77,6 +89,8 @@ class ArraysTest {
 
     @Test
     void fillFloatArray() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         float[] expected = new float[10];
         java.util.Arrays.fill(expected, Float.MAX_VALUE - 1);
 
@@ -90,6 +104,8 @@ class ArraysTest {
 
     @Test
     void fillDoubleArray() {
+        if (JVMConstants.OPENJ9_RUNTIME) return; //OpenJ9 does not support this
+
         double[] expected = new double[10];
         java.util.Arrays.fill(expected, Double.MAX_VALUE - 1);
 
