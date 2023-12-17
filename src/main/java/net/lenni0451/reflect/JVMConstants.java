@@ -33,12 +33,16 @@ public class JVMConstants {
     public static final String METHOD_ClassLoader_defineClass = calc("defineClass");
     public static final String METHOD_Module_implAddExportsOrOpens = calc("implAddExportsOrOpens");
     public static final String METHOD_Module_getPackages = calc("getPackages");
+    public static final String METHOD_InternalUnsafe_staticFieldOffset = calc("staticFieldOffset");
+    public static final String METHOD_InternalUnsafe_objectFieldOffset = calc("objectFieldOffset");
 
 
     /**
-     * Prevent the java compiler from inlining static final strings.
+     * Prevent the java compiler from inlining static final strings.<br>
+     * Also allows to use a different string depending on the JVM runtime.
      *
-     * @param s The string to prevent from inlining
+     * @param s    The string to prevent from inlining
+     * @param args The arguments to check
      * @return The same string
      */
     private static String calc(final String s, final Object... args) {

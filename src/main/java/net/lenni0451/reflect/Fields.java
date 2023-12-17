@@ -15,6 +15,19 @@ import static net.lenni0451.reflect.JavaBypass.UNSAFE;
  */
 public class Fields {
 
+    private static final Method internalStaticFieldOffset;
+    private static final Method internalObjectFieldOffset;
+
+    static {
+        if (JavaBypass.INTERNAL_UNSAFE != null) {
+            internalStaticFieldOffset = Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), JVMConstants.METHOD_InternalUnsafe_staticFieldOffset, Field.class);
+            internalObjectFieldOffset = Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), JVMConstants.METHOD_InternalUnsafe_objectFieldOffset, Field.class);
+        } else {
+            internalStaticFieldOffset = null;
+            internalObjectFieldOffset = null;
+        }
+    }
+
     /**
      * Get the offset of a field required for getting/setting the value of the field using unsafe.<br>
      * This method automatically chooses between static and virtual fields.
@@ -23,8 +36,13 @@ public class Fields {
      * @return The offset of the field
      */
     public static long offset(final Field field) {
-        if (Modifier.isStatic(field.getModifiers())) return UNSAFE.staticFieldOffset(field);
-        else return UNSAFE.objectFieldOffset(field);
+        if (Modifier.isStatic(field.getModifiers())) {
+            if (internalStaticFieldOffset != null) return Methods.invoke(JavaBypass.INTERNAL_UNSAFE, internalStaticFieldOffset, field);
+            else return UNSAFE.staticFieldOffset(field);
+        } else {
+            if (internalObjectFieldOffset != null) return Methods.invoke(JavaBypass.INTERNAL_UNSAFE, internalObjectFieldOffset, field);
+            else return UNSAFE.objectFieldOffset(field);
+        }
     }
 
     /**
