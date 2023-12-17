@@ -58,7 +58,7 @@ public class JavaBypass {
      * @throws IllegalStateException If the trusted lookup instance could not be gotten
      */
     public static MethodHandles.Lookup getTrustedLookup() {
-        Throwable cause = null;
+        Throwable cause;
         try {
             MethodHandles.lookup(); //Load class before getting the trusted lookup
             Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
