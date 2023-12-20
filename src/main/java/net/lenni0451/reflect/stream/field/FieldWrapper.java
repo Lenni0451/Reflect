@@ -5,6 +5,8 @@ import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.general.ModifierWrapper;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  * A wrapper of the {@link Field} class for easy access to all required methods.
@@ -61,6 +63,17 @@ public class FieldWrapper {
      */
     public ModifierWrapper modifier() {
         return this.modifier;
+    }
+
+    /**
+     * @return The generic types of the field
+     */
+    public Type[] genericTypes() {
+        if (this.field.getGenericType() instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) this.field.getGenericType();
+            return parameterizedType.getActualTypeArguments();
+        }
+        return new Type[0];
     }
 
 
