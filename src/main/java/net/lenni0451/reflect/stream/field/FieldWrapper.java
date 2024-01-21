@@ -198,4 +198,22 @@ public class FieldWrapper {
         Fields.copy(instance, target, this.field);
     }
 
+
+    @Override
+    public String toString() {
+        return this.field.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FieldWrapper) return this.field.equals(((FieldWrapper) obj).field);
+        else if (obj instanceof Field) return this.field.equals(obj);
+        else return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.field.hashCode();
+    }
+
 }

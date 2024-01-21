@@ -106,4 +106,22 @@ public class ConstructorWrapper {
         return RStream.of(clazz, this.newInstance(args));
     }
 
+
+    @Override
+    public String toString() {
+        return this.constructor.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ConstructorWrapper) return this.constructor.equals(((ConstructorWrapper) obj).constructor);
+        else if (obj instanceof Constructor) return this.constructor.equals(obj);
+        else return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.constructor.hashCode();
+    }
+
 }

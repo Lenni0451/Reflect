@@ -197,4 +197,22 @@ public class MethodWrapper {
         return RStream.of(clazz, this.invokeInstance(instance, args));
     }
 
+
+    @Override
+    public String toString() {
+        return this.method.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MethodWrapper) return this.method.equals(((MethodWrapper) obj).method);
+        else if (obj instanceof Method) return this.method.equals(obj);
+        else return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.method.hashCode();
+    }
+
 }
