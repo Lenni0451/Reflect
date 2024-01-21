@@ -4,7 +4,10 @@ import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.general.ModifierWrapper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * A wrapper of the {@link Method} class for easy access to all required methods.
@@ -75,6 +78,13 @@ public class MethodWrapper {
      */
     public ModifierWrapper modifier() {
         return this.modifier;
+    }
+
+    /**
+     * @return A stream of all annotations of the method
+     */
+    public Stream<Annotation> annotations() {
+        return Arrays.stream(this.method.getDeclaredAnnotations());
     }
 
 

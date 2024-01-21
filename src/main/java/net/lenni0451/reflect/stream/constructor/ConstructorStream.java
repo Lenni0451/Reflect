@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -134,12 +135,35 @@ public class ConstructorStream {
         return this.filter(constructor -> constructor.modifier().isStatic() == isStatic);
     }
 
+    /**
+     * Filter the constructors by whether they have the given annotation.<br>
+     * The current stream will be modified.
+     *
+     * @param annotation The annotation
+     * @return This stream
+     */
+    public ConstructorStream filterAnnotation(final Class<?> annotation) {
+        return this.filter(constructor -> constructor.annotations().anyMatch(a -> a.annotationType().equals(annotation)));
+    }
+
 
     /**
      * @return An iterator of method wrappers
      */
     public Iterator<ConstructorWrapper> iterator() {
         return this.constructors.iterator();
+    }
+
+    /**
+     * Map the constructors to a new stream.<br>
+     * This is the same as calling {@link #jstream()} and then {@link Stream#map(Function)}.
+     *
+     * @param mapFunction The map function
+     * @param <T>         The type of the new stream
+     * @return The new stream
+     */
+    public <T> Stream<T> map(final Function<ConstructorWrapper, T> mapFunction) {
+        return this.jstream().map(mapFunction);
     }
 
     /**

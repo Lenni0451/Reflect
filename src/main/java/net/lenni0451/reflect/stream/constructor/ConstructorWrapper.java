@@ -4,7 +4,10 @@ import net.lenni0451.reflect.Constructors;
 import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.general.ModifierWrapper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * A wrapper of the {@link Constructor} class for easy access to all required methods.
@@ -61,6 +64,13 @@ public class ConstructorWrapper {
      */
     public ModifierWrapper modifier() {
         return this.modifier;
+    }
+
+    /**
+     * @return A stream of all annotations of the constructor
+     */
+    public Stream<Annotation> annotations() {
+        return Arrays.stream(this.constructor.getDeclaredAnnotations());
     }
 
 

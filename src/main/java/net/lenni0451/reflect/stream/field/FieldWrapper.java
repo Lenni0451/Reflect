@@ -4,9 +4,12 @@ import net.lenni0451.reflect.Fields;
 import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.general.ModifierWrapper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * A wrapper of the {@link Field} class for easy access to all required methods.
@@ -74,6 +77,13 @@ public class FieldWrapper {
             return parameterizedType.getActualTypeArguments();
         }
         return new Type[0];
+    }
+
+    /**
+     * @return A stream of all annotations of the field
+     */
+    public Stream<Annotation> annotations() {
+        return Arrays.stream(this.field.getDeclaredAnnotations());
     }
 
 

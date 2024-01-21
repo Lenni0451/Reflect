@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -238,12 +239,35 @@ public class MethodStream {
         return this.filter(method -> method.modifier().isStatic() == isStatic);
     }
 
+    /**
+     * Filter the methods by whether they have the given annotation.<br>
+     * The current stream will be modified.
+     *
+     * @param annotation The annotation
+     * @return This stream
+     */
+    public MethodStream filterAnnotation(final Class<?> annotation) {
+        return this.filter(method -> method.annotations().anyMatch(a -> a.annotationType().equals(annotation)));
+    }
+
 
     /**
      * @return An iterator of method wrappers
      */
     public Iterator<MethodWrapper> iterator() {
         return this.methods.iterator();
+    }
+
+    /**
+     * Map the methods to a new stream.<br>
+     * This is the same as calling {@link #jstream()} and then {@link Stream#map(Function)}.
+     *
+     * @param mapFunction The map function
+     * @param <T>         The type of the new stream
+     * @return The new stream
+     */
+    public <T> Stream<T> map(final Function<MethodWrapper, T> mapFunction) {
+        return this.jstream().map(mapFunction);
     }
 
     /**

@@ -7,6 +7,7 @@ import net.lenni0451.reflect.stream.RStream;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -144,7 +145,7 @@ public class FieldStream {
     }
 
     /**
-     * Filter the fields by whether tey are static.<br>
+     * Filter the fields by whether they are static.<br>
      * The current stream will be modified.
      *
      * @param isStatic Whether the fields should be static
@@ -154,12 +155,35 @@ public class FieldStream {
         return this.filter(field -> field.modifier().isStatic() == isStatic);
     }
 
+    /**
+     * Filter the fields by whether they have the given annotation.<br>
+     * The current stream will be modified.
+     *
+     * @param annotation The annotation
+     * @return This stream
+     */
+    public FieldStream filterAnnotation(final Class<?> annotation) {
+        return this.filter(field -> field.annotations().anyMatch(a -> a.annotationType().equals(annotation)));
+    }
+
 
     /**
      * @return An iterator of field wrappers
      */
     public Iterator<FieldWrapper> iterator() {
         return this.fields.iterator();
+    }
+
+    /**
+     * Map the fields to a new stream.<br>
+     * This is the same as calling {@link #jstream()} and then {@link Stream#map(Function)}.
+     *
+     * @param mapFunction The map function
+     * @param <T>         The type of the new stream
+     * @return The new stream
+     */
+    public <T> Stream<T> map(final Function<FieldWrapper, T> mapFunction) {
+        return this.jstream().map(mapFunction);
     }
 
     /**
