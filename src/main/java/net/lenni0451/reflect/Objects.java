@@ -204,6 +204,20 @@ public class Objects {
         return (T) o;
     }
 
+    /**
+     * Allocate an instance of the given class.
+     *
+     * @param clazz The class
+     * @param <T>   The type of the instance
+     * @return The allocated instance
+     * @throws InstantiationException If the class can not be allocated
+     * @throws ClassCastException     If the object does not match the given class
+     */
+    @SneakyThrows
+    public static <T> T allocate(final Class<T> clazz) {
+        return (T) UNSAFE.allocateInstance(clazz);
+    }
+
 
     private static int getObjectAlignment() {
         if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
