@@ -4,6 +4,9 @@ import lombok.SneakyThrows;
 
 import java.util.function.Supplier;
 
+/**
+ * Helper class to initialize fields with a value or throw an exception if the value is null.
+ */
 public class FieldInitializer {
 
     @SneakyThrows
