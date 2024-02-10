@@ -2,6 +2,7 @@ package net.lenni0451.reflect;
 
 import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
+import net.lenni0451.reflect.utils.FieldInitializer;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -16,6 +17,14 @@ import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
  */
 public class Constructors {
 
+    private static final Method getDeclaredConstructors0 = FieldInitializer.reqInit(() -> {
+        if (JVMConstants.OPENJ9_RUNTIME) {
+            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
+        } else {
+            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
+        }
+    }, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean"));
+
     /**
      * Get all declared constructors of a class.<br>
      * The reflection filter of the class will be ignored.<br>
@@ -27,19 +36,8 @@ public class Constructors {
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredConstructors0} method could not be found
      */
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
-        try {
-            if (JVMConstants.OPENJ9_RUNTIME) {
-                Method getDeclaredConstructorsImpl = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
-                if (getDeclaredConstructorsImpl == null) throw new NoSuchMethodException();
-                return Methods.invoke(clazz, getDeclaredConstructorsImpl);
-            } else {
-                Method getDeclaredConstructors0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
-                if (getDeclaredConstructors0 == null) throw new NoSuchMethodException();
-                return Methods.invoke(clazz, getDeclaredConstructors0, false);
-            }
-        } catch (NoSuchMethodException e) {
-            throw new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean");
-        }
+        if (JVMConstants.OPENJ9_RUNTIME) return Methods.invoke(clazz, getDeclaredConstructors0);
+        else return Methods.invoke(clazz, getDeclaredConstructors0, false);
     }
 
     /**

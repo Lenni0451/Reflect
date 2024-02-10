@@ -10,11 +10,20 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredMethods0;
+import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with methods.
  */
 public class Methods {
+
+    private static final Method getDeclaredMethods0 = reqInit(() -> {
+        if (JVMConstants.OPENJ9_RUNTIME) {
+            return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
+        } else {
+            return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
+        }
+    }, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean"));
 
     /**
      * Get all declared methods of a class.<br>
@@ -25,17 +34,8 @@ public class Methods {
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredMethods0} method could not be found
      */
     public static Method[] getDeclaredMethods(final Class<?> clazz) {
-        try {
-            if (JVMConstants.OPENJ9_RUNTIME) {
-                Method getDeclaredMethodsImpl = Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
-                return Methods.invoke(clazz, getDeclaredMethodsImpl);
-            } else {
-                Method getDeclaredMethods0 = Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
-                return Methods.invoke(clazz, getDeclaredMethods0, false);
-            }
-        } catch (NoSuchMethodException e) {
-            throw new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean");
-        }
+        if (JVMConstants.OPENJ9_RUNTIME) return Methods.invoke(clazz, getDeclaredMethods0);
+        else return Methods.invoke(clazz, getDeclaredMethods0, false);
     }
 
     /**

@@ -1,6 +1,8 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import net.lenni0451.reflect.stream.RStream;
+import net.lenni0451.reflect.utils.FieldInitializer;
 import sun.misc.Unsafe;
 
 import java.lang.invoke.MethodHandles;
@@ -10,7 +12,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
@@ -23,10 +24,11 @@ public class ClassLoaders {
 
     private static final Class<?> classOptionClass = Classes.byName(CLASS_MethodHandles_Lookup_ClassOption);
     private static final Method unsafeDefineAnonymousClass = Methods.getDeclaredMethod(Unsafe.class, METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class);
-    private static final Method lookupDefineHiddenClass = ((Supplier<Method>) () -> {
-        if (classOptionClass == null) return null;
-        return Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass());
-    }).get();
+    private static final Method lookupDefineHiddenClass = FieldInitializer.reqOptInit(
+            classOptionClass != null,
+            () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass()),
+            () -> new MethodNotFoundException(MethodHandles.Lookup.class.getName(), METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass())
+    );
 
     /**
      * Add a URL to the system classpath.

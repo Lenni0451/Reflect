@@ -13,11 +13,17 @@ import java.lang.reflect.Method;
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
+import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
+import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with classes.
  */
 public class Classes {
+
+    private static final Method getDeclaredClasses0 = reqInit(() -> Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0), () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0));
+    private static final Method ensureClassInitialized = optInit(() -> Methods.getDeclaredMethod(Unsafe.class, "ensureClassInitialized", Class.class));
+    private static final Method ensureInitialized = optInit(() -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, "ensureInitialized", Class.class));
 
     /**
      * Get all declared classes of a class.<br>
@@ -28,12 +34,7 @@ public class Classes {
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredClasses0} method could not be found
      */
     public static Class<?>[] getDeclaredClasses(final Class<?> clazz) {
-        try {
-            Method getDeclaredClasses0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0);
-            return Methods.invoke(clazz, getDeclaredClasses0);
-        } catch (Throwable ignored) {
-            throw new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0);
-        }
+        return Methods.invoke(clazz, getDeclaredClasses0);
     }
 
     /**
@@ -59,7 +60,6 @@ public class Classes {
      */
     public static void ensureInitialized(Class<?> clazz) {
         try { //Try using unsafe (deprecated since Java 15)
-            Method ensureClassInitialized = Methods.getDeclaredMethod(Unsafe.class, "ensureClassInitialized", Class.class);
             if (ensureClassInitialized != null) {
                 Methods.invoke(UNSAFE, ensureClassInitialized, clazz);
                 return;
@@ -67,9 +67,8 @@ public class Classes {
         } catch (Throwable ignored) {
         }
         try { //Try using trusted lookup
-            Method ensureClassInitialized = Methods.getDeclaredMethod(MethodHandles.Lookup.class, "ensureInitialized", Class.class);
-            if (ensureClassInitialized != null) {
-                Methods.invoke(TRUSTED_LOOKUP.in(clazz), ensureClassInitialized, clazz);
+            if (ensureInitialized != null) {
+                Methods.invoke(TRUSTED_LOOKUP.in(clazz), ensureInitialized, clazz);
                 return;
             }
         } catch (Throwable ignored) {

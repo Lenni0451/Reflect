@@ -7,26 +7,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredFields0;
+import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
+import static net.lenni0451.reflect.utils.FieldInitializer.condInit;
+import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with fields.
  */
 public class Fields {
 
-    private static final Method internalStaticFieldOffset;
-    private static final Method internalObjectFieldOffset;
-
-    static {
-        if (JavaBypass.INTERNAL_UNSAFE != null) {
-            internalStaticFieldOffset = Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), JVMConstants.METHOD_InternalUnsafe_staticFieldOffset, Field.class);
-            internalObjectFieldOffset = Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), JVMConstants.METHOD_InternalUnsafe_objectFieldOffset, Field.class);
+    private static final Method internalStaticFieldOffset = condInit(JavaBypass.INTERNAL_UNSAFE != null, () -> Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_staticFieldOffset, Field.class));
+    private static final Method internalObjectFieldOffset = condInit(JavaBypass.INTERNAL_UNSAFE != null, () -> Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_objectFieldOffset, Field.class));
+    private static final Method getDeclaredFields0 = reqInit(() -> {
+        if (JVMConstants.OPENJ9_RUNTIME) {
+            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
         } else {
-            internalStaticFieldOffset = null;
-            internalObjectFieldOffset = null;
+            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
         }
-    }
+    }, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean"));
 
     /**
      * Get the offset of a field required for getting/setting the value of the field using unsafe.<br>
@@ -68,19 +67,8 @@ public class Fields {
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredFields0} method could not be found
      */
     public static Field[] getDeclaredFields(final Class<?> clazz) {
-        try {
-            if (JVMConstants.OPENJ9_RUNTIME) {
-                Method getDeclaredFieldsImpl = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
-                if (getDeclaredFieldsImpl == null) throw new NoSuchMethodException();
-                return Methods.invoke(clazz, getDeclaredFieldsImpl);
-            } else {
-                Method getDeclaredFields0 = Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
-                if (getDeclaredFields0 == null) throw new NoSuchMethodException();
-                return Methods.invoke(clazz, getDeclaredFields0, false);
-            }
-        } catch (NoSuchMethodException e) {
-            throw new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean");
-        }
+        if (JVMConstants.OPENJ9_RUNTIME) return Methods.invoke(clazz, getDeclaredFields0);
+        else return Methods.invoke(clazz, getDeclaredFields0, false);
     }
 
     /**
