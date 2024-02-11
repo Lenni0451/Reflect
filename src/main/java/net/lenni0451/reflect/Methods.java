@@ -1,15 +1,18 @@
 package net.lenni0451.reflect;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.MethodInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredMethods0;
+import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
@@ -17,13 +20,16 @@ import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
  */
 public class Methods {
 
-    private static final Method getDeclaredMethods0 = reqInit(() -> {
-        if (JVMConstants.OPENJ9_RUNTIME) {
-            return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
-        } else {
-            return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
-        }
-    }, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean"));
+    private static final MethodHandle getDeclaredMethods0 = reqInit(
+            () -> {
+                if (JVMConstants.OPENJ9_RUNTIME) {
+                    return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
+                } else {
+                    return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
+                }
+            },
+            TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean")
+    );
 
     /**
      * Get all declared methods of a class.<br>
@@ -33,9 +39,10 @@ public class Methods {
      * @return An array of all declared methods of the class
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredMethods0} method could not be found
      */
+    @SneakyThrows
     public static Method[] getDeclaredMethods(final Class<?> clazz) {
-        if (JVMConstants.OPENJ9_RUNTIME) return Methods.invoke(clazz, getDeclaredMethods0);
-        else return Methods.invoke(clazz, getDeclaredMethods0, false);
+        if (JVMConstants.OPENJ9_RUNTIME) return (Method[]) getDeclaredMethods0.invokeExact(clazz);
+        else return (Method[]) getDeclaredMethods0.invokeExact(clazz, false);
     }
 
     /**
@@ -69,8 +76,8 @@ public class Methods {
      */
     public static <T> T invoke(@Nullable final Object instance, final Method method, final Object... args) {
         try {
-            if (Modifier.isStatic(method.getModifiers())) return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
-            else return (T) JavaBypass.TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
+            if (Modifier.isStatic(method.getModifiers())) return (T) TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
+            else return (T) TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
         } catch (Throwable t) {
             throw new MethodInvocationException(method).cause(t);
         }
@@ -94,7 +101,7 @@ public class Methods {
     public static <I extends S, S, T> T invokeSuper(@Nonnull final I instance, @Nonnull final Class<S> superClass, final Method method, final Object... args) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Cannot invoke static super method");
         try {
-            return (T) JavaBypass.TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance).invokeWithArguments(args);
+            return (T) TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance).invokeWithArguments(args);
         } catch (Throwable t) {
             throw new MethodInvocationException(method).cause(t);
         }

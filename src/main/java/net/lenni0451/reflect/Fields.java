@@ -1,13 +1,15 @@
 package net.lenni0451.reflect;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import static net.lenni0451.reflect.JVMConstants.*;
+import static net.lenni0451.reflect.JavaBypass.INTERNAL_UNSAFE;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 import static net.lenni0451.reflect.utils.FieldInitializer.condInit;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
@@ -17,15 +19,26 @@ import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
  */
 public class Fields {
 
-    private static final Method internalStaticFieldOffset = condInit(JavaBypass.INTERNAL_UNSAFE != null, () -> Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_staticFieldOffset, Field.class));
-    private static final Method internalObjectFieldOffset = condInit(JavaBypass.INTERNAL_UNSAFE != null, () -> Methods.getDeclaredMethod(JavaBypass.INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_objectFieldOffset, Field.class));
-    private static final Method getDeclaredFields0 = reqInit(() -> {
-        if (JVMConstants.OPENJ9_RUNTIME) {
-            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
-        } else {
-            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
-        }
-    }, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean"));
+    private static final MethodHandle internalStaticFieldOffset = condInit(
+            INTERNAL_UNSAFE != null,
+            () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_staticFieldOffset, Field.class),
+            JavaBypass.TRUSTED_LOOKUP::unreflect
+    );
+    private static final MethodHandle internalObjectFieldOffset = condInit(
+            INTERNAL_UNSAFE != null,
+            () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_objectFieldOffset, Field.class),
+            JavaBypass.TRUSTED_LOOKUP::unreflect
+    );
+    private static final MethodHandle getDeclaredFields0 = reqInit(
+            () -> {
+                if (JVMConstants.OPENJ9_RUNTIME) {
+                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
+                } else {
+                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
+                }
+            },
+            JavaBypass.TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean")
+    );
 
     /**
      * Get the offset of a field required for getting/setting the value of the field using unsafe.<br>
@@ -34,12 +47,13 @@ public class Fields {
      * @param field The field to get the offset of
      * @return The offset of the field
      */
+    @SneakyThrows
     public static long offset(final Field field) {
         if (Modifier.isStatic(field.getModifiers())) {
-            if (internalStaticFieldOffset != null) return Methods.invoke(JavaBypass.INTERNAL_UNSAFE, internalStaticFieldOffset, field);
+            if (internalStaticFieldOffset != null) return (long) internalStaticFieldOffset.invoke(INTERNAL_UNSAFE, field);
             else return UNSAFE.staticFieldOffset(field);
         } else {
-            if (internalObjectFieldOffset != null) return Methods.invoke(JavaBypass.INTERNAL_UNSAFE, internalObjectFieldOffset, field);
+            if (internalObjectFieldOffset != null) return (long) internalObjectFieldOffset.invoke(INTERNAL_UNSAFE, field);
             else return UNSAFE.objectFieldOffset(field);
         }
     }
@@ -66,9 +80,10 @@ public class Fields {
      * @return An array of all declared fields of the class
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredFields0} method could not be found
      */
+    @SneakyThrows
     public static Field[] getDeclaredFields(final Class<?> clazz) {
-        if (JVMConstants.OPENJ9_RUNTIME) return Methods.invoke(clazz, getDeclaredFields0);
-        else return Methods.invoke(clazz, getDeclaredFields0, false);
+        if (JVMConstants.OPENJ9_RUNTIME) return (Field[]) getDeclaredFields0.invokeExact(clazz);
+        else return (Field[]) getDeclaredFields0.invokeExact(clazz, false);
     }
 
     /**

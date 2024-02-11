@@ -1,12 +1,13 @@
 package net.lenni0451.reflect;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import net.lenni0451.reflect.utils.FieldInitializer;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredConstructors0;
@@ -17,13 +18,16 @@ import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
  */
 public class Constructors {
 
-    private static final Method getDeclaredConstructors0 = FieldInitializer.reqInit(() -> {
-        if (JVMConstants.OPENJ9_RUNTIME) {
-            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
-        } else {
-            return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
-        }
-    }, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean"));
+    private static final MethodHandle getDeclaredConstructors0 = FieldInitializer.reqInit(
+            () -> {
+                if (JVMConstants.OPENJ9_RUNTIME) {
+                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
+                } else {
+                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
+                }
+            },
+            TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean")
+    );
 
     /**
      * Get all declared constructors of a class.<br>
@@ -35,9 +39,10 @@ public class Constructors {
      * @return An array of all declared constructors of the class
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredConstructors0} method could not be found
      */
+    @SneakyThrows
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
-        if (JVMConstants.OPENJ9_RUNTIME) return Methods.invoke(clazz, getDeclaredConstructors0);
-        else return Methods.invoke(clazz, getDeclaredConstructors0, false);
+        if (JVMConstants.OPENJ9_RUNTIME) return (Constructor<T>[]) getDeclaredConstructors0.invokeExact(clazz);
+        else return (Constructor<T>[]) getDeclaredConstructors0.invokeExact(clazz, false);
     }
 
     /**

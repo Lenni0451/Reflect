@@ -1,10 +1,11 @@
 package net.lenni0451.reflect;
 
+import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import net.lenni0451.reflect.stream.RStream;
-import net.lenni0451.reflect.utils.FieldInitializer;
 import sun.misc.Unsafe;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -16,17 +17,27 @@ import java.util.List;
 import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
+import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
+import static net.lenni0451.reflect.utils.FieldInitializer.reqOptInit;
 
 /**
  * This class contains some useful methods for working with class loaders.
  */
 public class ClassLoaders {
 
-    private static final Class<?> classOptionClass = Classes.byName(CLASS_MethodHandles_Lookup_ClassOption);
-    private static final Method unsafeDefineAnonymousClass = Methods.getDeclaredMethod(Unsafe.class, METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class);
-    private static final Method lookupDefineHiddenClass = FieldInitializer.reqOptInit(
+    private static final Class<?> classOptionClass = optInit(
+            () -> Class.forName(CLASS_MethodHandles_Lookup_ClassOption)
+    );
+    private static final MethodHandle unsafeDefineAnonymousClass = reqOptInit(
+            classOptionClass == null,
+            () -> Methods.getDeclaredMethod(Unsafe.class, METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class),
+            TRUSTED_LOOKUP::unreflect,
+            () -> new MethodNotFoundException(Unsafe.class.getName(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class)
+    );
+    private static final MethodHandle lookupDefineHiddenClass = reqOptInit(
             classOptionClass != null,
             () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass()),
+            TRUSTED_LOOKUP::unreflect,
             () -> new MethodNotFoundException(MethodHandles.Lookup.class.getName(), METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass())
     );
 
@@ -167,9 +178,10 @@ public class ClassLoaders {
      * @return The defined class
      * @throws IllegalArgumentException If a flag is unknown
      */
+    @SneakyThrows
     public static Class<?> defineAnonymousClass(final Class<?> parent, final byte[] bytecode, final String... flags) {
         if (classOptionClass == null) {
-            return Methods.invoke(UNSAFE, unsafeDefineAnonymousClass, parent, bytecode, new Object[0]);
+            return (Class<?>) unsafeDefineAnonymousClass.invokeExact(UNSAFE, parent, bytecode, new Object[0]);
         } else {
             Object classOptions = Array.newInstance(classOptionClass, flags.length);
             for (int i = 0; i < flags.length; i++) {
@@ -178,7 +190,7 @@ public class ClassLoaders {
                 if (classOption == null) throw new IllegalArgumentException("Unknown class option: " + flag);
                 Array.set(classOptions, i, classOption);
             }
-            MethodHandles.Lookup lookup = Methods.invoke(TRUSTED_LOOKUP.in(parent), lookupDefineHiddenClass, bytecode, false, classOptions);
+            MethodHandles.Lookup lookup = (MethodHandles.Lookup) lookupDefineHiddenClass.invoke(TRUSTED_LOOKUP.in(parent), bytecode, false, classOptions);
             return lookup.lookupClass();
         }
     }

@@ -7,8 +7,8 @@ import sun.misc.Unsafe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
@@ -21,9 +21,18 @@ import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
  */
 public class Classes {
 
-    private static final Method getDeclaredClasses0 = reqInit(() -> Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0), () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0));
-    private static final Method ensureClassInitialized = optInit(() -> Methods.getDeclaredMethod(Unsafe.class, "ensureClassInitialized", Class.class));
-    private static final Method ensureInitialized = optInit(() -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, "ensureInitialized", Class.class));
+    private static final MethodHandle getDeclaredClasses0 = reqInit(
+            () -> Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0),
+            TRUSTED_LOOKUP::unreflect, () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0)
+    );
+    private static final MethodHandle ensureClassInitialized = optInit(
+            () -> Methods.getDeclaredMethod(Unsafe.class, "ensureClassInitialized", Class.class),
+            TRUSTED_LOOKUP::unreflect
+    );
+    private static final MethodHandle ensureInitialized = optInit(
+            () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, "ensureInitialized", Class.class),
+            TRUSTED_LOOKUP::unreflect
+    );
 
     /**
      * Get all declared classes of a class.<br>
@@ -33,8 +42,9 @@ public class Classes {
      * @return An array of all declared classes of the class
      * @throws MethodNotFoundException If the {@link Class} internal {@code getDeclaredClasses0} method could not be found
      */
+    @SneakyThrows
     public static Class<?>[] getDeclaredClasses(final Class<?> clazz) {
-        return Methods.invoke(clazz, getDeclaredClasses0);
+        return (Class<?>[]) getDeclaredClasses0.invokeExact(clazz);
     }
 
     /**
@@ -61,14 +71,14 @@ public class Classes {
     public static void ensureInitialized(Class<?> clazz) {
         try { //Try using unsafe (deprecated since Java 15)
             if (ensureClassInitialized != null) {
-                Methods.invoke(UNSAFE, ensureClassInitialized, clazz);
+                ensureClassInitialized.invokeExact(UNSAFE, clazz);
                 return;
             }
         } catch (Throwable ignored) {
         }
         try { //Try using trusted lookup
             if (ensureInitialized != null) {
-                Methods.invoke(TRUSTED_LOOKUP.in(clazz), ensureInitialized, clazz);
+                ensureInitialized.invokeExact(TRUSTED_LOOKUP.in(clazz), clazz);
                 return;
             }
         } catch (Throwable ignored) {
