@@ -3,6 +3,7 @@ package net.lenni0451.reflect;
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.InvalidOOPSizeException;
+import net.lenni0451.reflect.utils.FieldInitializer;
 
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
@@ -21,9 +22,20 @@ public class Objects {
     public static final int OOP_SIZE = CompressedOopsClass.getOopSize();
     public static final int OBJECT_HEADER_SIZE = BooleanHeaderClass.getHeaderSize();
     public static final int ARRAY_HEADER_SIZE = OBJECT_HEADER_SIZE + 4;
-    public static final int OBJECT_ALIGNMENT = getObjectAlignment();
+    public static final int OBJECT_ALIGNMENT = FieldInitializer.init(() -> {
+        if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
+            HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
+            if (mxBean != null) return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
+        }
+        return 8; //Default to 8 and hope for the best
+    });
     public static final boolean COMPRESSED_OOPS = ADDRESS_SIZE != OOP_SIZE;
-    public static final int COMPRESSED_OOP_SHIFT = log2p(OBJECT_ALIGNMENT);
+    public static final int COMPRESSED_OOP_SHIFT = FieldInitializer.init(() -> {
+        int i = OBJECT_ALIGNMENT;
+        int result = 0;
+        while ((i >>= 1) != 0) result++;
+        return result;
+    });
     public static final long COMPRESSED_OOP_BASE = toNativeAddress(null);
     public static final long KLASS_OFFSET = Objects.OBJECT_HEADER_SIZE - Objects.OOP_SIZE;
 
@@ -218,21 +230,6 @@ public class Objects {
         return (T) UNSAFE.allocateInstance(clazz);
     }
 
-
-    private static int getObjectAlignment() {
-        if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
-            HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
-            if (mxBean != null) return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
-        }
-
-        return 8; //Default to 8 and hope for the best
-    }
-
-    private static int log2p(int i) {
-        int result = 0;
-        while ((i >>= 1) != 0) result++;
-        return result;
-    }
 
     private static class CompressedOopsClass {
         public Object o1;
