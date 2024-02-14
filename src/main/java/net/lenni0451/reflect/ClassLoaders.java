@@ -37,7 +37,7 @@ public class ClassLoaders {
     private static final MethodHandle lookupDefineHiddenClass = reqOptInit(
             classOptionClass != null,
             () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass()),
-            TRUSTED_LOOKUP::unreflect,
+            m -> TRUSTED_LOOKUP.unreflect(m).asFixedArity(),
             () -> new MethodNotFoundException(MethodHandles.Lookup.class.getName(), METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass())
     );
 
