@@ -3,12 +3,12 @@ package net.lenni0451.reflect;
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.InvalidOOPSizeException;
-import net.lenni0451.reflect.utils.FieldInitializer;
 
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
+import static net.lenni0451.reflect.utils.FieldInitializer.init;
 
 /**
  * This class contains some methods to do unsafe operations.
@@ -22,7 +22,7 @@ public class Objects {
     public static final int OOP_SIZE = CompressedOopsClass.getOopSize();
     public static final int OBJECT_HEADER_SIZE = BooleanHeaderClass.getHeaderSize();
     public static final int ARRAY_HEADER_SIZE = OBJECT_HEADER_SIZE + 4;
-    public static final int OBJECT_ALIGNMENT = FieldInitializer.init(() -> {
+    public static final int OBJECT_ALIGNMENT = init(() -> {
         if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
             HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
             if (mxBean != null) return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
@@ -30,7 +30,7 @@ public class Objects {
         return 8; //Default to 8 and hope for the best
     });
     public static final boolean COMPRESSED_OOPS = ADDRESS_SIZE != OOP_SIZE;
-    public static final int COMPRESSED_OOP_SHIFT = FieldInitializer.init(() -> {
+    public static final int COMPRESSED_OOP_SHIFT = init(() -> {
         int i = OBJECT_ALIGNMENT;
         int result = 0;
         while ((i >>= 1) != 0) result++;

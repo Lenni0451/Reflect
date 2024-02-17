@@ -3,7 +3,6 @@ package net.lenni0451.reflect;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
-import net.lenni0451.reflect.utils.FieldInitializer;
 
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
@@ -12,13 +11,14 @@ import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredConstructors0;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
+import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with constructors.
  */
 public class Constructors {
 
-    private static final MethodHandle getDeclaredConstructors0 = FieldInitializer.reqInit(
+    private static final MethodHandle getDeclaredConstructors0 = reqInit(
             () -> {
                 if (JVMConstants.OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
                 else return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);

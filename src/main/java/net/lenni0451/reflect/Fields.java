@@ -9,8 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import static net.lenni0451.reflect.JVMConstants.*;
-import static net.lenni0451.reflect.JavaBypass.INTERNAL_UNSAFE;
-import static net.lenni0451.reflect.JavaBypass.UNSAFE;
+import static net.lenni0451.reflect.JavaBypass.*;
 import static net.lenni0451.reflect.utils.FieldInitializer.condInit;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
@@ -22,19 +21,19 @@ public class Fields {
     private static final MethodHandle internalStaticFieldOffset = condInit(
             INTERNAL_UNSAFE != null,
             () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_staticFieldOffset, Field.class),
-            JavaBypass.TRUSTED_LOOKUP::unreflect
+            TRUSTED_LOOKUP::unreflect
     );
     private static final MethodHandle internalObjectFieldOffset = condInit(
             INTERNAL_UNSAFE != null,
             () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_objectFieldOffset, Field.class),
-            JavaBypass.TRUSTED_LOOKUP::unreflect
+            TRUSTED_LOOKUP::unreflect
     );
     private static final MethodHandle getDeclaredFields0 = reqInit(
             () -> {
                 if (JVMConstants.OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
                 else return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
             },
-            JavaBypass.TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean")
+            TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean")
     );
 
     /**
