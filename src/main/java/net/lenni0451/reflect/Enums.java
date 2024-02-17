@@ -1,15 +1,34 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.exceptions.FieldNotFoundException;
+
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.*;
+import static net.lenni0451.reflect.utils.FieldInitializer.reqOptInit;
 
 /**
  * This class contains some useful methods for working with enums.
  */
 public class Enums {
+
+    private static final Field enumVarsField = reqOptInit(
+            OPENJ9_RUNTIME,
+            () -> Fields.getDeclaredField(Class.class, FIELD_Class_EnumVars),
+            () -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_EnumVars)
+    );
+    private static final Field enumConstantsField = reqOptInit(
+            !OPENJ9_RUNTIME,
+            () -> Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants),
+            () -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_enumConstants)
+    );
+    private static final Field enumConstantDirectoryField = reqOptInit(
+            !OPENJ9_RUNTIME,
+            () -> Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory),
+            () -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_enumConstantDirectory)
+    );
 
     /**
      * Create a new instance of an enum.<br>
@@ -65,10 +84,10 @@ public class Enums {
      */
     public static void clearEnumCache(final Class<?> enumClass) {
         if (OPENJ9_RUNTIME) {
-            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_EnumVars), null);
+            Fields.setObject(enumClass, enumVarsField, null);
         } else {
-            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants), null);
-            Fields.setObject(enumClass, Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory), null);
+            Fields.setObject(enumClass, enumConstantsField, null);
+            Fields.setObject(enumClass, enumConstantDirectoryField, null);
         }
     }
 

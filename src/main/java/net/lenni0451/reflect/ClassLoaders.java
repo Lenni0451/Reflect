@@ -17,14 +17,18 @@ import java.util.List;
 import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
-import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqOptInit;
+import static net.lenni0451.reflect.utils.FieldInitializer.*;
 
 /**
  * This class contains some useful methods for working with class loaders.
  */
 public class ClassLoaders {
 
+    private static final MethodHandle defineClass = reqInit(
+            () -> Methods.getDeclaredMethod(ClassLoader.class, METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class),
+            TRUSTED_LOOKUP::unreflect,
+            () -> new MethodNotFoundException(ClassLoader.class.getName(), METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class)
+    );
     private static final Class<?> classOptionClass = optInit(
             () -> Class.forName(CLASS_MethodHandles_Lookup_ClassOption)
     );
@@ -162,9 +166,9 @@ public class ClassLoaders {
      * @param protectionDomain The protection domain of the class
      * @return The defined class
      */
+    @SneakyThrows
     public static Class<?> defineClass(final ClassLoader classLoader, final String name, final byte[] bytecode, final int offset, final int length, final ProtectionDomain protectionDomain) {
-        Method method = Methods.getDeclaredMethod(ClassLoader.class, METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
-        return Methods.invoke(classLoader, method, name, bytecode, offset, length, protectionDomain);
+        return (Class<?>) defineClass.invokeExact(classLoader, name, bytecode, offset, length, protectionDomain);
     }
 
     /**

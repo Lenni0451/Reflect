@@ -31,11 +31,8 @@ public class Fields {
     );
     private static final MethodHandle getDeclaredFields0 = reqInit(
             () -> {
-                if (JVMConstants.OPENJ9_RUNTIME) {
-                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
-                } else {
-                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
-                }
+                if (JVMConstants.OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
+                else return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
             },
             JavaBypass.TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean")
     );

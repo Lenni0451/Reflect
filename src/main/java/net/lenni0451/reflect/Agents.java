@@ -1,10 +1,12 @@
 package net.lenni0451.reflect;
 
+import lombok.SneakyThrows;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
 import java.util.Base64;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -12,6 +14,8 @@ import java.util.zip.ZipEntry;
 
 import static net.lenni0451.reflect.JVMConstants.CLASS_InstrumentationImpl;
 import static net.lenni0451.reflect.JVMConstants.METHOD_InstrumentationImpl_loadAgent;
+import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
+import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
 
 /**
  * This class contains some useful methods for working with agents.
@@ -57,6 +61,14 @@ public class Agents {
             "CgAEAAkBAAlhZ2VudG1haW4BADsoTGphdmEvbGFuZy9TdHJpbmc7TGphdmEvbGFuZy9pbnN0cnVtZW50L0luc3RydW1lbnRhdGlv" +
             "bjspVgwABQAGCQACAA0BAAdwcmVtYWluAQAEQ29kZQABAAIABAAAAAEACQAFAAYAAAADAAEABwAIAAEAEAAAABEAAQABAAAABSq3" +
             "AAqxAAAAAAAJAAsADAABABAAAAARAAEAAgAAAAUrswAOsQAAAAAACQAPAAwAAQAQAAAAEQABAAIAAAAFK7MADrEAAAAAAAA=";
+    private static final String DUMMY_AGENT_CLASS_NAME = "net.lenni0451.reflect.AgentLoader";
+    private static final Class<?> instrumentationImpl = optInit(
+            () -> Class.forName(CLASS_InstrumentationImpl)
+    );
+    private static final MethodHandle loadAgent = optInit(
+            () -> Methods.getDeclaredMethod(instrumentationImpl, METHOD_InstrumentationImpl_loadAgent, String.class),
+            TRUSTED_LOOKUP::unreflect
+    );
 
     /**
      * Create a temp empty dummy agent jar for a given class.
@@ -99,16 +111,14 @@ public class Agents {
      * The method used was added in Java 9 and is not available in Java 8.
      *
      * @param agentJar The path to the agent jar
-     * @throws ClassNotFoundException If the InstrumentationImpl class is not found
-     * @throws IllegalStateException  If the loadAgent method does not exist
+     * @throws IllegalStateException If the loadAgent method does not exist
      */
-    public static void load(final File agentJar) throws ClassNotFoundException {
-        Class<?> instrumentationImpl = Class.forName(CLASS_InstrumentationImpl);
-        Method method = Methods.getDeclaredMethod(instrumentationImpl, METHOD_InstrumentationImpl_loadAgent, String.class);
-        if (method == null) {
+    @SneakyThrows
+    public static void load(final File agentJar) {
+        if (loadAgent == null) {
             throw new IllegalStateException("Loading an Agent during runtime is not possible because the " + METHOD_InstrumentationImpl_loadAgent + " method does not exist");
         }
-        Methods.invoke(null, method, agentJar.getAbsolutePath());
+        loadAgent.invokeExact(agentJar.getAbsolutePath());
     }
 
     /**
@@ -116,11 +126,10 @@ public class Agents {
      * The method used was added in Java 9 and is not available in Java 8.
      *
      * @param agentClass The class to create the agent for
-     * @throws IOException            If an I/O error occurs
-     * @throws ClassNotFoundException If the InstrumentationImpl class is not found
-     * @throws IllegalStateException  If the loadAgent method does not exist
+     * @throws IOException           If an I/O error occurs
+     * @throws IllegalStateException If the loadAgent method does not exist
      */
-    public static void loadInternal(final Class<?> agentClass) throws IOException, ClassNotFoundException {
+    public static void loadInternal(final Class<?> agentClass) throws IOException {
         load(createDummyAgent(agentClass));
     }
 
@@ -131,19 +140,16 @@ public class Agents {
      * The instrumentation instance is cached so that it is only loaded once.
      *
      * @return The instrumentation instance
-     * @throws IOException            If an IO error occurs
-     * @throws ClassNotFoundException If the InstrumentationImpl class is not found
-     * @throws IllegalStateException  If the loadAgent method does not exist
+     * @throws IOException           If an IO error occurs
+     * @throws IllegalStateException If the loadAgent method does not exist
      */
-    public static Instrumentation getInstrumentation() throws IOException, ClassNotFoundException {
-        final String agentLoaderClassName = "net.lenni0451.reflect.AgentLoader";
-
+    public static Instrumentation getInstrumentation() throws IOException {
         Class<?> agentLoaderClass;
         try {
-            agentLoaderClass = ClassLoader.getSystemClassLoader().loadClass(agentLoaderClassName);
+            agentLoaderClass = ClassLoader.getSystemClassLoader().loadClass(DUMMY_AGENT_CLASS_NAME);
         } catch (ClassNotFoundException e) {
             //Load the agent loader into the system class loader
-            agentLoaderClass = ClassLoaders.defineClass(ClassLoader.getSystemClassLoader(), agentLoaderClassName, Base64.getDecoder().decode(DUMMY_AGENT_CLASS));
+            agentLoaderClass = ClassLoaders.defineClass(ClassLoader.getSystemClassLoader(), DUMMY_AGENT_CLASS_NAME, Base64.getDecoder().decode(DUMMY_AGENT_CLASS));
 
             load(createDummyAgent(agentLoaderClass));
         }

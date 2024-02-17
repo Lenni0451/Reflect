@@ -22,11 +22,8 @@ public class Methods {
 
     private static final MethodHandle getDeclaredMethods0 = reqInit(
             () -> {
-                if (JVMConstants.OPENJ9_RUNTIME) {
-                    return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
-                } else {
-                    return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
-                }
+                if (JVMConstants.OPENJ9_RUNTIME) return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
+                else return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
             },
             TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean")
     );

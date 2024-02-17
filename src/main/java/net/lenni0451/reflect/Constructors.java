@@ -20,11 +20,8 @@ public class Constructors {
 
     private static final MethodHandle getDeclaredConstructors0 = FieldInitializer.reqInit(
             () -> {
-                if (JVMConstants.OPENJ9_RUNTIME) {
-                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
-                } else {
-                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
-                }
+                if (JVMConstants.OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
+                else return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
             },
             TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean")
     );
