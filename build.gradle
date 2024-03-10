@@ -1,42 +1,62 @@
 plugins {
-    id "java"
     id "maven-publish"
     id "signing"
     id "checkstyle"
 }
 
-base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-    compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+allprojects {
+    apply plugin: "java"
 
-    archivesName = project.maven_name
-    group = project.maven_group
-    version = project.maven_version
-}
+    base {
+        java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+        compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
-repositories {
-    mavenCentral()
+        archivesName = project.maven_name ?: rootProject.maven_name
+        group = project.maven_group ?: rootProject.maven_group
+        version = project.maven_version ?: rootProject.maven_version
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+        compileOnly "org.projectlombok:lombok:1.18.28"
+        annotationProcessor "org.projectlombok:lombok:1.18.28"
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    javadoc {
+        failOnError = false
+    }
+
+    checkstyle {
+        toolVersion = "9.3" //Latest version for Java 8
+        configFile = rootProject.file("config/checkstyle.xml")
+    }
+
+    signing {
+        sign configurations.archives
+    }
+
+    project.tasks.withType(PublishToMavenRepository).forEach {
+        it.dependsOn(project.tasks.withType(Sign))
+    }
+
+    build.dependsOn(check)
 }
 
 dependencies {
-    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-    compileOnly "org.projectlombok:lombok:1.18.28"
-    annotationProcessor "org.projectlombok:lombok:1.18.28"
-
     testCompileOnly "org.projectlombok:lombok:1.18.28"
     testImplementation platform("org.junit:junit-bom:5.9.0")
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.ow2.asm:asm:9.5"
     testAnnotationProcessor "org.projectlombok:lombok:1.18.28"
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
-javadoc {
-    failOnError = false
 }
 
 test {
@@ -105,18 +125,8 @@ publishing {
     }
 }
 
-checkstyle {
-    toolVersion = "9.3" //Latest version for Java 8
-    configFile = rootProject.file("config/checkstyle.xml")
-}
-
 signing {
-    sign configurations.archives
     sign publishing.publications.maven
 }
 
-project.tasks.withType(PublishToMavenRepository).forEach {
-    it.dependsOn(project.tasks.withType(Sign))
-}
 build.dependsOn(test)
-build.dependsOn(check)
