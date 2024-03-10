@@ -23,7 +23,8 @@ public class Classes {
 
     private static final MethodHandle getDeclaredClasses0 = reqInit(
             () -> Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0),
-            TRUSTED_LOOKUP::unreflect, () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0)
+            TRUSTED_LOOKUP::unreflect,
+            () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0)
     );
     private static final MethodHandle ensureClassInitialized = optInit(
             () -> Methods.getDeclaredMethod(Unsafe.class, "ensureClassInitialized", Class.class),
