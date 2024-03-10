@@ -44,10 +44,6 @@ allprojects {
         sign configurations.archives
     }
 
-    project.tasks.withType(PublishToMavenRepository).forEach {
-        it.dependsOn(project.tasks.withType(Sign))
-    }
-
     build.dependsOn(check)
 }
 
@@ -127,6 +123,10 @@ publishing {
 
 signing {
     sign publishing.publications.maven
+}
+
+project.tasks.withType(PublishToMavenRepository).forEach {
+    it.dependsOn(project.tasks.withType(Sign))
 }
 
 build.dependsOn(test)
