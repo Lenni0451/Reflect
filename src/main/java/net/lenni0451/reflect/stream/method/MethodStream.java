@@ -34,6 +34,11 @@ public class MethodStream {
         } while (clazz != null);
     }
 
+    private MethodStream(final RStream parent, final List<MethodWrapper> methods) {
+        this.parent = parent;
+        this.methods = methods;
+    }
+
     /**
      * @return The parent stream
      */
@@ -286,6 +291,13 @@ public class MethodStream {
     public MethodStream forEach(final Consumer<MethodWrapper> consumer) {
         this.methods.forEach(consumer);
         return this;
+    }
+
+    /**
+     * @return A copy of this stream
+     */
+    public MethodStream copy() {
+        return new MethodStream(this.parent, new ArrayList<>(this.methods));
     }
 
 }

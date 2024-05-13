@@ -33,6 +33,11 @@ public class FieldStream {
         } while (clazz != null);
     }
 
+    private FieldStream(final RStream parent, final List<FieldWrapper> fields) {
+        this.parent = parent;
+        this.fields = fields;
+    }
+
     /**
      * @return The parent stream
      */
@@ -202,6 +207,13 @@ public class FieldStream {
     public FieldStream forEach(final Consumer<FieldWrapper> consumer) {
         this.fields.forEach(consumer);
         return this;
+    }
+
+    /**
+     * @return A copy of this stream
+     */
+    public FieldStream copy() {
+        return new FieldStream(this.parent, new ArrayList<>(this.fields));
     }
 
 }

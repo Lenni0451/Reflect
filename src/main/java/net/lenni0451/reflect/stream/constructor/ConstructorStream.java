@@ -27,6 +27,11 @@ public class ConstructorStream {
         for (Constructor<?> constructor : Constructors.getDeclaredConstructors(parent.clazz())) this.constructors.add(new ConstructorWrapper(this, constructor));
     }
 
+    private ConstructorStream(final RStream parent, final List<ConstructorWrapper> constructors) {
+        this.parent = parent;
+        this.constructors = constructors;
+    }
+
     /**
      * @return The parent stream
      */
@@ -182,6 +187,13 @@ public class ConstructorStream {
     public ConstructorStream forEach(final Consumer<ConstructorWrapper> consumer) {
         this.constructors.forEach(consumer);
         return this;
+    }
+
+    /**
+     * @return A copy of this stream
+     */
+    public ConstructorStream copy() {
+        return new ConstructorStream(this.parent, new ArrayList<>(this.constructors));
     }
 
 }
