@@ -2,12 +2,18 @@ package net.lenni0451.reflect.utils;
 
 import lombok.SneakyThrows;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Helper class to initialize fields with a value or throw an exception if the value is null.
  */
 public class FieldInitializer {
+
+    public static <T> T init(final T value, final Consumer<T> initializer) {
+        initializer.accept(value);
+        return value;
+    }
 
     @SneakyThrows
     public static <T> T init(final ThrowingSupplier<T> supplier) {
