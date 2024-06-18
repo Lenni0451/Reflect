@@ -123,4 +123,15 @@ public class BytecodeUtils {
         return "ARETURN";
     }
 
+    /**
+     * Get the stack size for the given type.
+     *
+     * @param clazz The type
+     * @return The stack size
+     */
+    public static int getStackSize(final Class<?> clazz) {
+        if (long.class.equals(clazz) || double.class.equals(clazz)) return 2;
+        return 1;
+    }
+
 }

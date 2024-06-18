@@ -3,6 +3,7 @@ package net.lenni0451.reflect.wrapper;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.ClassLoaders;
 import net.lenni0451.reflect.stream.RStream;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,8 +21,8 @@ import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
  * If ASM is present on the classpath it will be used instead.<br>
  * <b>This will probably stop working in the future, so don't rely on it...</b>
  */
-@SuppressWarnings({"unchecked", "unused"})
 @Deprecated
+@ApiStatus.ScheduledForRemoval
 public class ASMWrapper {
 
     private static final Class<?> CLASS_Opcodes;
