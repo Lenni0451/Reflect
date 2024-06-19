@@ -6,7 +6,7 @@ import net.lenni0451.reflect.proxy.test.Class2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ProxyTest {
 
@@ -42,6 +42,20 @@ class ProxyTest {
     @Test
     void testArgTypes() {
         this.proxy.takeAll(true, (byte) 1, (short) 2, 'c', 3, 4L, 5F, 6D, "test");
+    }
+
+    @Test
+    void testCancel() {
+        ((Proxy) this.proxy).setInvocationHandler((thiz, proxyMethod, args) -> proxyMethod.cancel());
+        assertFalse(this.proxy.getBoolean());
+        assertEquals(0, this.proxy.getByte());
+        assertEquals(0, this.proxy.getShort());
+        assertEquals(0, this.proxy.getChar());
+        assertEquals(0, this.proxy.getInt());
+        assertEquals(0, this.proxy.getLong());
+        assertEquals(0, this.proxy.getFloat());
+        assertEquals(0, this.proxy.getDouble());
+        assertNull(this.proxy.getString());
     }
 
 }

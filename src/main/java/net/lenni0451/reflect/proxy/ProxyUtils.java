@@ -2,6 +2,7 @@ package net.lenni0451.reflect.proxy;
 
 import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.bytecode.BytecodeUtils;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -11,12 +12,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@ApiStatus.Internal
 class ProxyUtils {
 
     public static void verifySuperClass(final Class<?> clazz) {
-        if (Modifier.isPrivate(clazz.getModifiers())) throw new IllegalArgumentException("Cannot create a proxy for a private class");
-        if (Modifier.isFinal(clazz.getModifiers())) throw new IllegalArgumentException("Cannot create a proxy for a final class");
-        if (getPublicConstructors(clazz).length == 0) throw new IllegalArgumentException("Cannot create a proxy for a class without any public constructors");
+        if (!Modifier.isPublic(clazz.getModifiers())) throw new IllegalArgumentException("The super class must be public");
+        if (clazz.isInterface()) throw new IllegalArgumentException("The super class must be a class");
+        if (Modifier.isFinal(clazz.getModifiers())) throw new IllegalArgumentException("The super class must not be final");
+        if (getPublicConstructors(clazz).length == 0) throw new IllegalArgumentException("The super class must have at least one public constructor");
+    }
+
+    public static void verifyInterface(final Class<?> clazz) {
+        if (!Modifier.isPublic(clazz.getModifiers())) throw new IllegalArgumentException("The interface must be public");
+        if (!clazz.isInterface()) throw new IllegalArgumentException("The interface must be an interface");
     }
 
     public static Constructor<?>[] getPublicConstructors(final Class<?> clazz) {

@@ -34,6 +34,8 @@ public class ProxyBuilder {
     private Class<?> proxyClass;
 
     public ProxyBuilder setSuperClass(@Nullable final Class<?> superClass) {
+        if (superClass != null) ProxyUtils.verifySuperClass(superClass);
+
         this.reset();
         this.superClass = superClass;
         return this;
@@ -45,6 +47,8 @@ public class ProxyBuilder {
     }
 
     public ProxyBuilder addInterface(@Nonnull final Class<?> clazz) {
+        ProxyUtils.verifyInterface(clazz);
+
         this.reset();
         if (this.interfaces == null) {
             this.interfaces = new Class<?>[]{clazz};
@@ -56,6 +60,10 @@ public class ProxyBuilder {
     }
 
     public ProxyBuilder setInterfaces(@Nullable final Class<?>... interfaces) {
+        if (interfaces != null) {
+            for (Class<?> inter : interfaces) ProxyUtils.verifyInterface(inter);
+        }
+
         this.reset();
         this.interfaces = interfaces;
         return this;
