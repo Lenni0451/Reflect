@@ -3,6 +3,7 @@ package net.lenni0451.reflect.proxy;
 import net.lenni0451.reflect.proxy.impl.Proxy;
 import net.lenni0451.reflect.proxy.test.Class1;
 import net.lenni0451.reflect.proxy.test.Class2;
+import net.lenni0451.reflect.proxy.test.Interface1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,7 @@ class ProxyTest {
     void init() {
         ProxyBuilder proxyBuilder = new ProxyBuilder();
         proxyBuilder.setSuperClass(Class1.class);
+        proxyBuilder.addInterface(Interface1.class);
         this.proxy = proxyBuilder.build().allocateInstance();
     }
 
@@ -56,6 +58,19 @@ class ProxyTest {
         assertEquals(0, this.proxy.getFloat());
         assertEquals(0, this.proxy.getDouble());
         assertNull(this.proxy.getString());
+    }
+
+    @Test
+    void testInterface() {
+        Class2 other = new Class2();
+        ((Proxy) this.proxy).setInvocationHandler((thiz, proxyMethod, args) -> proxyMethod.invokeWith(other, args));
+        assertEquals(12, ((Interface1) this.proxy).interfaceTest());
+    }
+
+    @Test
+    void testInvokeAbstractSuper() {
+        ((Proxy) this.proxy).setInvocationHandler((thiz, proxyMethod, args) -> proxyMethod.invokeSuper(args));
+        assertThrows(UnsupportedOperationException.class, () -> ((Interface1) this.proxy).interfaceTest());
     }
 
 }

@@ -2,6 +2,7 @@ package net.lenni0451.reflect.proxy.impl;
 
 import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
+import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodHandle;
@@ -109,6 +110,18 @@ public class ProxyRuntime {
                 for (Class<?> parameter : method.getParameterTypes()) polymorphicSignature += desc(parameter);
                 polymorphicSignature += ")" + desc(method.getReturnType());
 
+                BytecodeLabel elseLabel = BUILDER.label();
+                mb
+                        .var(BUILDER.opcode("ALOAD"), 0)
+                        .field(BUILDER.opcode("GETSTATIC"), className, "INVOKE_SUPER", desc(MethodHandle.class))
+                        .jump(BUILDER.opcode("IFNONNULL"), elseLabel)
+                        .type(BUILDER.opcode("NEW"), slash(UnsupportedOperationException.class))
+                        .insn(BUILDER.opcode("DUP"))
+                        .ldc("Can't invoke abstract super method")
+                        .method(BUILDER.opcode("INVOKESPECIAL"), slash(UnsupportedOperationException.class), "<init>", mdesc(void.class, String.class), false)
+                        .insn(BUILDER.opcode("ATHROW"))
+                        .label(elseLabel);
+
                 mb.field(BUILDER.opcode("GETSTATIC"), className, "INVOKE_SUPER", desc(MethodHandle.class));
                 mb //Cast instance to owner class
                         .var(BUILDER.opcode("ALOAD"), 0)
@@ -168,10 +181,13 @@ public class ProxyRuntime {
     }
 
     public static MethodHandle[] getMethodHandles(final Class<?> owner, final String name, final Class<?>[] parameters, final Class<?> returnType) throws NoSuchMethodException, IllegalAccessException {
-        return new MethodHandle[]{
-                TRUSTED_LOOKUP.findVirtual(owner, name, MethodType.methodType(returnType, parameters)),
-                TRUSTED_LOOKUP.findSpecial(owner, name, MethodType.methodType(returnType, parameters), owner)
-        };
+        MethodHandle invokeOther = TRUSTED_LOOKUP.findVirtual(owner, name, MethodType.methodType(returnType, parameters));
+        MethodHandle invokeSuper = null;
+        try {
+            invokeSuper = TRUSTED_LOOKUP.findSpecial(owner, name, MethodType.methodType(returnType, parameters), owner);
+        } catch (Throwable ignored) {
+        }
+        return new MethodHandle[]{invokeOther, invokeSuper};
     }
 
 }
