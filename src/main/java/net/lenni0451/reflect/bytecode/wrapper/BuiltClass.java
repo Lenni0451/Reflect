@@ -6,6 +6,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Experimental
 public interface BuiltClass {
 
+    String getName();
+
     byte[] toBytes();
 
     default Class<?> defineAnonymous(final Class<?> parent) {

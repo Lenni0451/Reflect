@@ -12,9 +12,16 @@ import static net.lenni0451.reflect.bytecode.impl.asm.ASMBuilder.CLASS_ClassWrit
 class ASMBuiltClass implements BuiltClass {
 
     private final Object classWriter;
+    private final String name;
 
-    public ASMBuiltClass(final Object classWriter) {
+    public ASMBuiltClass(final Object classWriter, final String name) {
         this.classWriter = classWriter;
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override

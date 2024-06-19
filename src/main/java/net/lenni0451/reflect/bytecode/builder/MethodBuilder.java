@@ -3,7 +3,7 @@ package net.lenni0451.reflect.bytecode.builder;
 import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
 import org.jetbrains.annotations.ApiStatus;
 
-import static net.lenni0451.reflect.bytecode.BytecodeUtils.desc;
+import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
 @ApiStatus.Experimental
 public interface MethodBuilder {
@@ -23,6 +23,22 @@ public interface MethodBuilder {
 
     MethodBuilder type(final int opcode, final String type);
 
+    default MethodBuilder box(final BytecodeBuilder builder, final Class<?> primitive) {
+        Class<?> boxed = boxed(primitive);
+        if (boxed != primitive) {
+            this.method(builder.opcode("INVOKESTATIC"), slash(boxed), "valueOf", mdesc(boxed, primitive), false);
+        }
+        return this;
+    }
+
+    default MethodBuilder unbox(final BytecodeBuilder builder, final Class<?> primitive) {
+        Class<?> boxed = boxed(primitive);
+        if (boxed != primitive) {
+            this.method(builder.opcode("INVOKEVIRTUAL"), slash(boxed), primitive.getSimpleName() + "Value", mdesc(primitive), false);
+        }
+        return this;
+    }
+
     MethodBuilder field(final int opcode, final String owner, final String name, final String descriptor);
 
     MethodBuilder method(final int opcode, final String owner, final String name, final String descriptor, final boolean isInterface);
@@ -34,16 +50,13 @@ public interface MethodBuilder {
     MethodBuilder ldc(final Object value);
 
     default MethodBuilder typeLdc(final BytecodeBuilder builder, final Class<?> clazz) {
-        if (clazz == void.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Void", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == boolean.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Boolean", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == byte.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Byte", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == short.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Short", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == char.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Character", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == int.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Integer", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == long.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Long", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == float.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Float", "TYPE", "Ljava/lang/Class;");
-        else if (clazz == double.class) return this.field(builder.opcode("GETSTATIC"), "java/lang/Double", "TYPE", "Ljava/lang/Class;");
-        else return this.ldc(builder.type(desc(clazz)));
+        Class<?> boxed = boxed(clazz);
+        if (boxed == clazz) {
+            this.ldc(builder.type(desc(clazz)));
+        } else {
+            this.field(builder.opcode("GETSTATIC"), slash(boxed), "TYPE", desc(Class.class));
+        }
+        return this;
     }
 
     MethodBuilder iinc(final int varIndex, final int increment);

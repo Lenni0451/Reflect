@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 @ApiStatus.Experimental
 public interface ClassBuilder {
 
+    String getName();
+
     void field(final int access, final String name, final String descriptor, final String signature, final Object defaultValue, final Consumer<FieldBuilder> consumer);
 
     default void field(final int access, final String name, final String descriptor, final String signature, final Object defaultValue) {

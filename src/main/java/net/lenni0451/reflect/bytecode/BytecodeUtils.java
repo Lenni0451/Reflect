@@ -134,4 +134,30 @@ public class BytecodeUtils {
         return 1;
     }
 
+    public static Class<?> boxed(final Class<?> clazz) {
+        if (clazz == void.class) return Void.class;
+        if (clazz == boolean.class) return Boolean.class;
+        if (clazz == byte.class) return Byte.class;
+        if (clazz == short.class) return Short.class;
+        if (clazz == char.class) return Character.class;
+        if (clazz == int.class) return Integer.class;
+        if (clazz == long.class) return Long.class;
+        if (clazz == float.class) return Float.class;
+        if (clazz == double.class) return Double.class;
+        return clazz;
+    }
+
+    public static Class<?> unboxed(final Class<?> clazz) {
+        if (clazz == Void.class) return void.class;
+        if (clazz == Boolean.class) return boolean.class;
+        if (clazz == Byte.class) return byte.class;
+        if (clazz == Short.class) return short.class;
+        if (clazz == Character.class) return char.class;
+        if (clazz == Integer.class) return int.class;
+        if (clazz == Long.class) return long.class;
+        if (clazz == Float.class) return float.class;
+        if (clazz == Double.class) return double.class;
+        return clazz;
+    }
+
 }

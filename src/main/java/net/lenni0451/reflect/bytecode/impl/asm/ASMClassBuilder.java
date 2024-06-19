@@ -17,13 +17,20 @@ import static net.lenni0451.reflect.bytecode.impl.asm.ASMBuilder.*;
 class ASMClassBuilder implements ClassBuilder {
 
     private final Object classWriter;
+    private final String name;
 
-    public ASMClassBuilder(final Object classWriter) {
+    public ASMClassBuilder(final Object classWriter, final String name) {
         this.classWriter = classWriter;
+        this.name = name;
     }
 
     public Object getClassWriter() {
         return this.classWriter;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override

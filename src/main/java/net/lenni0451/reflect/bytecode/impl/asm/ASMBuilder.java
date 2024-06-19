@@ -61,11 +61,11 @@ class ASMBuilder implements BytecodeBuilder {
 
         Object classWriter = constructor.invoke(2 /*COMPUTE_FRAMES*/);
         visit.invoke(classWriter, this.opcode("V1_8"), access, name, signature, superName, interfaces);
-        ASMClassBuilder builder = new ASMClassBuilder(classWriter);
+        ASMClassBuilder builder = new ASMClassBuilder(classWriter, name);
         consumer.accept(builder);
         visitEnd.invoke(classWriter);
 
-        return new ASMBuiltClass(classWriter);
+        return new ASMBuiltClass(classWriter, name);
     }
 
     @Override
