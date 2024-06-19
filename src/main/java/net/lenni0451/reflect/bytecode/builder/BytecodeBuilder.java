@@ -17,8 +17,9 @@ public interface BytecodeBuilder {
 
     @SneakyThrows
     static BytecodeBuilder get() {
-        if (Classes.byName("org.objectweb.asm.Opcodes") != null || Classes.byName("jdk.internal.org.objectweb.asm.Opcodes") != null) {
-            Class<?> impl = Classes.forName("net.lenni0451.reflect.bytecode.impl.asm.ASMBuilder");
+        if (Classes.byName("org.objectweb.asm.Opcodes", BytecodeBuilder.class.getClassLoader()) != null
+                || Classes.byName("jdk.internal.org.objectweb.asm.Opcodes", BytecodeBuilder.class.getClassLoader()) != null) {
+            Class<?> impl = Classes.forName("net.lenni0451.reflect.bytecode.impl.asm.ASMBuilder", BytecodeBuilder.class.getClassLoader());
             return (BytecodeBuilder) TRUSTED_LOOKUP.findConstructor(impl, MethodType.methodType(void.class)).invoke();
         }
         throw new UnsupportedOperationException("No supported bytecode library found");
