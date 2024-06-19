@@ -76,7 +76,7 @@ public class BytecodeUtils {
      * @return The descriptor
      */
     public static String desc(final Method method) {
-        return desc(method.getReturnType(), method.getParameterTypes());
+        return mdesc(method.getReturnType(), method.getParameterTypes());
     }
 
     /**
@@ -86,7 +86,7 @@ public class BytecodeUtils {
      * @param returnType     The return type
      * @return The descriptor
      */
-    public static String desc(final Class<?> returnType, final Class<?>... parameterTypes) {
+    public static String mdesc(final Class<?> returnType, final Class<?>... parameterTypes) {
         StringBuilder builder = new StringBuilder("(");
         for (Class<?> parameterType : parameterTypes) builder.append(desc(parameterType));
         builder.append(")").append(desc(returnType));

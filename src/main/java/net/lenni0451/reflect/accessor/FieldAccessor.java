@@ -204,7 +204,7 @@ public class FieldAccessor {
             }
             matched = invokerMethod;
         }
-        if (matched == null) throw new IllegalArgumentException("Could not find a valid invoker method for: " + desc(returnType, parameterTypes));
+        if (matched == null) throw new IllegalArgumentException("Could not find a valid invoker method for: " + mdesc(returnType, parameterTypes));
         return matched;
     }
 

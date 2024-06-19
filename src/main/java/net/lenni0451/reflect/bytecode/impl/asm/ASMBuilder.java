@@ -5,6 +5,7 @@ import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.builder.ClassBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
 import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
+import net.lenni0451.reflect.bytecode.wrapper.BytecodeType;
 import net.lenni0451.reflect.stream.RStream;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -25,6 +26,7 @@ class ASMBuilder implements BytecodeBuilder {
     public static final Class<?> CLASS_FieldVisitor;
     public static final Class<?> CLASS_MethodVisitor;
     public static final Class<?> CLASS_Label;
+    public static final Class<?> CLASS_type;
 
     private static final Map<String, Integer> opcodes = new HashMap<>();
 
@@ -34,6 +36,7 @@ class ASMBuilder implements BytecodeBuilder {
         CLASS_FieldVisitor = forName("org.objectweb.asm.FieldVisitor", "jdk.internal.org.objectweb.asm.FieldVisitor");
         CLASS_MethodVisitor = forName("org.objectweb.asm.MethodVisitor", "jdk.internal.org.objectweb.asm.MethodVisitor");
         CLASS_Label = forName("org.objectweb.asm.Label", "jdk.internal.org.objectweb.asm.Label");
+        CLASS_type = forName("org.objectweb.asm.Type", "jdk.internal.org.objectweb.asm.Type");
 
         RStream.of(CLASS_Opcodes).fields().filter(true).filter(int.class).forEach(f -> opcodes.put(f.name(), f.<Integer>get()));
     }
@@ -70,6 +73,13 @@ class ASMBuilder implements BytecodeBuilder {
     public BytecodeLabel label() {
         MethodHandle constructor = TRUSTED_LOOKUP.findConstructor(CLASS_Label, MethodType.methodType(void.class));
         return new BytecodeLabel(constructor.invoke());
+    }
+
+    @Override
+    @SneakyThrows
+    public BytecodeType type(String descriptor) {
+        MethodHandle method = TRUSTED_LOOKUP.findStatic(CLASS_type, "getType", MethodType.methodType(CLASS_type, String.class));
+        return new BytecodeType(method.invoke(descriptor));
     }
 
     @Override

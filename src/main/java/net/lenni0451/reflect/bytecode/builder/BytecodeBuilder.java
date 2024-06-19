@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import net.lenni0451.reflect.Classes;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
 import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
+import net.lenni0451.reflect.bytecode.wrapper.BytecodeType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodType;
@@ -28,6 +29,14 @@ public interface BytecodeBuilder {
 
     BytecodeLabel label();
 
+    BytecodeType type(final String descriptor);
+
     int opcode(final String name);
+
+    default int opcode(final String name, final String... or) {
+        int opcode = this.opcode(name);
+        for (String s : or) opcode |= this.opcode(s);
+        return opcode;
+    }
 
 }

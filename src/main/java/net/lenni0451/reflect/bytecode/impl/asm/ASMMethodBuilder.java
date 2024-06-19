@@ -3,6 +3,7 @@ package net.lenni0451.reflect.bytecode.impl.asm;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.bytecode.builder.MethodBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
+import net.lenni0451.reflect.bytecode.wrapper.BytecodeType;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.invoke.MethodHandle;
@@ -92,6 +93,7 @@ class ASMMethodBuilder implements MethodBuilder {
     @Override
     @SneakyThrows
     public MethodBuilder ldc(Object value) {
+        if (value instanceof BytecodeType) value = ((BytecodeType) value).getHandle();
         MethodHandle visitLdcInsn = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitLdcInsn", MethodType.methodType(void.class, Object.class));
         visitLdcInsn.invoke(this.methodVisitor, value);
         return this;
