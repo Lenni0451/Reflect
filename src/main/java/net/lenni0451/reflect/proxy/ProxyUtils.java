@@ -22,7 +22,7 @@ class ProxyUtils {
         if (!Modifier.isPublic(clazz.getModifiers())) throw new IllegalArgumentException("The super class must be public");
         if (clazz.isInterface()) throw new IllegalArgumentException("The super class must be a class");
         if (Modifier.isFinal(clazz.getModifiers())) throw new IllegalArgumentException("The super class must not be final");
-        if (getPublicConstructors(clazz).length == 0) throw new IllegalArgumentException("The super class must have at least one public constructor");
+//        if (getPublicConstructors(clazz).length == 0) throw new IllegalArgumentException("The super class must have at least one public constructor");
     }
 
     public static void verifyInterface(final Class<?> clazz) {

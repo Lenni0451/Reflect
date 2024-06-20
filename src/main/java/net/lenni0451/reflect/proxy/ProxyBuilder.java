@@ -197,7 +197,6 @@ public class ProxyBuilder {
             );
         } else {
             Constructor<?>[] constructors = ProxyUtils.getPublicConstructors(this.superClass);
-            if (constructors.length == 0) throw new IllegalArgumentException("Cannot create a proxy for a class without any public constructors");
             for (Constructor<?> constructor : constructors) {
                 cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class, constructor.getParameterTypes()), null, null, mb -> {
                     mb.var(BUILDER.opcode("ALOAD"), 0);
