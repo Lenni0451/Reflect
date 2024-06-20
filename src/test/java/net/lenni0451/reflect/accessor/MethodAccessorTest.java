@@ -13,30 +13,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MethodAccessorTest {
 
     private MethodClass mc;
-    private Method method;
+    private Method method1;
+    private Method method2;
 
     @BeforeEach
     void setUp() {
         this.mc = new MethodClass();
-        this.method = assertDoesNotThrow(() -> MethodClass.class.getDeclaredMethod("reverse", String.class));
+        this.method1 = assertDoesNotThrow(() -> MethodClass.class.getDeclaredMethod("reverse", String.class));
+        this.method2 = assertDoesNotThrow(() -> MethodClass.class.getDeclaredMethod("add", String.class, int.class, double.class));
     }
 
     @Test
     void makeInvoker() {
-        Function<String, String> invoker = assertDoesNotThrow(() -> MethodAccessor.makeInvoker(Function.class, this.mc, this.method));
+        Function<String, String> invoker = assertDoesNotThrow(() -> MethodAccessor.makeInvoker(Function.class, this.mc, this.method1));
         assertEquals("cba", invoker.apply("abc"));
     }
 
     @Test
+    void makeArrayInvoker() {
+        Function<Object[], Integer> arrayInvoker = assertDoesNotThrow(() -> MethodAccessor.makeArrayInvoker(this.mc, this.method2));
+        assertEquals(6, arrayInvoker.apply(new Object[]{"abc", 1, 2.78D}));
+    }
+
+    @Test
     void makeDynamicInvoker() {
-        BiFunction<MethodClass, String, String> dynamicInvoker = assertDoesNotThrow(() -> MethodAccessor.makeDynamicInvoker(BiFunction.class, this.method));
+        BiFunction<MethodClass, String, String> dynamicInvoker = assertDoesNotThrow(() -> MethodAccessor.makeDynamicInvoker(BiFunction.class, this.method1));
         assertEquals("cba", dynamicInvoker.apply(this.mc, "abc"));
     }
 
     @Test
     void makeDynamicArrayInvoker() {
-        Method method = assertDoesNotThrow(() -> MethodClass.class.getDeclaredMethod("add", String.class, int.class, double.class));
-        BiFunction<MethodClass, Object[], Integer> dynamicArrayInvoker = assertDoesNotThrow(() -> MethodAccessor.makeDynamicArrayInvoker(method));
+        BiFunction<MethodClass, Object[], Integer> dynamicArrayInvoker = assertDoesNotThrow(() -> MethodAccessor.makeDynamicArrayInvoker(this.method2));
         assertEquals(6, dynamicArrayInvoker.apply(this.mc, new Object[]{"abc", 1, 2.78D}));
     }
 

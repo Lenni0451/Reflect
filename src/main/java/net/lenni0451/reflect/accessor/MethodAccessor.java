@@ -12,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static net.lenni0451.reflect.accessor.AccessorUtils.addConstructor;
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
@@ -71,12 +72,77 @@ public class MethodAccessor {
         });
 
         Class<?> clazz = builtClass.defineMetafactory(method.getDeclaringClass());
-        if (Modifier.isStatic(method.getModifiers())) {
+        if (staticMethod) {
             Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz);
             return (I) Constructors.invoke(constructor);
         } else {
             Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz, instance.getClass());
             return (I) Constructors.invoke(constructor, instance);
+        }
+    }
+
+    /**
+     * Create a new array invoker instance for the given method.<br>
+     * The method parameters are passed as an array. Make sure the types are correct (e.g. Double instead of double) and the order is correct.<br>
+     * The instance parameter is only used if the method is not static.
+     *
+     * @param instance The instance of the class the method is in
+     * @param method   The method to invoke
+     * @param <R>      The return type
+     * @return The invoker instance implementation
+     */
+    public static <R> Function<Object[], R> makeArrayInvoker(@Nonnull final Object instance, @Nonnull final Method method) {
+        boolean staticMethod = Modifier.isStatic(method.getModifiers());
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), slash(method.getDeclaringClass()) + "$ArrayMethodInvoker", null, slash(Object.class), new String[]{slash(Function.class)}, cb -> {
+            //Disable the inspection because the instance parameter can be null. Just invoking getClass() here would throw an exception
+            //noinspection Convert2MethodRef
+            addConstructor(BUILDER, cb, () -> instance.getClass(), staticMethod);
+
+            String methodClass = slash(method.getDeclaringClass());
+            String methodDesc = desc(method);
+            boolean interfaceMethod = Modifier.isInterface(method.getDeclaringClass().getModifiers());
+            cb.method(BUILDER.opcode("ACC_PUBLIC"), "apply", mdesc(Object.class, Object.class), null, null, mb -> {
+                if (!staticMethod) {
+                    mb
+                            .var(BUILDER.opcode("ALOAD"), 0)
+                            .field(BUILDER.opcode("GETFIELD"), cb.getName(), "instance", desc(instance.getClass()));
+                }
+                mb
+                        .var(BUILDER.opcode("ALOAD"), 1)
+                        .type(BUILDER.opcode("CHECKCAST"), desc(Object[].class))
+                        .var(BUILDER.opcode("ASTORE"), 1);
+                for (int i = 0; i < method.getParameterCount(); i++) {
+                    Class<?> parameter = method.getParameterTypes()[i];
+                    mb
+                            .var(BUILDER.opcode("ALOAD"), 1)
+                            .intPush(BUILDER, i)
+                            .insn(BUILDER.opcode("AALOAD"))
+                            .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
+                            .unbox(BUILDER, parameter);
+                }
+                if (staticMethod) {
+                    mb.method(BUILDER.opcode("INVOKESTATIC"), methodClass, method.getName(), methodDesc, interfaceMethod);
+                } else {
+                    if (interfaceMethod) {
+                        mb.method(BUILDER.opcode("INVOKEINTERFACE"), methodClass, method.getName(), methodDesc, true);
+                    } else {
+                        mb.method(BUILDER.opcode("INVOKEVIRTUAL"), methodClass, method.getName(), methodDesc, false);
+                    }
+                }
+                mb
+                        .box(BUILDER, method.getReturnType())
+                        .insn(BUILDER.opcode("ARETURN"))
+                        .maxs(method.getParameterCount() + 2, 2);
+            });
+        });
+
+        Class<?> clazz = builtClass.defineMetafactory(method.getDeclaringClass());
+        if (staticMethod) {
+            Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz);
+            return (Function<Object[], R>) Constructors.invoke(constructor);
+        } else {
+            Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz, instance.getClass());
+            return (Function<Object[], R>) Constructors.invoke(constructor, instance);
         }
     }
 
