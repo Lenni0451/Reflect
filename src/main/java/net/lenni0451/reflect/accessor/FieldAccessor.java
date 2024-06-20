@@ -43,7 +43,7 @@ public class FieldAccessor {
         String newClassName = slash(field.getDeclaringClass()) + "$FieldSetter";
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getType()}, void.class);
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER") | BUILDER.opcode("ACC_FINAL") | BUILDER.opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
             //noinspection Convert2MethodRef
             addConstructor(cb, newClassName, () -> instance.getClass(), field);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
@@ -89,7 +89,7 @@ public class FieldAccessor {
         if (Modifier.isStatic(field.getModifiers())) throw new IllegalArgumentException("Dynamic setter can only be used for non-static fields");
         String newClassName = slash(field.getDeclaringClass()) + "$DynamicFieldSetter";
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass(), field.getType()}, void.class);
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER") | BUILDER.opcode("ACC_FINAL") | BUILDER.opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
             addConstructor(cb, newClassName, null, field);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 mb.var(BUILDER.opcode("ALOAD"), 1);
@@ -124,7 +124,7 @@ public class FieldAccessor {
         String newClassName = slash(field.getDeclaringClass()) + "$FieldGetter";
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[0], field.getType());
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER") | BUILDER.opcode("ACC_FINAL") | BUILDER.opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
             //noinspection Convert2MethodRef
             addConstructor(cb, newClassName, () -> instance.getClass(), field);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
@@ -167,7 +167,7 @@ public class FieldAccessor {
         if (Modifier.isStatic(field.getModifiers())) throw new IllegalArgumentException("Dynamic setter can only be used for non-static fields");
         String newClassName = slash(field.getDeclaringClass()) + "$DynamicFieldGetter";
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass()}, field.getType());
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER") | BUILDER.opcode("ACC_FINAL") | BUILDER.opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
             addConstructor(cb, newClassName, null, field);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 mb.var(BUILDER.opcode("ALOAD"), 1);
@@ -210,19 +210,19 @@ public class FieldAccessor {
 
     private static void addConstructor(final ClassBuilder cb, final String newClassName, @Nullable final Supplier<Class<?>> instanceType, final Field field) {
         if (Modifier.isStatic(field.getModifiers()) || instanceType == null) {
-            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", "()V", null, null, mb -> mb
+            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
                     .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false)
+                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
                     .insn(BUILDER.opcode("RETURN"))
                     .maxs(1, 1)
             );
         } else {
             String instanceTypeDesc = desc(instanceType.get());
-            cb.field(BUILDER.opcode("ACC_PRIVATE") | BUILDER.opcode("ACC_FINAL"), "instance", instanceTypeDesc, null, null, fb -> {});
+            cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_FINAL"), "instance", desc(instanceType.get()), null, null, fb -> {});
 
-            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", "(" + instanceTypeDesc + ")V", null, null, mb -> mb
+            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class, instanceType.get()), null, null, mb -> mb
                     .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false)
+                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
                     .var(BUILDER.opcode("ALOAD"), 0)
                     .var(BUILDER.opcode("ALOAD"), 1)
                     .field(BUILDER.opcode("PUTFIELD"), newClassName, "instance", instanceTypeDesc)
