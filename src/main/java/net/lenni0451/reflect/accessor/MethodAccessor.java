@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.function.BiFunction;
 
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
@@ -40,24 +41,23 @@ public class MethodAccessor {
         String newClassName = slash(method.getDeclaringClass()) + "$MethodInvoker";
         boolean staticMethod = Modifier.isStatic(method.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, method, false);
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER") | BUILDER.opcode("ACC_FINAL") | BUILDER.opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
             if (staticMethod) {
-                cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", "()V", null, null, mb -> mb
+                cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
                         .var(BUILDER.opcode("ALOAD"), 0)
-                        .method(BUILDER.opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false)
+                        .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
                         .insn(BUILDER.opcode("RETURN"))
                         .maxs(1, 1)
                 );
             } else {
-                String instanceType = desc(instance.getClass());
-                cb.field(BUILDER.opcode("ACC_PRIVATE"), "instance", instanceType, null, null, fb -> {});
+                cb.field(BUILDER.opcode("ACC_PRIVATE"), "instance", desc(instance.getClass()), null, null, fb -> {});
 
-                cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", "(" + instanceType + ")V", null, null, mb -> mb
+                cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class, instance.getClass()), null, null, mb -> mb
                         .var(BUILDER.opcode("ALOAD"), 0)
                         .method(BUILDER.opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false)
                         .var(BUILDER.opcode("ALOAD"), 0)
                         .var(BUILDER.opcode("ALOAD"), 1)
-                        .field(BUILDER.opcode("PUTFIELD"), newClassName, "instance", instanceType)
+                        .field(BUILDER.opcode("PUTFIELD"), newClassName, "instance", desc(instance.getClass()))
                         .insn(BUILDER.opcode("RETURN"))
                         .maxs(2, 2)
                 );
@@ -98,7 +98,7 @@ public class MethodAccessor {
 
     /**
      * Create a new dynamic invoker instance for the given method.<br>
-     * The invoker class must have a method with the right amount of parameters and right return type. A instance parameter is required at the beginning of the parameter list.<br>
+     * The invoker class must have a method with the right amount of parameters and right return type. An instance parameter is required at the beginning of the parameter list.<br>
      * Super types of the parameter types/return type are also allowed.<br>
      * Only non-static methods can be used.
      *
@@ -111,10 +111,10 @@ public class MethodAccessor {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
         String newClassName = slash(method.getDeclaringClass()) + "$DynamicMethodInvoker";
         Method invokerMethod = findInvokerMethod(invokerClass, method, true);
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER") | BUILDER.opcode("ACC_FINAL") | BUILDER.opcode("ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
-            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", "()V", null, null, mb -> mb
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
+            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
                     .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false)
+                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
                     .insn(BUILDER.opcode("RETURN"))
                     .maxs(1, 1)
             );
@@ -134,6 +134,58 @@ public class MethodAccessor {
         Class<?> clazz = builtClass.defineMetafactory(method.getDeclaringClass());
         Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz);
         return (I) Constructors.invoke(constructor);
+    }
+
+    /**
+     * Create a new dynamic array invoker instance for the given method.<br>
+     * The first parameter is the instance of the class the method is in.<br>
+     * The second parameter is an array of the method parameters. Make sure the types are correct (e.g. Double instead of double) and the order is correct.<br>
+     * Only non-static methods can be used.
+     *
+     * @param method The method to invoke
+     * @return The invoker instance implementation
+     */
+    public static BiFunction<Object, Object[], Object> makeDynamicArrayInvoker(@Nonnull final Method method) {
+        if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), slash(method.getDeclaringClass()) + "$DynamicArrayMethodInvoker", null, slash(Object.class), new String[]{slash(BiFunction.class)}, cb -> {
+            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
+                    .var(BUILDER.opcode("ALOAD"), 0)
+                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
+                    .insn(BUILDER.opcode("RETURN"))
+                    .maxs(1, 1)
+            );
+            cb.method(BUILDER.opcode("ACC_PUBLIC"), "apply", mdesc(Object.class, Object.class, Object.class), null, null, mb -> {
+                mb
+                        .var(BUILDER.opcode("ALOAD"), 1)
+                        .type(BUILDER.opcode("CHECKCAST"), slash(method.getDeclaringClass()));
+                mb
+                        .var(BUILDER.opcode("ALOAD"), 2)
+                        .type(BUILDER.opcode("CHECKCAST"), desc(Object[].class))
+                        .var(BUILDER.opcode("ASTORE"), 2);
+                for (int i = 0; i < method.getParameterCount(); i++) {
+                    Class<?> parameter = method.getParameterTypes()[i];
+                    mb
+                            .var(BUILDER.opcode("ALOAD"), 2)
+                            .intPush(BUILDER, i)
+                            .insn(BUILDER.opcode("AALOAD"))
+                            .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
+                            .unbox(BUILDER, parameter);
+                }
+                if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
+                    mb.method(BUILDER.opcode("INVOKEINTERFACE"), slash(method.getDeclaringClass()), method.getName(), desc(method), true);
+                } else {
+                    mb.method(BUILDER.opcode("INVOKEVIRTUAL"), slash(method.getDeclaringClass()), method.getName(), desc(method), false);
+                }
+                mb
+                        .box(BUILDER, method.getReturnType())
+                        .insn(BUILDER.opcode("ARETURN"))
+                        .maxs(method.getParameterCount() + 2, 3);
+            });
+        });
+
+        Class<?> clazz = builtClass.defineMetafactory(method.getDeclaringClass());
+        Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz);
+        return (BiFunction<Object, Object[], Object>) Constructors.invoke(constructor);
     }
 
     private static Method findInvokerMethod(final Class<?> invokerClass, final Method method, final boolean requireInstance) {

@@ -33,6 +33,13 @@ class MethodAccessorTest {
         assertEquals("cba", dynamicInvoker.apply(this.mc, "abc"));
     }
 
+    @Test
+    void makeDynamicArrayInvoker() {
+        Method method = assertDoesNotThrow(() -> MethodClass.class.getDeclaredMethod("add", String.class, int.class, double.class));
+        BiFunction<Object, Object[], Object> dynamicArrayInvoker = assertDoesNotThrow(() -> MethodAccessor.makeDynamicArrayInvoker(method));
+        assertEquals(6, dynamicArrayInvoker.apply(this.mc, new Object[]{"abc", 1, 2.78D}));
+    }
+
 
     private static class MethodClass {
         private String reverse(final String s) {
@@ -40,6 +47,10 @@ class MethodAccessorTest {
             char[] reversed = new char[chars.length];
             for (int i = 0; i < chars.length; i++) reversed[i] = chars[chars.length - i - 1];
             return new String(reversed);
+        }
+
+        private int add(final String s, final int a, final double b) {
+            return s.length() + a + (int) b;
         }
     }
 
