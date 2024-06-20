@@ -146,10 +146,10 @@ public class ProxyRuntime {
                     .var(BUILDER.opcode("ALOAD"), 0)
                     .field(BUILDER.opcode("GETSTATIC"), cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class))
                     .jump(BUILDER.opcode("IFNONNULL"), elseLabel)
-                    .type(BUILDER.opcode("NEW"), slash(UnsupportedOperationException.class))
+                    .type(BUILDER.opcode("NEW"), slash(AbstractMethodError.class))
                     .insn(BUILDER.opcode("DUP"))
-                    .ldc("Can't invoke abstract super method")
-                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(UnsupportedOperationException.class), "<init>", mdesc(void.class, String.class), false)
+                    .ldc(slash(method.getDeclaringClass()) + "." + method.getName() + desc(method))
+                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(AbstractMethodError.class), "<init>", mdesc(void.class, String.class), false)
                     .insn(BUILDER.opcode("ATHROW"))
                     .label(elseLabel);
 

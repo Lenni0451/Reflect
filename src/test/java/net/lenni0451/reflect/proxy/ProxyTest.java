@@ -70,7 +70,7 @@ class ProxyTest {
     @Test
     void testInvokeAbstractSuper() {
         ((Proxy) this.proxy).setInvocationHandler((thiz, proxyMethod, args) -> proxyMethod.invokeSuper(args));
-        assertThrows(UnsupportedOperationException.class, () -> ((Interface1) this.proxy).interfaceTest());
+        assertThrows(AbstractMethodError.class, () -> ((Interface1) this.proxy).interfaceTest());
     }
 
 }
