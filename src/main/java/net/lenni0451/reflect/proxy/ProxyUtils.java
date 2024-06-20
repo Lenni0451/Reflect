@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Utils for creating proxy classes.
@@ -39,13 +40,13 @@ class ProxyUtils {
         return constructors.toArray(new Constructor<?>[0]);
     }
 
-    public static Method[] getOverridableMethod(final Class<?> superClass, final Class<?>[] interfaces) {
+    public static Method[] getOverridableMethod(final Class<?> superClass, final Class<?>[] interfaces, final Predicate<Method> filter) {
         Map<String, Method> methods = new HashMap<>();
         if (superClass != null) getOverridableMethod(superClass, methods);
         if (interfaces != null) {
             for (Class<?> inter : interfaces) getOverridableMethod(inter, methods);
         }
-        return methods.values().toArray(new Method[0]);
+        return methods.values().stream().filter(filter).toArray(Method[]::new);
     }
 
     public static void getOverridableMethod(final Class<?> clazz, final Map<String, Method> methods) {

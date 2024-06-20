@@ -17,6 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
@@ -31,6 +32,7 @@ public class ProxyBuilder {
     private Class<?> superClass;
     @Nullable
     private Class<?>[] interfaces;
+    private Predicate<Method> methodFilter = m -> true;
     private InvocationHandler invocationHandler = InvocationHandler.forwarding();
     private ProxyClassDefiner classDefiner = ProxyClassDefiner.loader(ProxyBuilder.class.getClassLoader());
 
@@ -102,6 +104,25 @@ public class ProxyBuilder {
     @Nullable
     public Class<?>[] getInterfaces() {
         return this.interfaces;
+    }
+
+    /**
+     * Set the filter for the methods that should be overridden by the proxy class.
+     *
+     * @param methodFilter The method filter
+     * @return This builder
+     */
+    public ProxyBuilder setMethodFilter(@Nonnull final Predicate<Method> methodFilter) {
+        this.reset();
+        this.methodFilter = methodFilter;
+        return this;
+    }
+
+    /**
+     * @return The current method filter
+     */
+    public Predicate<Method> getMethodFilter() {
+        return this.methodFilter;
     }
 
     /**
@@ -178,7 +199,7 @@ public class ProxyBuilder {
                 cb -> {
                     this.addConstructors(cb);
 
-                    Method[] methods = ProxyUtils.getOverridableMethod(this.superClass, this.interfaces);
+                    Method[] methods = ProxyUtils.getOverridableMethod(this.superClass, this.interfaces, this.methodFilter);
                     methodsReference.value = methods;
                     this.addFields(cb, methods);
                     this.addMethods(cb, methods);
