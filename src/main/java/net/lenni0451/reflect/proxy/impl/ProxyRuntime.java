@@ -15,6 +15,10 @@ import java.lang.reflect.Method;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
+/**
+ * Util methods invoked by the proxy classes at runtime.<br>
+ * The method invocations are generated at runtime.
+ */
 @ApiStatus.Internal
 public class ProxyRuntime {
 

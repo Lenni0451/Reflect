@@ -20,6 +20,9 @@ import java.util.Arrays;
 
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
+/**
+ * A builder to create proxy classes.
+ */
 public class ProxyBuilder {
 
     private static final BytecodeBuilder BUILDER = BytecodeBuilder.get();
@@ -33,6 +36,13 @@ public class ProxyBuilder {
 
     private Class<?> proxyClass;
 
+    /**
+     * Set the super class of the proxy class.<br>
+     * The super class must be public and not final.
+     *
+     * @param superClass The super class
+     * @return This builder
+     */
     public ProxyBuilder setSuperClass(@Nullable final Class<?> superClass) {
         if (superClass != null) ProxyUtils.verifySuperClass(superClass);
 
@@ -41,11 +51,21 @@ public class ProxyBuilder {
         return this;
     }
 
+    /**
+     * @return The super class of the proxy class
+     */
     @Nullable
     public Class<?> getSuperClass() {
         return this.superClass;
     }
 
+    /**
+     * Add an interface to the proxy class.<br>
+     * The interface must be public.
+     *
+     * @param clazz The interface to add
+     * @return This builder
+     */
     public ProxyBuilder addInterface(@Nonnull final Class<?> clazz) {
         ProxyUtils.verifyInterface(clazz);
 
@@ -59,6 +79,13 @@ public class ProxyBuilder {
         return this;
     }
 
+    /**
+     * Set the interfaces of the proxy class.<br>
+     * The interfaces must be public.
+     *
+     * @param interfaces The interfaces
+     * @return This builder
+     */
     public ProxyBuilder setInterfaces(@Nullable final Class<?>... interfaces) {
         if (interfaces != null) {
             for (Class<?> inter : interfaces) ProxyUtils.verifyInterface(inter);
@@ -69,31 +96,57 @@ public class ProxyBuilder {
         return this;
     }
 
+    /**
+     * @return The interfaces of the proxy class
+     */
     @Nullable
     public Class<?>[] getInterfaces() {
         return this.interfaces;
     }
 
+    /**
+     * Set the invocation handler for the proxy class.
+     *
+     * @param invocationHandler The invocation handler
+     * @return This builder
+     */
     public ProxyBuilder setInvocationHandler(@Nonnull final InvocationHandler invocationHandler) {
         this.reset();
         this.invocationHandler = invocationHandler;
         return this;
     }
 
+    /**
+     * @return The invocation handler
+     */
     public InvocationHandler getInvocationHandler() {
         return this.invocationHandler;
     }
 
+    /**
+     * Set the class definer for the proxy class.
+     *
+     * @param classDefiner The class definer
+     * @return This builder
+     */
     public ProxyBuilder setClassDefiner(@Nonnull final ProxyClassDefiner classDefiner) {
         this.reset();
         this.classDefiner = classDefiner;
         return this;
     }
 
+    /**
+     * @return The current class definer
+     */
     public ProxyClassDefiner getClassDefiner() {
         return this.classDefiner;
     }
 
+    /**
+     * Build the proxy class.
+     *
+     * @return The built proxy class
+     */
     public ProxyClass build() {
         if (this.proxyClass == null) {
             Reference<Method[]> methodsReference = new Reference<>();
