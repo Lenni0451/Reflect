@@ -91,7 +91,7 @@ public class MethodAccessor {
      * @param <R>      The return type
      * @return The invoker instance implementation
      */
-    public static <R> Function<Object[], R> makeArrayInvoker(@Nonnull final Object instance, @Nonnull final Method method) {
+    public static <R> Function<Object[], R> makeArrayInvoker(final Object instance, @Nonnull final Method method) {
         boolean staticMethod = Modifier.isStatic(method.getModifiers());
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), slash(method.getDeclaringClass()) + "$ArrayMethodInvoker", null, slash(Object.class), new String[]{slash(Function.class)}, cb -> {
             //Disable the inspection because the instance parameter can be null. Just invoking getClass() here would throw an exception
@@ -107,19 +107,7 @@ public class MethodAccessor {
                             .var(BUILDER.opcode("ALOAD"), 0)
                             .field(BUILDER.opcode("GETFIELD"), cb.getName(), "instance", desc(instance.getClass()));
                 }
-                mb
-                        .var(BUILDER.opcode("ALOAD"), 1)
-                        .type(BUILDER.opcode("CHECKCAST"), desc(Object[].class))
-                        .var(BUILDER.opcode("ASTORE"), 1);
-                for (int i = 0; i < method.getParameterCount(); i++) {
-                    Class<?> parameter = method.getParameterTypes()[i];
-                    mb
-                            .var(BUILDER.opcode("ALOAD"), 1)
-                            .intPush(BUILDER, i)
-                            .insn(BUILDER.opcode("AALOAD"))
-                            .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
-                            .unbox(BUILDER, parameter);
-                }
+                pushArrayArgs(mb, method, 1);
                 if (staticMethod) {
                     mb.method(BUILDER.opcode("INVOKESTATIC"), methodClass, method.getName(), methodDesc, interfaceMethod);
                 } else {
@@ -200,19 +188,7 @@ public class MethodAccessor {
                 mb
                         .var(BUILDER.opcode("ALOAD"), 1)
                         .type(BUILDER.opcode("CHECKCAST"), slash(method.getDeclaringClass()));
-                mb
-                        .var(BUILDER.opcode("ALOAD"), 2)
-                        .type(BUILDER.opcode("CHECKCAST"), desc(Object[].class))
-                        .var(BUILDER.opcode("ASTORE"), 2);
-                for (int i = 0; i < method.getParameterCount(); i++) {
-                    Class<?> parameter = method.getParameterTypes()[i];
-                    mb
-                            .var(BUILDER.opcode("ALOAD"), 2)
-                            .intPush(BUILDER, i)
-                            .insn(BUILDER.opcode("AALOAD"))
-                            .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
-                            .unbox(BUILDER, parameter);
-                }
+                pushArrayArgs(mb, method, 2);
                 if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
                     mb.method(BUILDER.opcode("INVOKEINTERFACE"), slash(method.getDeclaringClass()), method.getName(), desc(method), true);
                 } else {
@@ -267,6 +243,22 @@ public class MethodAccessor {
             mb.var(BUILDER.opcode(getLoadOpcode(suppliedType)), stack);
             if (!suppliedType.equals(targetType)) mb.type(BUILDER.opcode("CHECKCAST"), slash(targetType));
             stack += getStackSize(suppliedType);
+        }
+    }
+
+    private static void pushArrayArgs(final MethodBuilder mb, final Method method, final int arrayIndex) {
+        mb
+                .var(BUILDER.opcode("ALOAD"), arrayIndex)
+                .type(BUILDER.opcode("CHECKCAST"), desc(Object[].class))
+                .var(BUILDER.opcode("ASTORE"), arrayIndex);
+        for (int i = 0; i < method.getParameterCount(); i++) {
+            Class<?> parameter = method.getParameterTypes()[i];
+            mb
+                    .var(BUILDER.opcode("ALOAD"), arrayIndex)
+                    .intPush(BUILDER, i)
+                    .insn(BUILDER.opcode("AALOAD"))
+                    .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
+                    .unbox(BUILDER, parameter);
         }
     }
 
