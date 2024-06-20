@@ -289,6 +289,13 @@ public class ProxyBuilder {
                     .insn(BUILDER.opcode("RETURN"))
                     .maxs(2, 2);
         });
+        cb.method(BUILDER.opcode("ACC_PUBLIC"), "getInvocationHandler", mdesc(InvocationHandler.class), null, null, mb -> {
+            mb
+                    .var(BUILDER.opcode("ALOAD"), 0)
+                    .field(BUILDER.opcode("GETFIELD"), cb.getName(), "invocationHandler", desc(InvocationHandler.class))
+                    .insn(BUILDER.opcode("ARETURN"))
+                    .maxs(1, 1);
+        });
     }
 
     private void reset() {

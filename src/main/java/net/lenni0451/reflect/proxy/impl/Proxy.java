@@ -16,4 +16,9 @@ public interface Proxy {
      */
     void setInvocationHandler(@Nonnull final InvocationHandler invocationHandler);
 
+    /**
+     * @return The current invocation handler
+     */
+    InvocationHandler getInvocationHandler();
+
 }

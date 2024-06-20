@@ -73,4 +73,11 @@ class ProxyTest {
         assertThrows(AbstractMethodError.class, () -> ((Interface1) this.proxy).interfaceTest());
     }
 
+    @Test
+    void testDefaultMethods() {
+        InvocationHandler handler = InvocationHandler.forwarding();
+        ((Proxy) this.proxy).setInvocationHandler(handler);
+        assertEquals(handler, ((Proxy) this.proxy).getInvocationHandler());
+    }
+
 }
