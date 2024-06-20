@@ -4,17 +4,15 @@ import lombok.SneakyThrows;
 import net.lenni0451.reflect.Constructors;
 import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
-import net.lenni0451.reflect.bytecode.builder.ClassBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.function.Supplier;
 
+import static net.lenni0451.reflect.accessor.AccessorUtils.addConstructor;
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
 /**
@@ -44,8 +42,9 @@ public class FieldAccessor {
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getType()}, void.class);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
+            //Disable the inspection because the instance parameter can be null. Just invoking getClass() here would throw an exception
             //noinspection Convert2MethodRef
-            addConstructor(cb, newClassName, () -> instance.getClass(), field);
+            addConstructor(BUILDER, cb, () -> instance.getClass(), Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 if (staticField) {
                     mb.var(BUILDER.opcode(getLoadOpcode(invokerMethod.getParameterTypes()[0])), 1);
@@ -90,7 +89,7 @@ public class FieldAccessor {
         String newClassName = slash(field.getDeclaringClass()) + "$DynamicFieldSetter";
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass(), field.getType()}, void.class);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
-            addConstructor(cb, newClassName, null, field);
+            addConstructor(BUILDER, cb, null, Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 mb.var(BUILDER.opcode("ALOAD"), 1);
                 if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mb.type(BUILDER.opcode("CHECKCAST"), slash(field.getDeclaringClass()));
@@ -125,8 +124,9 @@ public class FieldAccessor {
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[0], field.getType());
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
+            //Disable the inspection because the instance parameter can be null. Just invoking getClass() here would throw an exception
             //noinspection Convert2MethodRef
-            addConstructor(cb, newClassName, () -> instance.getClass(), field);
+            addConstructor(BUILDER, cb, () -> instance.getClass(), Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 if (staticField) {
                     mb.field(BUILDER.opcode("GETSTATIC"), slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
@@ -168,7 +168,7 @@ public class FieldAccessor {
         String newClassName = slash(field.getDeclaringClass()) + "$DynamicFieldGetter";
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass()}, field.getType());
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
-            addConstructor(cb, newClassName, null, field);
+            addConstructor(BUILDER, cb, null, Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 mb.var(BUILDER.opcode("ALOAD"), 1);
                 if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mb.type(BUILDER.opcode("CHECKCAST"), slash(field.getDeclaringClass()));
@@ -206,30 +206,6 @@ public class FieldAccessor {
         }
         if (matched == null) throw new IllegalArgumentException("Could not find a valid invoker method for: " + mdesc(returnType, parameterTypes));
         return matched;
-    }
-
-    private static void addConstructor(final ClassBuilder cb, final String newClassName, @Nullable final Supplier<Class<?>> instanceType, final Field field) {
-        if (Modifier.isStatic(field.getModifiers()) || instanceType == null) {
-            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
-                    .insn(BUILDER.opcode("RETURN"))
-                    .maxs(1, 1)
-            );
-        } else {
-            String instanceTypeDesc = desc(instanceType.get());
-            cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_FINAL"), "instance", desc(instanceType.get()), null, null, fb -> {});
-
-            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class, instanceType.get()), null, null, mb -> mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .var(BUILDER.opcode("ALOAD"), 1)
-                    .field(BUILDER.opcode("PUTFIELD"), newClassName, "instance", instanceTypeDesc)
-                    .insn(BUILDER.opcode("RETURN"))
-                    .maxs(2, 2)
-            );
-        }
     }
 
 }

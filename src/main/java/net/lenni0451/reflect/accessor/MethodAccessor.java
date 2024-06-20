@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.BiFunction;
 
+import static net.lenni0451.reflect.accessor.AccessorUtils.addConstructor;
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
 /**
@@ -42,26 +43,9 @@ public class MethodAccessor {
         boolean staticMethod = Modifier.isStatic(method.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, method, false);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
-            if (staticMethod) {
-                cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
-                        .var(BUILDER.opcode("ALOAD"), 0)
-                        .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
-                        .insn(BUILDER.opcode("RETURN"))
-                        .maxs(1, 1)
-                );
-            } else {
-                cb.field(BUILDER.opcode("ACC_PRIVATE"), "instance", desc(instance.getClass()), null, null, fb -> {});
-
-                cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class, instance.getClass()), null, null, mb -> mb
-                        .var(BUILDER.opcode("ALOAD"), 0)
-                        .method(BUILDER.opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false)
-                        .var(BUILDER.opcode("ALOAD"), 0)
-                        .var(BUILDER.opcode("ALOAD"), 1)
-                        .field(BUILDER.opcode("PUTFIELD"), newClassName, "instance", desc(instance.getClass()))
-                        .insn(BUILDER.opcode("RETURN"))
-                        .maxs(2, 2)
-                );
-            }
+            //Disable the inspection because the instance parameter can be null. Just invoking getClass() here would throw an exception
+            //noinspection Convert2MethodRef
+            addConstructor(BUILDER, cb, () -> instance.getClass(), staticMethod);
 
             String methodClass = slash(method.getDeclaringClass());
             String methodDesc = desc(method);
@@ -112,12 +96,7 @@ public class MethodAccessor {
         String newClassName = slash(method.getDeclaringClass()) + "$DynamicMethodInvoker";
         Method invokerMethod = findInvokerMethod(invokerClass, method, true);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
-            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
-                    .insn(BUILDER.opcode("RETURN"))
-                    .maxs(1, 1)
-            );
+            addConstructor(BUILDER, cb, null, false);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 pushArgs(mb, invokerMethod.getParameterTypes(), prepend(method.getParameterTypes(), method.getDeclaringClass()));
                 if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
@@ -148,12 +127,7 @@ public class MethodAccessor {
     public static BiFunction<Object, Object[], Object> makeDynamicArrayInvoker(@Nonnull final Method method) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), slash(method.getDeclaringClass()) + "$DynamicArrayMethodInvoker", null, slash(Object.class), new String[]{slash(BiFunction.class)}, cb -> {
-            cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
-                    .insn(BUILDER.opcode("RETURN"))
-                    .maxs(1, 1)
-            );
+            addConstructor(BUILDER, cb, null, false);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), "apply", mdesc(Object.class, Object.class, Object.class), null, null, mb -> {
                 mb
                         .var(BUILDER.opcode("ALOAD"), 1)
