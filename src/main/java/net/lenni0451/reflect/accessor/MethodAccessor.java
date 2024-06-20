@@ -122,9 +122,11 @@ public class MethodAccessor {
      * Only non-static methods can be used.
      *
      * @param method The method to invoke
+     * @param <I>    The instance type
+     * @param <R>    The return type
      * @return The invoker instance implementation
      */
-    public static BiFunction<Object, Object[], Object> makeDynamicArrayInvoker(@Nonnull final Method method) {
+    public static <I, R> BiFunction<I, Object[], R> makeDynamicArrayInvoker(@Nonnull final Method method) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), slash(method.getDeclaringClass()) + "$DynamicArrayMethodInvoker", null, slash(Object.class), new String[]{slash(BiFunction.class)}, cb -> {
             addConstructor(BUILDER, cb, null, false);
@@ -159,7 +161,7 @@ public class MethodAccessor {
 
         Class<?> clazz = builtClass.defineMetafactory(method.getDeclaringClass());
         Constructor<?> constructor = Constructors.getDeclaredConstructor(clazz);
-        return (BiFunction<Object, Object[], Object>) Constructors.invoke(constructor);
+        return (BiFunction<I, Object[], R>) Constructors.invoke(constructor);
     }
 
     private static Method findInvokerMethod(final Class<?> invokerClass, final Method method, final boolean requireInstance) {

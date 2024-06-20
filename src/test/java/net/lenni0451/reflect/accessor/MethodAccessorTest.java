@@ -36,7 +36,7 @@ class MethodAccessorTest {
     @Test
     void makeDynamicArrayInvoker() {
         Method method = assertDoesNotThrow(() -> MethodClass.class.getDeclaredMethod("add", String.class, int.class, double.class));
-        BiFunction<Object, Object[], Object> dynamicArrayInvoker = assertDoesNotThrow(() -> MethodAccessor.makeDynamicArrayInvoker(method));
+        BiFunction<MethodClass, Object[], Integer> dynamicArrayInvoker = assertDoesNotThrow(() -> MethodAccessor.makeDynamicArrayInvoker(method));
         assertEquals(6, dynamicArrayInvoker.apply(this.mc, new Object[]{"abc", 1, 2.78D}));
     }
 
