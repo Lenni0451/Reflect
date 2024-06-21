@@ -117,8 +117,9 @@ public class MethodAccessor {
                         mb.method(BUILDER.opcode("INVOKEVIRTUAL"), methodClass, method.getName(), methodDesc, false);
                     }
                 }
+                if (method.getReturnType() == void.class) mb.insn(BUILDER.opcode("ACONST_NULL"));
+                else mb.box(BUILDER, method.getReturnType());
                 mb
-                        .box(BUILDER, method.getReturnType())
                         .insn(BUILDER.opcode("ARETURN"))
                         .maxs(method.getParameterCount() + 2, 2);
             });
@@ -194,8 +195,9 @@ public class MethodAccessor {
                 } else {
                     mb.method(BUILDER.opcode("INVOKEVIRTUAL"), slash(method.getDeclaringClass()), method.getName(), desc(method), false);
                 }
+                if (method.getReturnType() == void.class) mb.insn(BUILDER.opcode("ACONST_NULL"));
+                else mb.box(BUILDER, method.getReturnType());
                 mb
-                        .box(BUILDER, method.getReturnType())
                         .insn(BUILDER.opcode("ARETURN"))
                         .maxs(method.getParameterCount() + 2, 3);
             });
