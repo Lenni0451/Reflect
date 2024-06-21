@@ -2,6 +2,7 @@ package net.lenni0451.reflect.proxy;
 
 import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.bytecode.BytecodeUtils;
+import net.lenni0451.reflect.proxy.impl.Proxy;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Constructor;
@@ -27,6 +28,7 @@ class ProxyUtils {
     }
 
     public static void verifyInterface(final Class<?> clazz) {
+        if (clazz == Proxy.class) throw new IllegalArgumentException("The 'Proxy' interface is not allowed as interface");
         if (!Modifier.isPublic(clazz.getModifiers())) throw new IllegalArgumentException("The interface must be public");
         if (!clazz.isInterface()) throw new IllegalArgumentException("The interface must be an interface");
     }
@@ -50,6 +52,7 @@ class ProxyUtils {
     }
 
     public static void getOverridableMethod(final Class<?> clazz, final Map<String, Method> methods) {
+        if (clazz == Proxy.class) return; //Ignore the Proxy interface
         for (Method method : Methods.getDeclaredMethods(clazz)) {
             if (Modifier.isPrivate(method.getModifiers())) continue;
             if (Modifier.isStatic(method.getModifiers())) continue;

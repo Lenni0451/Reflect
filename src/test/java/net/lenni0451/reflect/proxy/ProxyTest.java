@@ -1,9 +1,7 @@
 package net.lenni0451.reflect.proxy;
 
 import net.lenni0451.reflect.proxy.impl.Proxy;
-import net.lenni0451.reflect.proxy.test.Class1;
-import net.lenni0451.reflect.proxy.test.Class2;
-import net.lenni0451.reflect.proxy.test.Interface1;
+import net.lenni0451.reflect.proxy.test.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +12,7 @@ class ProxyTest {
     private Class1 proxy;
 
     @BeforeEach
-    void init() {
+    void setUp() {
         ProxyBuilder proxyBuilder = new ProxyBuilder();
         proxyBuilder.setSuperClass(Class1.class);
         proxyBuilder.addInterface(Interface1.class);
@@ -78,6 +76,27 @@ class ProxyTest {
         InvocationHandler handler = InvocationHandler.forwarding();
         ((Proxy) this.proxy).setInvocationHandler(handler);
         assertEquals(handler, ((Proxy) this.proxy).getInvocationHandler());
+    }
+
+    @Test
+    void testNoConstructorProxy() {
+        ProxyClass proxyClass = new ProxyBuilder()
+                .setSuperClass(Class3.class)
+                .setInvocationHandler(InvocationHandler.cancelling())
+                .build();
+        Class3 instance = proxyClass.allocateInstance();
+        assertNotNull(instance);
+        assertNull(instance.toString());
+    }
+
+    @Test
+    void testSuperImplementsProxy() {
+        ProxyClass proxyClass = assertDoesNotThrow(() -> new ProxyBuilder()
+                .setSuperClass(Class4.class)
+                .setInvocationHandler(InvocationHandler.forwarding())
+                .build());
+        Class4 instance = proxyClass.allocateInstance();
+        assertDoesNotThrow(instance::get);
     }
 
 }
