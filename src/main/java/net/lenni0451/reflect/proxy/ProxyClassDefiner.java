@@ -1,4 +1,4 @@
-package net.lenni0451.reflect.proxy.define;
+package net.lenni0451.reflect.proxy;
 
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.ClassLoaders;

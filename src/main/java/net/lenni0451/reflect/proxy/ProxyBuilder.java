@@ -6,7 +6,6 @@ import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.builder.ClassBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
 import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
-import net.lenni0451.reflect.proxy.define.ProxyClassDefiner;
 import net.lenni0451.reflect.proxy.impl.Proxy;
 import net.lenni0451.reflect.proxy.impl.ProxyMethod;
 import net.lenni0451.reflect.proxy.impl.ProxyRuntime;
@@ -28,6 +27,7 @@ public class ProxyBuilder {
 
     private static final BytecodeBuilder BUILDER = BytecodeBuilder.get();
     private static final String METHODS_FIELD = "METHODS";
+    private static final String PROXY_METHOD_CLASSES_FIELD = "PROXY_METHOD_CLASSES";
     private static final String INVOCATION_HANDLER_FIELD = "invocationHandler";
 
     @Nullable
@@ -176,8 +176,13 @@ public class ProxyBuilder {
             BuiltClass builtClass = this.buildClass(methodsReference);
             this.proxyClass = this.classDefiner.defineProxyClass(builtClass, this.superClass, this.interfaces);
 
+            //Set the static fieldss
             Field methods = Fields.getDeclaredField(this.proxyClass, METHODS_FIELD);
             Fields.setObject(null, methods, methodsReference.value);
+
+            Class<ProxyMethod>[] proxyMethodClasses = this.buildProxyMethodClasses(methodsReference.value);
+            Field proxyMethodClassesField = Fields.getDeclaredField(this.proxyClass, PROXY_METHOD_CLASSES_FIELD);
+            Fields.setObject(null, proxyMethodClassesField, proxyMethodClasses);
         }
         return new ProxyClass(this.proxyClass, this.invocationHandler);
     }
@@ -239,6 +244,7 @@ public class ProxyBuilder {
 
     private void addFields(final ClassBuilder cb, final Method[] methods) {
         cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_STATIC", "ACC_FINAL"), METHODS_FIELD, desc(Method[].class), null, null);
+        cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_STATIC", "ACC_FINAL"), PROXY_METHOD_CLASSES_FIELD, desc(Class[].class), null, null);
         cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_FINAL"), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class), null, null);
         for (int i = 0; i < methods.length; i++) {
             cb.field(BUILDER.opcode("ACC_PRIVATE"), "method" + i, desc(ProxyMethod.class), null, null);
@@ -262,14 +268,17 @@ public class ProxyBuilder {
                         .jump(BUILDER.opcode("IFNONNULL"), elseLabel); //this.invocationHandler, this, this.methodN
                 mb
                         .insn(BUILDER.opcode("POP")) //this.invocationHandler, this
-                        .var(BUILDER.opcode("ALOAD"), 0) //this.invocationHandler, this, this
-                        .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, this, this
-                        .field(BUILDER.opcode("GETSTATIC"), cb.getName(), METHODS_FIELD, desc(Method[].class)) //this.invocationHandler, this, this, this, METHODS
-                        .intPush(BUILDER, methodId) //this.invocationHandler, this, this, this, METHODS, methodId
-                        .insn(BUILDER.opcode("AALOAD")) //this.invocationHandler, this, this, this, method
-                        .method(BUILDER.opcode("INVOKESTATIC"), slash(ProxyRuntime.class), "makeProxyMethod", mdesc(ProxyMethod.class, Object.class, Method.class), false) //this.invocationHandler, this, this, proxyMethod
-                        .insn(BUILDER.opcode("DUP_X1")) //this.invocationHandler, this, proxyMethod, this, proxyMethod
-                        .field(BUILDER.opcode("PUTFIELD"), cb.getName(), "method" + methodId, desc(ProxyMethod.class)); //this.invocationHandler, this, proxyMethod
+                        .var(BUILDER.opcode("ALOAD"), 0) //^, this
+                        .field(BUILDER.opcode("GETSTATIC"), cb.getName(), PROXY_METHOD_CLASSES_FIELD, desc(Class[].class)) //^, this, PROXY_METHOD_CLASSES
+                        .intPush(BUILDER, methodId) //^, this, PROXY_METHOD_CLASSES, methodId
+                        .insn(BUILDER.opcode("AALOAD")) //^, this, proxyMethodClass
+                        .var(BUILDER.opcode("ALOAD"), 0) //^, this, proxyMethodClass, this
+                        .field(BUILDER.opcode("GETSTATIC"), cb.getName(), METHODS_FIELD, desc(Method[].class)) //^, this, proxyMethodClass, this, METHODS
+                        .intPush(BUILDER, methodId) //^, this, proxyMethodClass, this, METHODS, methodId
+                        .insn(BUILDER.opcode("AALOAD")) //^, this, proxyMethodClass, this, method
+                        .method(BUILDER.opcode("INVOKESTATIC"), slash(ProxyRuntime.class), "instantiateProxyMethod", mdesc(ProxyMethod.class, Class.class, Object.class, Method.class), false) //^, this, proxyMethod
+                        .insn(BUILDER.opcode("DUP_X1")) //^, proxyMethod, this, proxyMethod
+                        .field(BUILDER.opcode("PUTFIELD"), cb.getName(), "method" + methodId, desc(ProxyMethod.class)); //^, proxyMethod
                 mb
                         .label(elseLabel) //this.invocationHandler, this, proxyMethod
                         .intPush(BUILDER, method.getParameterCount()) //this.invocationHandler, this, proxyMethod, parameterCount
@@ -318,6 +327,14 @@ public class ProxyBuilder {
                     .insn(BUILDER.opcode("ARETURN"))
                     .maxs(1, 1);
         });
+    }
+
+    private Class<ProxyMethod>[] buildProxyMethodClasses(final Method[] methods) {
+        Class<ProxyMethod>[] proxyMethodClasses = new Class[methods.length];
+        for (int i = 0; i < methods.length; i++) {
+            proxyMethodClasses[i] = ProxyMethodBuilder.buildProxyMethodClass(this.proxyClass, methods[i]);
+        }
+        return proxyMethodClasses;
     }
 
     private void reset() {
