@@ -176,7 +176,7 @@ public class ProxyBuilder {
             BuiltClass builtClass = this.buildClass(methodsReference);
             this.proxyClass = this.classDefiner.defineProxyClass(builtClass, this.superClass, this.interfaces);
 
-            //Set the static fieldss
+            //Set the static fields
             Field methods = Fields.getDeclaredField(this.proxyClass, METHODS_FIELD);
             Fields.setObject(null, methods, methodsReference.value);
 
@@ -265,9 +265,9 @@ public class ProxyBuilder {
                         .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, this
                         .field(BUILDER.opcode("GETFIELD"), cb.getName(), "method" + methodId, desc(ProxyMethod.class)) //this.invocationHandler, this, this.methodN
                         .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, this.methodN, this.methodN
-                        .jump(BUILDER.opcode("IFNONNULL"), elseLabel); //this.invocationHandler, this, this.methodN
+                        .jump(BUILDER.opcode("IFNONNULL"), elseLabel) //this.invocationHandler, this, this.methodN
+                        .insn(BUILDER.opcode("POP")); //this.invocationHandler, this
                 mb
-                        .insn(BUILDER.opcode("POP")) //this.invocationHandler, this
                         .var(BUILDER.opcode("ALOAD"), 0) //^, this
                         .field(BUILDER.opcode("GETSTATIC"), cb.getName(), PROXY_METHOD_CLASSES_FIELD, desc(Class[].class)) //^, this, PROXY_METHOD_CLASSES
                         .intPush(BUILDER, methodId) //^, this, PROXY_METHOD_CLASSES, methodId
