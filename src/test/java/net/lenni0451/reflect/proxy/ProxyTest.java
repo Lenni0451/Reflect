@@ -1,9 +1,12 @@
 package net.lenni0451.reflect.proxy;
 
+import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.proxy.impl.Proxy;
 import net.lenni0451.reflect.proxy.test.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,6 +100,44 @@ class ProxyTest {
                 .build());
         Class4 instance = proxyClass.allocateInstance();
         assertDoesNotThrow(instance::get);
+    }
+
+    @Test
+    void testInvokeWrongObject() {
+        ProxyClass proxyClass = new ProxyBuilder()
+                .setSuperClass(Class2.class)
+                .setInvocationHandler((thiz, proxyMethod, args) -> proxyMethod.invokeWith(new Class1(), args))
+                .build();
+        Class2 proxy = proxyClass.allocateInstance();
+        //The method found by the proxy builder belongs to Class2 (the proxy super class)
+        //Invoking it with an instance of Class1 should throw an exception because Class1 does not extend Class2, even tho it is the other way round
+        //The cast is done by the proxy to allow calling invokeExact of the method handle
+        assertThrows(ClassCastException.class, proxy::test);
+    }
+
+    @Test
+    void testMethodMapper() {
+        ProxyClass proxyClass = new ProxyBuilder()
+                .setSuperClass(Class2.class)
+                .setMethodMapper(method -> {
+                    Method class1Method = Methods.getDeclaredMethod(Class1.class, method.getName(), method.getParameterTypes());
+                    if (class1Method != null) return class1Method;
+                    return method;
+                })
+                .setInvocationHandler((thiz, proxyMethod, args) -> proxyMethod.invokeWith(new Class1(), args))
+                .build();
+        Class2 proxy = proxyClass.allocateInstance();
+        //The invocation is the same as in testInvokeWrongObject but this time the method mapper maps the method to one owned by Class1
+        //This should work because Class2 extends Class1 and the correct method should be invoked
+        assertEquals(1, proxy.test());
+
+        ((Proxy) proxy).setInvocationHandler(InvocationHandler.forwarding());
+        //Here it should return 2 because the super method is still the one from Class2
+        assertEquals(2, proxy.test());
+
+        ((Proxy) proxy).setInvocationHandler((thiz, proxyMethod, args) -> proxyMethod.invokeWith(new Class2(), args));
+        //This should also work because it's forwarded to Class2
+        assertEquals(2, proxy.test());
     }
 
 }

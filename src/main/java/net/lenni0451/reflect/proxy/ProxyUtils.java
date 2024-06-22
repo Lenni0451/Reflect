@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -62,6 +63,22 @@ class ProxyUtils {
         }
         if (clazz.getSuperclass() != null) getOverridableMethod(clazz.getSuperclass(), methods);
         for (Class<?> inter : clazz.getInterfaces()) getOverridableMethod(inter, methods);
+    }
+
+    public static Method[] mapMethods(final Method[] methods, final Function<Method, Method> methodMapper) {
+        Method[] originalMethods = new Method[methods.length];
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            Method mappedMethod = methodMapper.apply(method);
+            if (method.equals(mappedMethod)) continue;
+
+            if (!mappedMethod.getDeclaringClass().isAssignableFrom(method.getDeclaringClass())) {
+                throw new IllegalArgumentException("The method '" + method.getName() + "' in class '" + method.getDeclaringClass().getName() + "' is not assignable to the method in the proxy class");
+            }
+            methods[i] = mappedMethod;
+            originalMethods[i] = method;
+        }
+        return originalMethods;
     }
 
 }

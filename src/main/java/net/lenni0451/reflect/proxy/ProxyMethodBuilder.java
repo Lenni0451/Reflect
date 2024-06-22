@@ -7,6 +7,7 @@ import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
 import net.lenni0451.reflect.proxy.impl.ProxyMethod;
 import net.lenni0451.reflect.proxy.impl.ProxyRuntime;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
@@ -22,14 +23,14 @@ class ProxyMethodBuilder {
 
     private static final BytecodeBuilder BUILDER = BytecodeBuilder.get();
 
-    public static Class<ProxyMethod> buildProxyMethodClass(final Class<?> proxyClass, final Method method) {
+    public static Class<ProxyMethod> buildProxyMethodClass(final Class<?> proxyClass, final Method method, @Nullable final Method originalMethod) {
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_PUBLIC"), slash(proxyClass) + "$ProxyMethodImpl", null, slash(Object.class), new String[]{slash(ProxyMethod.class)}, cb -> {
             addFields(proxyClass, cb);
-            addStaticBlock(method, cb);
+            addStaticBlock(method, originalMethod, cb);
             addConstructor(proxyClass, cb);
             addMethodGetter(cb);
             addInvokeWith(method, cb);
-            addInvokeSuper(proxyClass, method, cb);
+            addInvokeSuper(proxyClass, originalMethod == null ? method : originalMethod, cb);
             addCancel(method, cb);
         });
 
@@ -43,10 +44,15 @@ class ProxyMethodBuilder {
         cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_FINAL"), "method", desc(Method.class), null, null);
     }
 
-    private static void addStaticBlock(final Method method, final ClassBuilder cb) {
+    private static void addStaticBlock(final Method method, @Nullable final Method originalMethod, final ClassBuilder cb) {
         cb.method(BUILDER.opcode("ACC_PUBLIC", "ACC_STATIC"), "<clinit>", mdesc(void.class), null, null, mb -> {
+            mb.typeLdc(BUILDER, method.getDeclaringClass()); //Instance class
+            if (originalMethod != null) {
+                mb.typeLdc(BUILDER, originalMethod.getDeclaringClass()); //Super class
+            } else {
+                mb.insn(BUILDER.opcode("DUP"));
+            }
             mb
-                    .typeLdc(BUILDER, method.getDeclaringClass()) //Instance class
                     .ldc(method.getName()) //Method name
                     .intPush(BUILDER, method.getParameterCount())
                     .type(BUILDER.opcode("ANEWARRAY"), slash(Class.class)); //Parameter array
@@ -60,7 +66,7 @@ class ProxyMethodBuilder {
             }
             mb
                     .typeLdc(BUILDER, method.getReturnType()) //Return type
-                    .method(BUILDER.opcode("INVOKESTATIC"), slash(ProxyRuntime.class), "getMethodHandles", mdesc(MethodHandle[].class, Class.class, String.class, Class[].class, Class.class), false);
+                    .method(BUILDER.opcode("INVOKESTATIC"), slash(ProxyRuntime.class), "getMethodHandles", mdesc(MethodHandle[].class, Class.class, Class.class, String.class, Class[].class, Class.class), false);
             mb //Store the method handles
                     .insn(BUILDER.opcode("DUP"))
                     .intPush(BUILDER, 0)

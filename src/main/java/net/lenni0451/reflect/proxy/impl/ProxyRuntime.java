@@ -28,11 +28,11 @@ public class ProxyRuntime {
      * @throws NoSuchMethodException  If the method does not exist
      * @throws IllegalAccessException If the method is not accessible
      */
-    public static MethodHandle[] getMethodHandles(final Class<?> owner, final String name, final Class<?>[] parameters, final Class<?> returnType) throws NoSuchMethodException, IllegalAccessException {
+    public static MethodHandle[] getMethodHandles(final Class<?> owner, final Class<?> superOwner, final String name, final Class<?>[] parameters, final Class<?> returnType) throws NoSuchMethodException, IllegalAccessException {
         MethodHandle[] methodHandles = new MethodHandle[2];
         methodHandles[0] = TRUSTED_LOOKUP.findVirtual(owner, name, MethodType.methodType(returnType, parameters));
         try {
-            methodHandles[1] = TRUSTED_LOOKUP.findSpecial(owner, name, MethodType.methodType(returnType, parameters), owner);
+            methodHandles[1] = TRUSTED_LOOKUP.findSpecial(superOwner, name, MethodType.methodType(returnType, parameters), superOwner);
         } catch (Throwable ignored) {
         }
         return methodHandles;

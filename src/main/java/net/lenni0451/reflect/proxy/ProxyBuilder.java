@@ -16,6 +16,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
@@ -35,10 +36,19 @@ public class ProxyBuilder {
     @Nullable
     private Class<?>[] interfaces;
     private Predicate<Method> methodFilter = m -> true;
+    private Function<Method, Method> methodMapper = Function.identity();
     private InvocationHandler invocationHandler = InvocationHandler.forwarding();
     private ProxyClassDefiner classDefiner = ProxyClassDefiner.loader(ProxyBuilder.class.getClassLoader());
 
     private Class<?> proxyClass;
+
+    /**
+     * @return The super class of the proxy class
+     */
+    @Nullable
+    public Class<?> getSuperClass() {
+        return this.superClass;
+    }
 
     /**
      * Set the super class of the proxy class.<br>
@@ -56,11 +66,11 @@ public class ProxyBuilder {
     }
 
     /**
-     * @return The super class of the proxy class
+     * @return The interfaces of the proxy class
      */
     @Nullable
-    public Class<?> getSuperClass() {
-        return this.superClass;
+    public Class<?>[] getInterfaces() {
+        return this.interfaces;
     }
 
     /**
@@ -101,15 +111,16 @@ public class ProxyBuilder {
     }
 
     /**
-     * @return The interfaces of the proxy class
+     * @return The current method filter
      */
-    @Nullable
-    public Class<?>[] getInterfaces() {
-        return this.interfaces;
+    public Predicate<Method> getMethodFilter() {
+        return this.methodFilter;
     }
 
     /**
-     * Set the filter for the methods that should be overridden by the proxy class.
+     * Set the filter for the methods that should be overridden by the proxy class.<br>
+     * Filtered methods will not be overridden by the proxy class.<br>
+     * Abstract methods will always be overridden and cannot be filtered.
      *
      * @param methodFilter The method filter
      * @return This builder
@@ -121,10 +132,31 @@ public class ProxyBuilder {
     }
 
     /**
-     * @return The current method filter
+     * @return The current method mapper
      */
-    public Predicate<Method> getMethodFilter() {
-        return this.methodFilter;
+    public Function<Method, Method> getMethodMapper() {
+        return this.methodMapper;
+    }
+
+    /**
+     * Set the mapper for the methods that should be overridden by the proxy class.<br>
+     * The mapper can be used to change the owner of an overridden method.<br>
+     * The owner must be a super class of the original owner.
+     *
+     * @param methodMapper The method mapper
+     * @return This builder
+     */
+    public ProxyBuilder setMethodMapper(@Nonnull final Function<Method, Method> methodMapper) {
+        this.reset();
+        this.methodMapper = methodMapper;
+        return this;
+    }
+
+    /**
+     * @return The invocation handler
+     */
+    public InvocationHandler getInvocationHandler() {
+        return this.invocationHandler;
     }
 
     /**
@@ -140,10 +172,10 @@ public class ProxyBuilder {
     }
 
     /**
-     * @return The invocation handler
+     * @return The current class definer
      */
-    public InvocationHandler getInvocationHandler() {
-        return this.invocationHandler;
+    public ProxyClassDefiner getClassDefiner() {
+        return this.classDefiner;
     }
 
     /**
@@ -159,13 +191,6 @@ public class ProxyBuilder {
     }
 
     /**
-     * @return The current class definer
-     */
-    public ProxyClassDefiner getClassDefiner() {
-        return this.classDefiner;
-    }
-
-    /**
      * Build the proxy class.
      *
      * @return The built proxy class
@@ -173,21 +198,22 @@ public class ProxyBuilder {
     public ProxyClass build() {
         if (this.proxyClass == null) {
             Reference<Method[]> methodsReference = new Reference<>();
-            BuiltClass builtClass = this.buildClass(methodsReference);
+            Reference<Method[]> originalMethodsReference = new Reference<>();
+            BuiltClass builtClass = this.buildClass(methodsReference, originalMethodsReference);
             this.proxyClass = this.classDefiner.defineProxyClass(builtClass, this.superClass, this.interfaces);
 
             //Set the static fields
             Field methods = Fields.getDeclaredField(this.proxyClass, METHODS_FIELD);
             Fields.setObject(null, methods, methodsReference.value);
 
-            Class<ProxyMethod>[] proxyMethodClasses = this.buildProxyMethodClasses(methodsReference.value);
+            Class<ProxyMethod>[] proxyMethodClasses = this.buildProxyMethodClasses(methodsReference.value, originalMethodsReference.value);
             Field proxyMethodClassesField = Fields.getDeclaredField(this.proxyClass, PROXY_METHOD_CLASSES_FIELD);
             Fields.setObject(null, proxyMethodClassesField, proxyMethodClasses);
         }
         return new ProxyClass(this.proxyClass, this.invocationHandler);
     }
 
-    private BuiltClass buildClass(final Reference<Method[]> methodsReference) {
+    private BuiltClass buildClass(final Reference<Method[]> methodsReference, final Reference<Method[]> originalMethodsReference) {
         String className = "net/lenni0451/reflect/proxy/ProxyImpl$" + System.nanoTime();
         Class<?>[] interfaces = this.interfaces;
         if (interfaces == null) {
@@ -208,6 +234,7 @@ public class ProxyBuilder {
 
                     Method[] methods = ProxyUtils.getOverridableMethod(this.superClass, this.interfaces, this.methodFilter);
                     methodsReference.value = methods;
+                    originalMethodsReference.value = ProxyUtils.mapMethods(methods, this.methodMapper);
                     this.addFields(cb, methods);
                     this.addMethods(cb, methods);
                     this.addDefaultMethods(cb);
@@ -329,10 +356,10 @@ public class ProxyBuilder {
         });
     }
 
-    private Class<ProxyMethod>[] buildProxyMethodClasses(final Method[] methods) {
+    private Class<ProxyMethod>[] buildProxyMethodClasses(final Method[] methods, final Method[] originalMethods) {
         Class<ProxyMethod>[] proxyMethodClasses = new Class[methods.length];
         for (int i = 0; i < methods.length; i++) {
-            proxyMethodClasses[i] = ProxyMethodBuilder.buildProxyMethodClass(this.proxyClass, methods[i]);
+            proxyMethodClasses[i] = ProxyMethodBuilder.buildProxyMethodClass(this.proxyClass, methods[i], originalMethods[i]);
         }
         return proxyMethodClasses;
     }
