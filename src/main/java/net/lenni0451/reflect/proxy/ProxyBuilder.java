@@ -27,6 +27,8 @@ import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 public class ProxyBuilder {
 
     private static final BytecodeBuilder BUILDER = BytecodeBuilder.get();
+    private static final String METHODS_FIELD = "METHODS";
+    private static final String INVOCATION_HANDLER_FIELD = "invocationHandler";
 
     @Nullable
     private Class<?> superClass;
@@ -174,7 +176,7 @@ public class ProxyBuilder {
             BuiltClass builtClass = this.buildClass(methodsReference);
             this.proxyClass = this.classDefiner.defineProxyClass(builtClass, this.superClass, this.interfaces);
 
-            Field methods = Fields.getDeclaredField(this.proxyClass, "METHODS");
+            Field methods = Fields.getDeclaredField(this.proxyClass, METHODS_FIELD);
             Fields.setObject(null, methods, methodsReference.value);
         }
         return new ProxyClass(this.proxyClass, this.invocationHandler);
@@ -236,8 +238,8 @@ public class ProxyBuilder {
     }
 
     private void addFields(final ClassBuilder cb, final Method[] methods) {
-        cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_STATIC", "ACC_FINAL"), "METHODS", desc(Method[].class), null, null);
-        cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_FINAL"), "invocationHandler", desc(InvocationHandler.class), null, null);
+        cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_STATIC", "ACC_FINAL"), METHODS_FIELD, desc(Method[].class), null, null);
+        cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_FINAL"), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class), null, null);
         for (int i = 0; i < methods.length; i++) {
             cb.field(BUILDER.opcode("ACC_PRIVATE"), "method" + i, desc(ProxyMethod.class), null, null);
         }
@@ -252,7 +254,7 @@ public class ProxyBuilder {
 
                 mb
                         .var(BUILDER.opcode("ALOAD"), 0) //this
-                        .field(BUILDER.opcode("GETFIELD"), cb.getName(), "invocationHandler", desc(InvocationHandler.class)) //this.invocationHandler
+                        .field(BUILDER.opcode("GETFIELD"), cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class)) //this.invocationHandler
                         .var(BUILDER.opcode("ALOAD"), 0) //this.invocationHandler, this
                         .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, this
                         .field(BUILDER.opcode("GETFIELD"), cb.getName(), "method" + methodId, desc(ProxyMethod.class)) //this.invocationHandler, this, this.methodN
@@ -262,7 +264,7 @@ public class ProxyBuilder {
                         .insn(BUILDER.opcode("POP")) //this.invocationHandler, this
                         .var(BUILDER.opcode("ALOAD"), 0) //this.invocationHandler, this, this
                         .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, this, this
-                        .field(BUILDER.opcode("GETSTATIC"), cb.getName(), "METHODS", desc(Method[].class)) //this.invocationHandler, this, this, this, METHODS
+                        .field(BUILDER.opcode("GETSTATIC"), cb.getName(), METHODS_FIELD, desc(Method[].class)) //this.invocationHandler, this, this, this, METHODS
                         .intPush(BUILDER, methodId) //this.invocationHandler, this, this, this, METHODS, methodId
                         .insn(BUILDER.opcode("AALOAD")) //this.invocationHandler, this, this, this, method
                         .method(BUILDER.opcode("INVOKESTATIC"), slash(ProxyRuntime.class), "makeProxyMethod", mdesc(ProxyMethod.class, Object.class, Method.class), false) //this.invocationHandler, this, this, proxyMethod
@@ -305,14 +307,14 @@ public class ProxyBuilder {
             mb
                     .var(BUILDER.opcode("ALOAD"), 0)
                     .var(BUILDER.opcode("ALOAD"), 1)
-                    .field(BUILDER.opcode("PUTFIELD"), cb.getName(), "invocationHandler", desc(InvocationHandler.class))
+                    .field(BUILDER.opcode("PUTFIELD"), cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class))
                     .insn(BUILDER.opcode("RETURN"))
                     .maxs(2, 2);
         });
         cb.method(BUILDER.opcode("ACC_PUBLIC"), "getInvocationHandler", mdesc(InvocationHandler.class), null, null, mb -> {
             mb
                     .var(BUILDER.opcode("ALOAD"), 0)
-                    .field(BUILDER.opcode("GETFIELD"), cb.getName(), "invocationHandler", desc(InvocationHandler.class))
+                    .field(BUILDER.opcode("GETFIELD"), cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class))
                     .insn(BUILDER.opcode("ARETURN"))
                     .maxs(1, 1);
         });
