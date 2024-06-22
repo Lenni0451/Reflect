@@ -1,4 +1,4 @@
-package net.lenni0451.reflect.proxy;
+package net.lenni0451.reflect.proxy.internal;
 
 import net.lenni0451.reflect.Methods;
 import net.lenni0451.reflect.bytecode.BytecodeUtils;
@@ -19,7 +19,7 @@ import java.util.function.Predicate;
  * Utils for creating proxy classes.
  */
 @ApiStatus.Internal
-class ProxyUtils {
+public class ProxyUtils {
 
     public static void verifySuperClass(final Class<?> clazz) {
         if (!Modifier.isPublic(clazz.getModifiers())) throw new IllegalArgumentException("The super class must be public");

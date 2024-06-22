@@ -9,6 +9,8 @@ import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
 import net.lenni0451.reflect.proxy.impl.Proxy;
 import net.lenni0451.reflect.proxy.impl.ProxyMethod;
 import net.lenni0451.reflect.proxy.impl.ProxyRuntime;
+import net.lenni0451.reflect.proxy.internal.ProxyMethodBuilder;
+import net.lenni0451.reflect.proxy.internal.ProxyUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

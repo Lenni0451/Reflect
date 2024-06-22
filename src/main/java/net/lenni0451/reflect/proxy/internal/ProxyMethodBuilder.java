@@ -1,4 +1,4 @@
-package net.lenni0451.reflect.proxy;
+package net.lenni0451.reflect.proxy.internal;
 
 import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.builder.ClassBuilder;
@@ -19,7 +19,7 @@ import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
  * They are unique to every method and therefore need to be created at runtime.
  */
 @ApiStatus.Internal
-class ProxyMethodBuilder {
+public class ProxyMethodBuilder {
 
     private static final BytecodeBuilder BUILDER = BytecodeBuilder.get();
 
