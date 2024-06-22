@@ -1,7 +1,6 @@
 package net.lenni0451.reflect.proxy.internal;
 
 import net.lenni0451.reflect.Methods;
-import net.lenni0451.reflect.bytecode.BytecodeUtils;
 import net.lenni0451.reflect.proxy.impl.Proxy;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -12,6 +11,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static net.lenni0451.reflect.bytecode.BytecodeUtils.desc;
 
 /**
  * Utils for creating proxy classes.
@@ -57,7 +58,7 @@ public class ProxyUtils {
             if (Modifier.isStatic(method.getModifiers())) continue;
             if (Modifier.isFinal(method.getModifiers())) continue;
             if (Modifier.isNative(method.getModifiers())) continue;
-            methods.putIfAbsent(method.getName() + BytecodeUtils.desc(method), method);
+            methods.putIfAbsent(method.getName() + desc(method), method);
         }
         if (clazz.getSuperclass() != null) getOverridableMethod(clazz.getSuperclass(), methods);
         for (Class<?> inter : clazz.getInterfaces()) getOverridableMethod(inter, methods);
