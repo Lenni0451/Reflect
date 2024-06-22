@@ -143,7 +143,8 @@ public class ProxyBuilder {
     /**
      * Set the mapper for the methods that should be overridden by the proxy class.<br>
      * The mapper can be used to change the owner of an overridden method.<br>
-     * The owner must be a super class of the original owner.
+     * The owner must be a super class of the original owner.<br>
+     * The super call will not be changed by the mapper.
      *
      * @param methodMapper The method mapper
      * @return This builder

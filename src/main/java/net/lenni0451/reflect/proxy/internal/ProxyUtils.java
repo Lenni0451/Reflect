@@ -8,12 +8,10 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Utils for creating proxy classes.
@@ -70,10 +68,21 @@ public class ProxyUtils {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             Method mappedMethod = methodMapper.apply(method);
-            if (method.equals(mappedMethod)) continue;
+            if (mappedMethod == null || method.equals(mappedMethod)) continue;
 
+            if (!method.getName().equals(mappedMethod.getName())) {
+                throw new IllegalArgumentException(String.format("Method '%s' has mismatching name (%1$s != %s)", method.getName(), mappedMethod.getName()));
+            }
+            if (!Arrays.equals(method.getParameterTypes(), mappedMethod.getParameterTypes())) {
+                String originalParameters = Arrays.stream(method.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(", "));
+                String mappedParameters = Arrays.stream(mappedMethod.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(", "));
+                throw new IllegalArgumentException(String.format("Method '%s' has mismatching parameter types (%s != %s)", mappedMethod.getName(), originalParameters, mappedParameters));
+            }
+            if (method.getReturnType() != mappedMethod.getReturnType()) {
+                throw new IllegalArgumentException(String.format("Method '%s' has mismatching return type (%s != %s)", mappedMethod.getName(), method.getReturnType().getSimpleName(), mappedMethod.getReturnType().getSimpleName()));
+            }
             if (!mappedMethod.getDeclaringClass().isAssignableFrom(method.getDeclaringClass())) {
-                throw new IllegalArgumentException("The method '" + method.getName() + "' in class '" + method.getDeclaringClass().getName() + "' is not assignable to the method in the proxy class");
+                throw new IllegalArgumentException(String.format("Declaring class of method '%s' is not assignable from original declaring class (%s != %s)", mappedMethod.getName(), mappedMethod.getDeclaringClass().getName(), method.getDeclaringClass().getName()));
             }
             methods[i] = mappedMethod;
             originalMethods[i] = method;
