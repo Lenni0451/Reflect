@@ -2,10 +2,12 @@ plugins {
     id "maven-publish"
     id "signing"
     id "checkstyle"
+    id "io.freefair.lombok" version "8.6" apply false
 }
 
 allprojects {
     apply plugin: "java"
+    apply plugin: "io.freefair.lombok"
 
     base {
         java.toolchain.languageVersion = JavaLanguageVersion.of(8)
@@ -23,13 +25,16 @@ allprojects {
     dependencies {
         compileOnly "com.google.code.findbugs:jsr305:3.0.2"
         compileOnly "org.jetbrains:annotations:24.1.0"
-        compileOnly "org.projectlombok:lombok:1.18.32"
-        annotationProcessor "org.projectlombok:lombok:1.18.32"
     }
 
     java {
         withSourcesJar()
         withJavadocJar()
+    }
+
+    sourcesJar {
+        from delombok
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 
     javadoc {
@@ -42,6 +47,7 @@ allprojects {
     }
 
     signing {
+        setRequired false
         sign configurations.archives
     }
 
@@ -49,11 +55,9 @@ allprojects {
 }
 
 dependencies {
-    testCompileOnly "org.projectlombok:lombok:1.18.28"
     testImplementation platform("org.junit:junit-bom:5.9.0")
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.ow2.asm:asm:9.5"
-    testAnnotationProcessor "org.projectlombok:lombok:1.18.28"
 }
 
 test {
@@ -91,20 +95,20 @@ publishing {
     }
     publications {
         maven(MavenPublication) {
-            artifactId = project.maven_name
-            groupId = project.maven_group
-            version = project.maven_version
+            artifactId = project.maven_name ?: rootProject.maven_name
+            groupId = rootProject.maven_group
+            version = rootProject.maven_version
 
             from components.java
 
             pom {
                 name = rootProject.name
-                description = "A reflection library with some useful methods to bypass reflection restrictions in Java"
-                url = "https://github.com/Lenni0451/Reflect"
+                description = rootProject.maven_description
+                url = "https://github.com/" + rootProject.github_repo
                 licenses {
                     license {
                         name = "MIT License"
-                        url = "https://github.com/Lenni0451/Reflect/blob/main/LICENSE"
+                        url = "https://github.com/" + rootProject.github_repo + "/blob/main/LICENSE"
                     }
                 }
                 developers {
@@ -113,9 +117,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/Lenni0451/Reflect.git"
-                    developerConnection = "scm:git:ssh://github.com/Lenni0451/Reflect.git"
-                    url = "github.com/Lenni0451/Reflect"
+                    connection = "scm:git:git://github.com/" + rootProject.github_repo + ".git"
+                    developerConnection = "scm:git:ssh://github.com/" + rootProject.github_repo + ".git"
+                    url = "github.com/" + rootProject.github_repo
                 }
             }
         }

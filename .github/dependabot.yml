@@ -1,0 +1,50 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "gradle"
+    directory: "/AddonAntiCheat"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/AddonAntiCrash"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/AddonFingerprint"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/AddonWeDoALittleTrolling"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/Core"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/IntegrationBungee"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/IntegrationSpigot"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/IntegrationVelocity"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/IntegrationViaProxy"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/StatusPanel"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "gradle"
+    directory: "/Utils"
+    schedule:
+      interval: "daily"
