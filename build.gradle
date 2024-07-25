@@ -1,74 +1,46 @@
 plugins {
+    id "java-library"
     id "maven-publish"
     id "signing"
     id "checkstyle"
 }
 
-allprojects {
-    apply plugin: "java"
+base {
+    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+    compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
-    base {
-        java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-        compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+    archivesName = project.maven_name ?: rootProject.maven_name
+    group = project.maven_group ?: rootProject.maven_group
+    version = project.maven_version ?: rootProject.maven_version
+}
 
-        archivesName = project.maven_name ?: rootProject.maven_name
-        group = project.maven_group ?: rootProject.maven_group
-        version = project.maven_version ?: rootProject.maven_version
-    }
-
-    configurations {
-        include
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-        compileOnly "org.jetbrains:annotations:24.1.0"
-        compileOnly(annotationProcessor("org.projectlombok:lombok:1.18.34"))
-    }
-
-    java {
-        withSourcesJar()
-        withJavadocJar()
-    }
-
-    jar {
-        dependsOn configurations.include
-        from {
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-            configurations.include.collect {
-                zipTree(it)
-            }
-        } {
-            exclude "META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA"
-        }
-    }
-
-    javadoc {
-        failOnError = false
-    }
-
-    checkstyle {
-        toolVersion = "9.3" //Latest version for Java 8
-        configFile = rootProject.file("config/checkstyle.xml")
-    }
-
-    signing {
-        setRequired false
-        sign configurations.archives
-    }
-
-    build.dependsOn(check)
+repositories {
+    mavenCentral()
 }
 
 dependencies {
-    testImplementation platform("org.junit:junit-bom:5.10.3")
-    testImplementation "org.junit.jupiter:junit-jupiter"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+    compileOnly "org.jetbrains:annotations:24.1.0"
+    compileOnly(annotationProcessor("org.projectlombok:lombok:1.18.34"))
+
     testImplementation "org.ow2.asm:asm:9.7"
+    testImplementation(platform("org.junit:junit-bom:5.10.3"))
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testCompileOnly(testAnnotationProcessor("org.projectlombok:lombok:1.18.34"))
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+javadoc {
+    failOnError = false
 }
 
 test {
@@ -137,12 +109,19 @@ publishing {
     }
 }
 
+checkstyle {
+    toolVersion = "9.3" //Latest version for Java 8: 9.3
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+}
+
 signing {
+    setRequired false
+    sign configurations.archives
     sign publishing.publications.maven
 }
 
 project.tasks.withType(PublishToMavenRepository).forEach {
     it.dependsOn(project.tasks.withType(Sign))
 }
-
 build.dependsOn(test)
+build.dependsOn(check)
