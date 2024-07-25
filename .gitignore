@@ -2,5 +2,5 @@
 /out/
 /bin/
 /.gradle/
-/build/
+build/
 *.iml
