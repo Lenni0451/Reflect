@@ -2,7 +2,7 @@ plugins {
     id "maven-publish"
     id "signing"
     id "checkstyle"
-    id "io.freefair.lombok" version "8.6" apply false
+    id "io.freefair.lombok" version "8.7.1" apply false
 }
 
 allprojects {
