@@ -1,6 +1,7 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.reflect.accessor.UnsafeAccess;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 
 import javax.annotation.Nullable;
@@ -8,9 +9,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import static net.lenni0451.reflect.JVMConstants.*;
-import static net.lenni0451.reflect.JavaBypass.*;
-import static net.lenni0451.reflect.utils.FieldInitializer.condInit;
+import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredFields0;
+import static net.lenni0451.reflect.JVMConstants.OPENJ9_RUNTIME;
+import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
@@ -18,16 +19,6 @@ import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
  */
 public class Fields {
 
-    private static final MethodHandle internalStaticFieldOffset = condInit(
-            INTERNAL_UNSAFE != null,
-            () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_staticFieldOffset, Field.class),
-            TRUSTED_LOOKUP::unreflect
-    );
-    private static final MethodHandle internalObjectFieldOffset = condInit(
-            INTERNAL_UNSAFE != null,
-            () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_InternalUnsafe_objectFieldOffset, Field.class),
-            TRUSTED_LOOKUP::unreflect
-    );
     private static final MethodHandle getDeclaredFields0 = reqInit(
             () -> {
                 if (JVMConstants.OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
@@ -46,11 +37,9 @@ public class Fields {
     @SneakyThrows
     public static long offset(final Field field) {
         if (Modifier.isStatic(field.getModifiers())) {
-            if (internalStaticFieldOffset != null) return (long) internalStaticFieldOffset.invoke(INTERNAL_UNSAFE, field);
-            else return UNSAFE.staticFieldOffset(field);
+            return UnsafeAccess.staticFieldOffset(field);
         } else {
-            if (internalObjectFieldOffset != null) return (long) internalObjectFieldOffset.invoke(INTERNAL_UNSAFE, field);
-            else return UNSAFE.objectFieldOffset(field);
+            return UnsafeAccess.objectFieldOffset(field);
         }
     }
 
@@ -109,7 +98,7 @@ public class Fields {
      * @return The value of the field
      */
     public static boolean getBoolean(final Object instance, final Field field) {
-        return UNSAFE.getBoolean(instance(instance, field), offset(field));
+        return UnsafeAccess.getBoolean(instance(instance, field), offset(field));
     }
 
     /**
@@ -122,7 +111,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setBoolean(final Object instance, final Field field, final boolean value) {
-        UNSAFE.putBoolean(instance(instance, field), offset(field), value);
+        UnsafeAccess.putBoolean(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -149,7 +138,7 @@ public class Fields {
      * @return The value of the field
      */
     public static byte getByte(final Object instance, final Field field) {
-        return UNSAFE.getByte(instance(instance, field), offset(field));
+        return UnsafeAccess.getByte(instance(instance, field), offset(field));
     }
 
     /**
@@ -162,7 +151,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setByte(final Object instance, final Field field, final byte value) {
-        UNSAFE.putByte(instance(instance, field), offset(field), value);
+        UnsafeAccess.putByte(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -189,7 +178,7 @@ public class Fields {
      * @return The value of the field
      */
     public static short getShort(final Object instance, final Field field) {
-        return UNSAFE.getShort(instance(instance, field), offset(field));
+        return UnsafeAccess.getShort(instance(instance, field), offset(field));
     }
 
     /**
@@ -202,7 +191,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setShort(final Object instance, final Field field, final short value) {
-        UNSAFE.putShort(instance(instance, field), offset(field), value);
+        UnsafeAccess.putShort(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -229,7 +218,7 @@ public class Fields {
      * @return The value of the field
      */
     public static char getChar(final Object instance, final Field field) {
-        return UNSAFE.getChar(instance(instance, field), offset(field));
+        return UnsafeAccess.getChar(instance(instance, field), offset(field));
     }
 
     /**
@@ -242,7 +231,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setChar(final Object instance, final Field field, final char value) {
-        UNSAFE.putChar(instance(instance, field), offset(field), value);
+        UnsafeAccess.putChar(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -269,7 +258,7 @@ public class Fields {
      * @return The value of the field
      */
     public static int getInt(final Object instance, final Field field) {
-        return UNSAFE.getInt(instance(instance, field), offset(field));
+        return UnsafeAccess.getInt(instance(instance, field), offset(field));
     }
 
     /**
@@ -282,7 +271,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setInt(final Object instance, final Field field, final int value) {
-        UNSAFE.putInt(instance(instance, field), offset(field), value);
+        UnsafeAccess.putInt(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -309,7 +298,7 @@ public class Fields {
      * @return The value of the field
      */
     public static long getLong(final Object instance, final Field field) {
-        return UNSAFE.getLong(instance(instance, field), offset(field));
+        return UnsafeAccess.getLong(instance(instance, field), offset(field));
     }
 
     /**
@@ -322,7 +311,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setLong(final Object instance, final Field field, final long value) {
-        UNSAFE.putLong(instance(instance, field), offset(field), value);
+        UnsafeAccess.putLong(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -349,7 +338,7 @@ public class Fields {
      * @return The value of the field
      */
     public static float getFloat(final Object instance, final Field field) {
-        return UNSAFE.getFloat(instance(instance, field), offset(field));
+        return UnsafeAccess.getFloat(instance(instance, field), offset(field));
     }
 
     /**
@@ -362,7 +351,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setFloat(final Object instance, final Field field, final float value) {
-        UNSAFE.putFloat(instance(instance, field), offset(field), value);
+        UnsafeAccess.putFloat(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -389,7 +378,7 @@ public class Fields {
      * @return The value of the field
      */
     public static double getDouble(final Object instance, final Field field) {
-        return UNSAFE.getDouble(instance(instance, field), offset(field));
+        return UnsafeAccess.getDouble(instance(instance, field), offset(field));
     }
 
     /**
@@ -402,7 +391,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setDouble(final Object instance, final Field field, final double value) {
-        UNSAFE.putDouble(instance(instance, field), offset(field), value);
+        UnsafeAccess.putDouble(instance(instance, field), offset(field), value);
     }
 
     /**
@@ -431,7 +420,7 @@ public class Fields {
      * @return The value of the field
      */
     public static <T> T getObject(final Object instance, final Field field) {
-        return (T) UNSAFE.getObject(instance(instance, field), offset(field));
+        return (T) UnsafeAccess.getObject(instance(instance, field), offset(field));
     }
 
     /**
@@ -445,7 +434,7 @@ public class Fields {
      * @param value    The value to set
      */
     public static void setObject(final Object instance, final Field field, final Object value) {
-        UNSAFE.putObject(instance(instance, field), offset(field), value);
+        UnsafeAccess.putObject(instance(instance, field), offset(field), value);
     }
 
     /**

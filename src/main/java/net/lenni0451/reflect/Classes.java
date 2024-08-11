@@ -1,9 +1,9 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.reflect.accessor.UnsafeAccess;
 import net.lenni0451.reflect.exceptions.MethodInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
-import sun.misc.Unsafe;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,7 +12,6 @@ import java.lang.invoke.MethodHandles;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
-import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
@@ -25,10 +24,6 @@ public class Classes {
             () -> Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0),
             TRUSTED_LOOKUP::unreflect,
             () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0)
-    );
-    private static final MethodHandle ensureClassInitialized = optInit(
-            () -> Methods.getDeclaredMethod(Unsafe.class, "ensureClassInitialized", Class.class),
-            TRUSTED_LOOKUP::unreflect
     );
     private static final MethodHandle ensureInitialized = optInit(
             () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, "ensureInitialized", Class.class),
@@ -70,11 +65,8 @@ public class Classes {
      * @param clazz The class to initialize
      */
     public static void ensureInitialized(Class<?> clazz) {
-        try { //Try using unsafe (deprecated since Java 15)
-            if (ensureClassInitialized != null) {
-                ensureClassInitialized.invokeExact(UNSAFE, clazz);
-                return;
-            }
+        try { //Try using unsafe (deprecated since Java 15, available in internal unsafe)
+            UnsafeAccess.ensureClassInitialized(clazz);
         } catch (Throwable ignored) {
         }
         try { //Try using trusted lookup

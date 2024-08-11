@@ -1,0 +1,69 @@
+package net.lenni0451.reflect.accessor;
+
+import lombok.SneakyThrows;
+import net.lenni0451.reflect.JavaBypass;
+
+import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
+
+/**
+ * A class that provides access to all methods found in the unsafe classes (sun.misc.Unsafe and jdk.internal.misc.Unsafe).<br>
+ * The methods in this class are based on <b>Java {{sourceVersion}}</b> and might be different in other Java versions.<br>
+ * If a method is present in both classes, the method from jdk.internal.misc.Unsafe is used.<br>
+ * <br>
+ * Every method has comments describing where the method was found and if it is deprecated.<br>
+ * Chances are, that methods deprecated in both classes will no longer work in future Java versions.
+ */
+public class UnsafeAccess {
+
+    private static final String UNAVAILABLE_MESSAGE = "This method is not supported on this platform or Java version!";
+    {{#each this}}
+    private static final MethodHandle {{name.0}}_{{iterIndex}} = tryGet(new String[]{{alt "{"}}{{#name}}"{{.}}"{{#iterHasNext}}, {{/iterHasNext}}{{/name}}{{alt "}"}}, MethodType.methodType({{returnType}}.class{{#args}}, {{..type}}.class{{/args}}));
+    {{/each}}
+
+    {{#each this}}
+    /**
+    {{#notices}}
+     * {{.}}{{#iterHasNext}}<br>{{/iterHasNext}}
+    {{/notices}}
+     *
+    {{#args}}
+     * @param {{..name}} {@link {{..type}}}
+    {{/args}}
+    {{#isNotEq returnType "void"}}
+     * @return {@link {{returnType}}}
+    {{/isNotEq}}
+     **/
+    @SneakyThrows
+    public static {{returnType}} {{name.0}}({{#args}}final {{..type}} {{..name}}{{#iterHasNext}}, {{/iterHasNext}}{{/args}}) {
+        if ({{name.0}}_{{iterIndex}} == null) throw new UnsupportedOperationException(UNAVAILABLE_MESSAGE);
+        {{#isNotEq returnType "void"}}return ({{returnType}}) {{/isNotEq}}{{name.0}}_{{iterIndex}}.invokeExact({{#args}}{{..name}}{{#iterHasNext}}, {{/iterHasNext}}{{/args}});
+    }
+
+    {{/each}}
+
+    @Nullable
+    @SneakyThrows
+    private static MethodHandle tryGet(final String[] names, final MethodType methodType) {
+        for (String name : names) {
+            MethodHandle handle = tryGet(JavaBypass.INTERNAL_UNSAFE, name, methodType);
+            if (handle != null) return handle;
+        }
+        for (String name : names) {
+            MethodHandle handle = tryGet(JavaBypass.UNSAFE, name, methodType);
+            if (handle != null) return handle;
+        }
+        return null;
+    }
+
+    @Nullable
+    private static MethodHandle tryGet(final Object instance, final String name, final MethodType methodType) {
+        try {
+            return JavaBypass.TRUSTED_LOOKUP.findVirtual(instance.getClass(), name, methodType).bindTo(instance);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+}

@@ -3,6 +3,7 @@ plugins {
     id "maven-publish"
     id "signing"
     id "checkstyle"
+    id "net.lenni0451.template-processor" version "1.0.0"
 }
 
 base {
@@ -33,6 +34,12 @@ dependencies {
 java {
     withSourcesJar()
     withJavadocJar()
+}
+
+templateProcessor {
+    templateDir = project.file("src/main/templates")
+    outputDir = layout.buildDirectory.dir("generated/templates/main/java")
+    markAsSource(project.sourceSets.main)
 }
 
 artifacts {

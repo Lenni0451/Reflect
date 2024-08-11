@@ -3,7 +3,6 @@ package net.lenni0451.reflect;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import net.lenni0451.reflect.stream.RStream;
-import sun.misc.Unsafe;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -34,9 +33,9 @@ public class ClassLoaders {
     );
     private static final MethodHandle unsafeDefineAnonymousClass = reqOptInit(
             classOptionClass == null,
-            () -> Methods.getDeclaredMethod(Unsafe.class, METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class),
+            () -> Methods.getDeclaredMethod(UNSAFE.getClass(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class),
             TRUSTED_LOOKUP::unreflect,
-            () -> new MethodNotFoundException(Unsafe.class.getName(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class)
+            () -> new MethodNotFoundException(UNSAFE.getClass().getName(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class)
     );
     private static final MethodHandle lookupDefineHiddenClass = reqOptInit(
             classOptionClass != null,

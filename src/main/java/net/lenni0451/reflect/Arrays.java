@@ -1,8 +1,8 @@
 package net.lenni0451.reflect;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import net.lenni0451.reflect.accessor.UnsafeAccess;
 
-import static net.lenni0451.reflect.JavaBypass.UNSAFE;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * This class contains some useful methods for working with arrays.
@@ -24,7 +24,7 @@ public class Arrays {
      */
     public static void setLength(final Object array, final int newLength) {
         if (!array.getClass().isArray()) throw new IllegalArgumentException("Object is not an array");
-        UNSAFE.putInt(array, (long) Objects.OBJECT_HEADER_SIZE, newLength);
+        UnsafeAccess.putInt(array, Objects.OBJECT_HEADER_SIZE, newLength);
     }
 
     /**
@@ -35,7 +35,7 @@ public class Arrays {
      * @param value The value to fill the array with
      */
     public static void fill(final byte[] array, final byte value) {
-        UNSAFE.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length, value);
+        UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length, value);
     }
 
     /**
@@ -47,10 +47,10 @@ public class Arrays {
      */
     public static void fill(final short[] array, final short value) {
         if (value == 0) {
-            UNSAFE.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 2L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 2L, (byte) 0);
         } else {
             for (int i = 0; i < array.length * 2; i += 2) {
-                UNSAFE.putShort(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+                UnsafeAccess.putShort(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
             }
         }
     }
@@ -64,10 +64,10 @@ public class Arrays {
      */
     public static void fill(final char[] array, final char value) {
         if (value == 0) {
-            UNSAFE.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 2L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 2L, (byte) 0);
         } else {
             for (int i = 0; i < array.length * 2; i += 2) {
-                UNSAFE.putChar(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+                UnsafeAccess.putChar(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
             }
         }
     }
@@ -81,10 +81,10 @@ public class Arrays {
      */
     public static void fill(final int[] array, final int value) {
         if (value == 0) {
-            UNSAFE.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 4L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 4L, (byte) 0);
         } else {
             for (int i = 0; i < array.length * 4; i += 4) {
-                UNSAFE.putInt(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+                UnsafeAccess.putInt(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
             }
         }
     }
@@ -98,10 +98,10 @@ public class Arrays {
      */
     public static void fill(final long[] array, final long value) {
         if (value == 0) {
-            UNSAFE.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 8L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 8L, (byte) 0);
         } else {
             for (int i = 0; i < array.length * 8; i += 8) {
-                UNSAFE.putLong(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+                UnsafeAccess.putLong(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
             }
         }
     }
@@ -115,10 +115,10 @@ public class Arrays {
      */
     public static void fill(final float[] array, final float value) {
         if (value == 0) {
-            UNSAFE.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 4L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 4L, (byte) 0);
         } else {
             for (int i = 0; i < array.length * 4; i += 4) {
-                UNSAFE.putFloat(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+                UnsafeAccess.putFloat(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
             }
         }
     }
@@ -132,10 +132,10 @@ public class Arrays {
      */
     public static void fill(final double[] array, final double value) {
         if (value == 0) {
-            UNSAFE.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 8L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 8L, (byte) 0);
         } else {
             for (int i = 0; i < array.length * 8; i += 8) {
-                UNSAFE.putDouble(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+                UnsafeAccess.putDouble(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
             }
         }
     }

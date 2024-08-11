@@ -1,0 +1,118 @@
+public static void main(final String[] args) throws Throwable {
+    Map<Class<?>, ClassNode> classNodes = new HashMap<>();
+    List<Method> allMethods = new ArrayList<>();
+    Collections.addAll(allMethods, JavaBypass.UNSAFE.getClass().getDeclaredMethods());
+    Collections.addAll(allMethods, JavaBypass.INTERNAL_UNSAFE.getClass().getDeclaredMethods());
+
+    Map<String, Method> methods = new LinkedHashMap<>();
+    Map<String, List<String>> notices = new HashMap<>();
+    for (Method method : allMethods) {
+        if (Modifier.isStatic(method.getModifiers())) continue;
+        if (Modifier.isPrivate(method.getModifiers())) continue;
+        String notice = "Found in {@code " + method.getDeclaringClass().getName() + "}";
+        if (method.getDeclaredAnnotation(Deprecated.class) != null) notice += " (deprecated)";
+        notice += ".";
+        if (method.getDeclaredAnnotation(Deprecated.class) != null) notice = "<u>" + notice + "</u>";
+
+        String uniqueName = method.getName() + Type.getMethodDescriptor(method);
+        methods.put(uniqueName, method);
+        notices.computeIfAbsent(uniqueName, m -> new ArrayList<>()).add(notice);
+    }
+
+    Set<String> set = new HashSet<>();
+    JsonArray arr = new JsonArray();
+    for (Method method : methods.values()) {
+        List<String> noticesList = notices.get(method.getName() + Type.getMethodDescriptor(method));
+        JsonObject json = new JsonObject();
+
+        JsonArray names = new JsonArray();
+        names.add(method.getName());
+        if (method.getDeclaredAnnotation(Deprecated.class) != null) {
+            Method redirect = findRedirect(method, classNodes.computeIfAbsent(method.getDeclaringClass(), clazz -> loadClassNode(clazz)));
+            if (redirect != null) {
+                names.add(redirect.getName());
+                String argsString = Arrays.stream(redirect.getParameterTypes()).map(clazz -> trimClassName(clazz)).collect(Collectors.joining(", "));
+                noticesList.add("Automatically redirected to {@link #" + redirect.getName() + "(" + argsString + ")} in {@code " + redirect.getDeclaringClass().getName() + "} in case of removal.");
+            }
+        }
+        json.add("name", names);
+
+        String[] argNames = getArgNames(method, classNodes.computeIfAbsent(method.getDeclaringClass(), clazz -> loadClassNode(clazz)));
+        JsonArray methodArgs = new JsonArray();
+        for (Class<?> parameterType : method.getParameterTypes()) {
+            JsonObject argObject = new JsonObject();
+            argObject.addProperty("type", trimClassName(parameterType));
+            argObject.addProperty("name", argNames[methodArgs.size()]);
+            methodArgs.add(argObject);
+        }
+        json.add("args", methodArgs);
+
+        json.addProperty("returnType", trimClassName(method.getReturnType()));
+
+        json.add("notices", noticesList.stream().map(JsonPrimitive::new).collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
+
+        if (set.add(json.toString())) arr.add(json);
+    }
+    System.out.println(arr);
+}
+
+private static <E extends Throwable> ClassNode loadClassNode(final Class<?> clazz) throws E {
+    try {
+        ClassReader classReader = new ClassReader(Main.class.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/') + ".class").readAllBytes());
+        ClassNode classNode = new ClassNode();
+        classReader.accept(classNode, ClassReader.SKIP_FRAMES);
+        return classNode;
+    } catch (Throwable t) {
+        throw (E) t;
+    }
+}
+
+private static String trimClassName(final Class<?> clazz) {
+    String name = clazz.getName();
+    if (clazz.isArray()) name = clazz.getComponentType().getName();
+    if (name.startsWith("java.lang.") && name.split("\\.").length == 3) return name.split("\\.")[2];
+    return name;
+}
+
+private static Method findRedirect(final Method method, final ClassNode classNode) throws NoSuchMethodException {
+    MethodNode methodNode = classNode.methods.stream().filter(m -> m.name.equals(method.getName())).filter(m -> m.desc.equals(Type.getMethodDescriptor(method))).findFirst().orElse(null);
+    if (methodNode == null) return null;
+    String redirectName = null;
+    for (AbstractInsnNode instruction : methodNode.instructions) {
+        if (instruction.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+            if (redirectName == null) {
+                MethodInsnNode methodInsnNode = (MethodInsnNode) instruction;
+                if (!methodInsnNode.owner.equals(classNode.name)) return null;
+                if (!methodInsnNode.desc.equals(Type.getMethodDescriptor(method))) return null;
+                redirectName = methodInsnNode.name;
+            } else {
+                return null;
+            }
+        }
+    }
+    if (redirectName == null) return null;
+    return method.getDeclaringClass().getDeclaredMethod(redirectName, method.getParameterTypes());
+}
+
+private static String[] getArgNames(final Method method, final ClassNode classNode) {
+    String[] names = new String[method.getParameterCount()];
+    for (int i = 0; i < names.length; i++) names[i] = "arg" + i;
+
+    MethodNode methodNode = classNode.methods.stream().filter(m -> m.name.equals(method.getName())).filter(m -> m.desc.equals(Type.getMethodDescriptor(method))).findFirst().orElse(null);
+    if (methodNode == null) return names;
+    if (methodNode.localVariables == null) return names;
+
+    Type[] argTypes = Type.getArgumentTypes(method);
+    int index = 1;
+    for (int i = 0; i < names.length; i++) {
+        Type argType = argTypes[i];
+        for (int j = 0; j < methodNode.localVariables.size(); j++) {
+            if (methodNode.localVariables.get(j).index == index) {
+                names[i] = methodNode.localVariables.get(j).name;
+                break;
+            }
+        }
+        index += argType.getSize();
+    }
+    return names;
+}

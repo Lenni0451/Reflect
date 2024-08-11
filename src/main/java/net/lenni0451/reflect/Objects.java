@@ -2,12 +2,12 @@ package net.lenni0451.reflect;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
+import net.lenni0451.reflect.accessor.UnsafeAccess;
 import net.lenni0451.reflect.exceptions.InvalidOOPSizeException;
 
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 
-import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 import static net.lenni0451.reflect.utils.FieldInitializer.init;
 
 /**
@@ -16,9 +16,9 @@ import static net.lenni0451.reflect.utils.FieldInitializer.init;
 public class Objects {
 
     private static final ThreadLocal<Object[]> OBJECT_ARRAY_CACHE = ThreadLocal.withInitial(() -> new Object[1]);
-    public static final long ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(Object[].class);
-    public static final int ARRAY_INDEX_SCALE = UNSAFE.arrayIndexScale(Object[].class);
-    public static final int ADDRESS_SIZE = UNSAFE.addressSize();
+    public static final long ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(Object[].class);
+    public static final int ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(Object[].class);
+    public static final int ADDRESS_SIZE = UnsafeAccess.addressSize();
     public static final int OOP_SIZE = CompressedOopsClass.getOopSize();
     public static final int OBJECT_HEADER_SIZE = BooleanHeaderClass.getHeaderSize();
     public static final int ARRAY_HEADER_SIZE = OBJECT_HEADER_SIZE + 4;
@@ -58,8 +58,8 @@ public class Objects {
         Object[] array = OBJECT_ARRAY_CACHE.get();
         array[0] = o;
         long jvmAddress;
-        if (OOP_SIZE == 4) jvmAddress = UNSAFE.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
-        else if (OOP_SIZE == 8) jvmAddress = UNSAFE.getLong(array, ARRAY_BASE_OFFSET);
+        if (OOP_SIZE == 4) jvmAddress = UnsafeAccess.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
+        else if (OOP_SIZE == 8) jvmAddress = UnsafeAccess.getLong(array, ARRAY_BASE_OFFSET);
         else throw new InvalidOOPSizeException();
         array[0] = null;
         return jvmAddress;
@@ -116,8 +116,8 @@ public class Objects {
      */
     public static <T> T fromJVMAddress(final long jvmAddress) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
-        if (OOP_SIZE == 4) UNSAFE.putInt(array, ARRAY_BASE_OFFSET, (int) jvmAddress);
-        else if (OOP_SIZE == 8) UNSAFE.putLong(array, ARRAY_BASE_OFFSET, jvmAddress);
+        if (OOP_SIZE == 4) UnsafeAccess.putInt(array, ARRAY_BASE_OFFSET, (int) jvmAddress);
+        else if (OOP_SIZE == 8) UnsafeAccess.putLong(array, ARRAY_BASE_OFFSET, jvmAddress);
         else throw new InvalidOOPSizeException();
         Object o = array[0];
         array[0] = null;
@@ -145,7 +145,7 @@ public class Objects {
      * @param size       The size of the memory to copy
      */
     public static void copyMemory(final Object from, final long fromOffset, final Object to, final long toOffset, final long size) {
-        UNSAFE.copyMemory(toJVMAddress(from) + fromOffset, toJVMAddress(to) + toOffset, size);
+        UnsafeAccess.copyMemory(toJVMAddress(from) + fromOffset, toJVMAddress(to) + toOffset, size);
     }
 
     /**
@@ -158,7 +158,7 @@ public class Objects {
     @SneakyThrows
     public static long getKlass(final Class<?> clazz) {
         if (clazz.isArray()) return getKlass(Array.newInstance(clazz.getComponentType(), 0));
-        else return getKlass(UNSAFE.allocateInstance(clazz));
+        else return getKlass(UnsafeAccess.allocateInstance(clazz));
     }
 
     /**
@@ -169,8 +169,8 @@ public class Objects {
      * @throws InvalidOOPSizeException If the OOP size is not 4 or 8
      */
     public static long getKlass(final Object o) {
-        if (OOP_SIZE == 4) return UNSAFE.getInt(o, KLASS_OFFSET) & 0xFFFFFFFFL;
-        else if (OOP_SIZE == 8) return UNSAFE.getLong(o, KLASS_OFFSET);
+        if (OOP_SIZE == 4) return UnsafeAccess.getInt(o, KLASS_OFFSET) & 0xFFFFFFFFL;
+        else if (OOP_SIZE == 8) return UnsafeAccess.getLong(o, KLASS_OFFSET);
         else throw new InvalidOOPSizeException();
     }
 
@@ -210,8 +210,8 @@ public class Objects {
      */
     public static <T> T cast(final Object o, final long klass) {
         if (JVMConstants.OPENJ9_RUNTIME) throw new UnsupportedOperationException("OpenJ9 is not supported");
-        if (OOP_SIZE == 4) UNSAFE.putInt(o, KLASS_OFFSET, (int) klass);
-        else if (OOP_SIZE == 8) UNSAFE.putLong(o, KLASS_OFFSET, klass);
+        if (OOP_SIZE == 4) UnsafeAccess.putInt(o, KLASS_OFFSET, (int) klass);
+        else if (OOP_SIZE == 8) UnsafeAccess.putLong(o, KLASS_OFFSET, klass);
         else throw new InvalidOOPSizeException();
         return (T) o;
     }
@@ -227,7 +227,7 @@ public class Objects {
      */
     @SneakyThrows
     public static <T> T allocate(final Class<T> clazz) {
-        return (T) UNSAFE.allocateInstance(clazz);
+        return (T) UnsafeAccess.allocateInstance(clazz);
     }
 
 
@@ -236,8 +236,8 @@ public class Objects {
         public Object o2;
 
         private static int getOopSize() {
-            long o1 = UNSAFE.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o1"));
-            long o2 = UNSAFE.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o2"));
+            long o1 = UnsafeAccess.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o1"));
+            long o2 = UnsafeAccess.objectFieldOffset(Fields.getDeclaredField(CompressedOopsClass.class, "o2"));
             return (int) Math.abs(o2 - o1);
         }
     }
@@ -246,7 +246,7 @@ public class Objects {
         public boolean b;
 
         private static int getHeaderSize() {
-            long b = UNSAFE.objectFieldOffset(Fields.getDeclaredField(BooleanHeaderClass.class, "b"));
+            long b = UnsafeAccess.objectFieldOffset(Fields.getDeclaredField(BooleanHeaderClass.class, "b"));
             return (int) b;
         }
     }
