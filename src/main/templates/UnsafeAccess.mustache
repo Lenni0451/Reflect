@@ -2,6 +2,7 @@ package net.lenni0451.reflect.accessor;
 
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.JavaBypass;
+import net.lenni0451.reflect.Objects;
 
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
@@ -13,7 +14,9 @@ import java.lang.invoke.MethodType;
  * If a method is present in both classes, the method from jdk.internal.misc.Unsafe is used.<br>
  * <br>
  * Every method has comments describing where the method was found and if it is deprecated.<br>
- * Chances are, that methods deprecated in both classes will no longer work in future Java versions.
+ * Chances are, that methods deprecated in both classes will no longer work in future Java versions.<br>
+ * <br>
+ * <b>WARNING! Methods in this class may be removed at any time without prior notice! If you want a stable API, use the methods in the {@link Objects} class!</b>
  */
 public class UnsafeAccess {
 
