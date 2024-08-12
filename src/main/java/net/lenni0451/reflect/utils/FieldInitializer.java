@@ -3,6 +3,7 @@ package net.lenni0451.reflect.utils;
 import lombok.SneakyThrows;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -83,14 +84,75 @@ public class FieldInitializer {
         return processor.apply(value);
     }
 
+    @SneakyThrows
+    public static <C, T> T condReqInit(final ThrowingSupplier<C> condition, final ThrowingFunction<C, T> supplier, final Supplier<Throwable> exceptionSupplier) {
+        C cond;
+        try {
+            cond = condition.get();
+            if (cond == null) return null;
+        } catch (Throwable t) {
+            return null;
+        }
+        T value = supplier.apply(cond);
+        if (value == null) throw exceptionSupplier.get();
+        return value;
+    }
+
+    @SneakyThrows
+    public static <T> T process(final ThrowingSupplier<T> supplier, final Function<Throwable, Throwable> exceptionProcessor) {
+        try {
+            return supplier.get();
+        } catch (Throwable t) {
+            throw exceptionProcessor.apply(t);
+        }
+    }
+
 
     @FunctionalInterface
     public interface ThrowingSupplier<T> {
+        @SafeVarargs
+        static <T> ThrowingSupplier<T> getFirst(final ThrowingSupplier<T>... suppliers) {
+            return () -> {
+                Throwable cause = null;
+                for (ThrowingSupplier<T> supplier : suppliers) {
+                    try {
+                        T value = supplier.get();
+                        if (value != null) return value;
+                        throw new NullPointerException("Supplier returned null");
+                    } catch (Throwable t) {
+                        if (cause == null) cause = new IllegalStateException("All suppliers failed");
+                        cause.addSuppressed(t);
+                    }
+                }
+                if (cause == null) throw new IllegalStateException("All suppliers failed");
+                throw cause;
+            };
+        }
+
         T get() throws Throwable;
     }
 
     @FunctionalInterface
     public interface ThrowingFunction<A, R> {
+        @SafeVarargs
+        static <A, R> ThrowingFunction<A, R> getFirst(final ThrowingFunction<A, R>... functions) {
+            return a -> {
+                Throwable cause = null;
+                for (ThrowingFunction<A, R> function : functions) {
+                    try {
+                        R value = function.apply(a);
+                        if (value != null) return value;
+                        throw new NullPointerException("Function returned null");
+                    } catch (Throwable t) {
+                        if (cause == null) cause = new IllegalStateException("All functions failed");
+                        cause.addSuppressed(t);
+                    }
+                }
+                if (cause == null) throw new IllegalStateException("All functions failed");
+                throw cause;
+            };
+        }
+
         R apply(final A a) throws Throwable;
     }
 

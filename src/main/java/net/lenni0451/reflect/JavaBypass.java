@@ -7,6 +7,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
 import static net.lenni0451.reflect.JVMConstants.*;
+import static net.lenni0451.reflect.utils.FieldInitializer.ThrowingSupplier.getFirst;
+import static net.lenni0451.reflect.utils.FieldInitializer.*;
 
 /**
  * The main class for bypassing java restrictions.<br>
@@ -36,18 +38,21 @@ public class JavaBypass {
      * @throws IllegalStateException If the unsafe instance could not be gotten
      */
     public static Unsafe getUnsafe() {
-        Throwable cause = null;
-        try {
-            for (Field field : Unsafe.class.getDeclaredFields()) {
-                if (field.getType().equals(Unsafe.class)) {
-                    field.setAccessible(true);
-                    return (Unsafe) field.get(null);
-                }
-            }
-        } catch (Throwable t) {
-            cause = t;
-        }
-        throw new IllegalStateException("Unable to get Unsafe instance", cause);
+        return process(
+                () -> reqInit(
+                        () -> {
+                            for (Field field : Unsafe.class.getDeclaredFields()) {
+                                if (field.getType().equals(Unsafe.class)) {
+                                    field.setAccessible(true);
+                                    return (Unsafe) field.get(null);
+                                }
+                            }
+                            return null;
+                        },
+                        () -> new IllegalStateException("Unsafe field not found or was null")
+                ),
+                cause -> new IllegalStateException("Unable to get unsafe instance", cause)
+        );
     }
 
     /**
@@ -58,16 +63,18 @@ public class JavaBypass {
      * @throws IllegalStateException If the trusted lookup instance could not be gotten
      */
     public static MethodHandles.Lookup getTrustedLookup() {
-        Throwable cause;
-        try {
-            MethodHandles.lookup(); //Load class before getting the trusted lookup
-            Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
-            long lookupFieldOffset = UNSAFE.staticFieldOffset(lookupField);
-            return (MethodHandles.Lookup) UNSAFE.getObject(MethodHandles.Lookup.class, lookupFieldOffset);
-        } catch (Throwable t) {
-            cause = t;
-        }
-        throw new IllegalStateException("Unable to get trusted lookup", cause);
+        return process(
+                () -> reqInit(
+                        getFirst(() -> {
+                            MethodHandles.lookup(); //Load class before getting the trusted lookup
+                            Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
+                            long lookupFieldOffset = UNSAFE.staticFieldOffset(lookupField);
+                            return (MethodHandles.Lookup) UNSAFE.getObject(MethodHandles.Lookup.class, lookupFieldOffset);
+                        }),
+                        () -> new IllegalStateException("Lookup field was null")
+                ),
+                cause -> new IllegalStateException("Unable to get trusted lookup instance", cause)
+        );
     }
 
     /**
@@ -79,14 +86,19 @@ public class JavaBypass {
      */
     @Nullable
     public static Object getInternalUnsafe() {
-        try {
-            Class<?> unsafeClass = Class.forName(CLASS_INTERNAL_Unsafe);
-            for (Field field : unsafeClass.getDeclaredFields()) {
-                if (field.getType().equals(unsafeClass)) return TRUSTED_LOOKUP.unreflectGetter(field).invoke();
-            }
-        } catch (Throwable ignored) {
-        }
-        return null;
+        return process(
+                () -> condReqInit(
+                        () -> Class.forName(CLASS_INTERNAL_Unsafe),
+                        unsafeClass -> {
+                            for (Field field : unsafeClass.getDeclaredFields()) {
+                                if (field.getType().equals(unsafeClass)) return TRUSTED_LOOKUP.unreflectGetter(field).invoke();
+                            }
+                            return null;
+                        },
+                        () -> new IllegalStateException("Internal unsafe field not found or was null")
+                ),
+                cause -> new IllegalStateException("Unable to get internal unsafe instance", cause)
+        );
     }
 
     /**
