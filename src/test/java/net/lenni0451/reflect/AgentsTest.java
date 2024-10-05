@@ -16,6 +16,9 @@ class AgentsTest {
             Instrumentation instrumentation = assertDoesNotThrow(Agents::getInstrumentation);
             assertNotNull(instrumentation);
             assertNotNull(instrumentation.getAllLoadedClasses());
+            assertTrue(instrumentation.isRetransformClassesSupported());
+            assertTrue(instrumentation.isRedefineClassesSupported());
+            assertTrue(instrumentation.isNativeMethodPrefixSupported());
         }
     }
 

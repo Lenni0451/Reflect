@@ -100,6 +100,7 @@ public class Agents {
         manifest.getMainAttributes().putValue("Launcher-Agent-Class", agentName);
         manifest.getMainAttributes().putValue("Can-Redefine-Classes", "true");
         manifest.getMainAttributes().putValue("Can-Retransform-Classes", "true");
+        manifest.getMainAttributes().putValue("Can-Set-Native-Method-Prefix", "true");
         manifest.write(jos);
 
         jos.closeEntry();
