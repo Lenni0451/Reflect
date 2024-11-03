@@ -2,6 +2,8 @@ package net.lenni0451.reflect;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClassesTest {
@@ -29,6 +31,14 @@ class ClassesTest {
         assertThrows(ClassNotFoundException.class, () -> Classes.forName("UnknownClass"));
         assertThrows(ClassNotFoundException.class, () -> Classes.forName("UnknownClass", null));
         assertThrows(ClassNotFoundException.class, () -> Classes.forName("UnknownClass", true, null));
+    }
+
+    @Test
+    void find() {
+        assertThrows(ClassNotFoundException.class, () -> Classes.find("UnknownClass", true, ClassLoader.getSystemClassLoader()));
+        assertEquals(String.class, assertDoesNotThrow(() -> Classes.find("java.lang.String", true, ClassLoader.getSystemClassLoader())));
+        assertThrows(ClassNotFoundException.class, () -> Classes.find("UnknownClass", true, Collections.singletonList(ClassLoader.getSystemClassLoader())));
+        assertEquals(String.class, assertDoesNotThrow(() -> Classes.find("java.lang.String", true, Collections.singletonList(ClassLoader.getSystemClassLoader()))));
     }
 
 }

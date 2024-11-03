@@ -174,4 +174,44 @@ public class Classes {
         return Class.forName(name, initialize, loader);
     }
 
+    /**
+     * Get a class by its name from the first class loader that can find it.
+     *
+     * @param name       The name of the class
+     * @param initialize Whether to initialize the class
+     * @param loaders    The class loaders to get the class from
+     * @return The class or null if it doesn't exist
+     * @throws ClassNotFoundException If the class could not be found
+     */
+    @SneakyThrows
+    public static Class<?> find(final String name, final boolean initialize, final Iterable<ClassLoader> loaders) {
+        for (ClassLoader loader : loaders) {
+            try {
+                return Class.forName(name, initialize, loader);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        throw new ClassNotFoundException(name);
+    }
+
+    /**
+     * Get a class by its name from the first class loader that can find it.
+     *
+     * @param name       The name of the class
+     * @param initialize Whether to initialize the class
+     * @param loaders    The class loaders to get the class from
+     * @return The class or null if it doesn't exist
+     * @throws ClassNotFoundException If the class could not be found
+     */
+    @SneakyThrows
+    public static Class<?> find(final String name, final boolean initialize, final ClassLoader... loaders) {
+        for (ClassLoader loader : loaders) {
+            try {
+                return Class.forName(name, initialize, loader);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        throw new ClassNotFoundException(name);
+    }
+
 }
