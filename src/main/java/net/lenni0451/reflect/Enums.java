@@ -1,7 +1,7 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.reflect.exceptions.ConstructorNotFoundException;
 import net.lenni0451.reflect.exceptions.FieldNotFoundException;
-import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
@@ -56,7 +56,7 @@ public class Enums {
         System.arraycopy(arguments, 0, args, 2, arguments.length);
 
         Constructor<T> constructor = Constructors.getDeclaredConstructor(enumClass, types);
-        if (constructor == null) throw new MethodNotFoundException(enumClass.getSimpleName(), null, argumentTypes);
+        if (constructor == null) throw new ConstructorNotFoundException(enumClass.getSimpleName(), argumentTypes);
         return Constructors.invoke(constructor, args);
     }
 
