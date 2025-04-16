@@ -61,7 +61,7 @@ public class Agents {
             "CgAEAAkBAAlhZ2VudG1haW4BADsoTGphdmEvbGFuZy9TdHJpbmc7TGphdmEvbGFuZy9pbnN0cnVtZW50L0luc3RydW1lbnRhdGlv" +
             "bjspVgwABQAGCQACAA0BAAdwcmVtYWluAQAEQ29kZQABAAIABAAAAAEACQAFAAYAAAADAAEABwAIAAEAEAAAABEAAQABAAAABSq3" +
             "AAqxAAAAAAAJAAsADAABABAAAAARAAEAAgAAAAUrswAOsQAAAAAACQAPAAwAAQAQAAAAEQABAAIAAAAFK7MADrEAAAAAAAA=";
-    private static final String DUMMY_AGENT_CLASS_NAME = "net.lenni0451.reflect.AgentLoader";
+    private static final String DUMMY_AGENT_CLASS_NAME = String.join(".", "net", "lenni0451", "reflect", "AgentLoader"); //Prevent repackaging tools from changing the name
     private static final Class<?> instrumentationImpl = optInit(
             () -> Class.forName(CLASS_InstrumentationImpl)
     );
