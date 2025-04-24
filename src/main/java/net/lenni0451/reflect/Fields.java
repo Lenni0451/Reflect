@@ -49,10 +49,14 @@ public class Fields {
      *
      * @param instance The instance or null if the field is static
      * @param field    The field
-     * @return The instance if virtual, otherwise the declaring class of the field
+     * @return The instance if virtual, otherwise the static field base
      */
     public static Object instance(final Object instance, final Field field) {
-        return Modifier.isStatic(field.getModifiers()) ? field.getDeclaringClass() : instance;
+        if (Modifier.isStatic(field.getModifiers())) {
+            return UnsafeAccess.staticFieldBase(field);
+        } else {
+            return instance;
+        }
     }
 
 

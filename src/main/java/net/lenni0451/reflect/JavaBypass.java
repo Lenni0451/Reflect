@@ -70,7 +70,7 @@ public class JavaBypass {
                             MethodHandles.lookup(); //Load class before getting the trusted lookup
                             Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
                             long lookupFieldOffset = UNSAFE.staticFieldOffset(lookupField);
-                            return (MethodHandles.Lookup) UNSAFE.getObject(MethodHandles.Lookup.class, lookupFieldOffset);
+                            return (MethodHandles.Lookup) UNSAFE.getObject(UNSAFE.staticFieldBase(lookupField), lookupFieldOffset);
                         }, () -> {
                             MethodHandles.Lookup lookup = (MethodHandles.Lookup) ReflectionFactory.getReflectionFactory()
                                     .newConstructorForSerialization(MethodHandles.Lookup.class, MethodHandles.Lookup.class.getDeclaredConstructor(Class.class))
