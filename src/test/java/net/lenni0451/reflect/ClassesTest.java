@@ -41,4 +41,9 @@ class ClassesTest {
         assertEquals(String.class, assertDoesNotThrow(() -> Classes.find("java.lang.String", true, Collections.singletonList(ClassLoader.getSystemClassLoader()))));
     }
 
+    @Test
+    void getCallerClass() {
+        assertEquals(ClassesTest.class, Classes.getCallerClass(0));
+    }
+
 }

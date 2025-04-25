@@ -214,4 +214,17 @@ public class Classes {
         throw new ClassNotFoundException(name);
     }
 
+    /**
+     * Get the class of the caller.<br>
+     * Depth 0 is the caller of this method, depth 1 is the caller of the caller, etc.<br>
+     * If the depth is too high, {@code null} will be returned.
+     *
+     * @param depth The depth of the caller
+     * @return The class of the caller
+     */
+    @SneakyThrows
+    public static Class<?> getCallerClass(final int depth) {
+        return Classes$MR.getCallerClass(depth);
+    }
+
 }
