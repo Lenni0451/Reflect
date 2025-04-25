@@ -100,6 +100,19 @@ public class Classes {
     }
 
     /**
+     * Get a class by its name.<br>
+     * The {@code loader} parameter is set to the caller class loader.
+     *
+     * @param name       The name of the class
+     * @param initialize Whether to initialize the class
+     * @return The class or null if it doesn't exist
+     */
+    @Nullable
+    public static Class<?> byName(final String name, final boolean initialize) {
+        return byName(name, initialize, getCallerClass(1).getClassLoader());
+    }
+
+    /**
      * Get a class by its name from a given class loader.<br>
      * The {@code initialize} parameter is set to true.
      *
@@ -142,6 +155,20 @@ public class Classes {
     @SneakyThrows
     public static Class<?> forName(final String name) {
         return Class.forName(name);
+    }
+
+    /**
+     * Get a class by its name from.<br>
+     * The {@code loader} parameter is set to the caller class loader.
+     *
+     * @param name       The name of the class
+     * @param initialize Whether to initialize the class
+     * @return The class or null if it doesn't exist
+     * @throws ClassNotFoundException If the class could not be found
+     */
+    @Nonnull
+    public static Class<?> forName(final String name, final boolean initialize) {
+        return forName(name, initialize, getCallerClass(1).getClassLoader());
     }
 
     /**

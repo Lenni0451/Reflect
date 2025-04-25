@@ -16,6 +16,7 @@ class ClassesTest {
     @Test
     void byName() {
         assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String")));
+        assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String", true)));
         assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String", null)));
         assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String", true, null)));
         assertNull(assertDoesNotThrow(() -> Classes.byName("UnknownClass")));
@@ -26,6 +27,7 @@ class ClassesTest {
     @Test
     void forName() {
         assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String")));
+        assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String", true)));
         assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String", null)));
         assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String", true, null)));
         assertThrows(ClassNotFoundException.class, () -> Classes.forName("UnknownClass"));
