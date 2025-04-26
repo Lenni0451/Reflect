@@ -118,12 +118,13 @@ class LocalStackFrameImpl implements LocalStackFrame {
         Object[] array = (Object[]) getter.invokeExact(this.parent);
         Object[] converted = new Object[array.length];
         for (int i = 0; i < array.length; i++) {
-            if (primitiveSlot32.isInstance(array[0])) {
-                converted[i] = new PrimitiveValue(4, (int) primitiveSlot32_value.invokeExact(array[i]));
-            } else if (primitiveSlot64.isInstance(array[0])) {
-                converted[i] = new PrimitiveValue(8, (long) primitiveSlot64_value.invokeExact(array[i]));
+            Object item = array[i];
+            if (primitiveSlot32.isInstance(item)) {
+                converted[i] = new PrimitiveValue(4, (int) primitiveSlot32_value.invokeExact(item));
+            } else if (primitiveSlot64.isInstance(item)) {
+                converted[i] = new PrimitiveValue(8, (long) primitiveSlot64_value.invokeExact(item));
             } else {
-                converted[i] = array[i];
+                converted[i] = item;
             }
         }
         return converted;
