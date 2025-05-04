@@ -100,6 +100,19 @@ public class Classes {
     }
 
     /**
+     * Get a class by its name.<br>
+     * The {@code loader} parameter is set to the caller class loader.
+     *
+     * @param name       The name of the class
+     * @param initialize Whether to initialize the class
+     * @return The class or null if it doesn't exist
+     */
+    @Nullable
+    public static Class<?> byName(final String name, final boolean initialize) {
+        return byName(name, initialize, getCallerClass(1).getClassLoader());
+    }
+
+    /**
      * Get a class by its name from a given class loader.<br>
      * The {@code initialize} parameter is set to true.
      *
@@ -142,6 +155,20 @@ public class Classes {
     @SneakyThrows
     public static Class<?> forName(final String name) {
         return Class.forName(name);
+    }
+
+    /**
+     * Get a class by its name from.<br>
+     * The {@code loader} parameter is set to the caller class loader.
+     *
+     * @param name       The name of the class
+     * @param initialize Whether to initialize the class
+     * @return The class or null if it doesn't exist
+     * @throws ClassNotFoundException If the class could not be found
+     */
+    @Nonnull
+    public static Class<?> forName(final String name, final boolean initialize) {
+        return forName(name, initialize, getCallerClass(1).getClassLoader());
     }
 
     /**
@@ -212,6 +239,19 @@ public class Classes {
             }
         }
         throw new ClassNotFoundException(name);
+    }
+
+    /**
+     * Get the class of the caller.<br>
+     * Depth 0 is the caller of this method, depth 1 is the caller of the caller, etc.<br>
+     * If the depth is too high, {@code null} will be returned.
+     *
+     * @param depth The depth of the caller
+     * @return The class of the caller
+     */
+    @SneakyThrows
+    public static Class<?> getCallerClass(final int depth) {
+        return Classes$MR.getCallerClass(depth);
     }
 
 }

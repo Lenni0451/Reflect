@@ -1,45 +1,64 @@
 plugins {
-    id "java-library"
     id "maven-publish"
     id "signing"
-    id "checkstyle"
     id "net.lenni0451.template-processor" version "1.0.0"
 }
 
-base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-    compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
+allprojects {
+    apply plugin: "java-library"
+    apply plugin: "checkstyle"
 
-    archivesName = project.maven_name ?: rootProject.maven_name
-    group = project.maven_group ?: rootProject.maven_group
-    version = project.maven_version ?: rootProject.maven_version
-}
+    base {
+        java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+        compileJava.options.encoding = compileTestJava.options.encoding = javadoc.options.encoding = "UTF-8"
 
-repositories {
-    mavenCentral()
-}
+        archivesName = project.maven_name ?: rootProject.maven_name
+        group = project.maven_group ?: rootProject.maven_group
+        version = project.maven_version ?: rootProject.maven_version
+    }
 
-dependencies {
-    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-    compileOnly "org.jetbrains:annotations:26.0.2"
-    compileOnly(annotationProcessor("org.projectlombok:lombok:1.18.38"))
+    repositories {
+        mavenCentral()
+    }
 
-    testImplementation "org.ow2.asm:asm:9.8"
-    testImplementation(platform("org.junit:junit-bom:5.12.2"))
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
-    testCompileOnly(testAnnotationProcessor("org.projectlombok:lombok:1.18.38"))
-}
+    dependencies {
+        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+        compileOnly "org.jetbrains:annotations:26.0.2"
+        compileOnly(annotationProcessor("org.projectlombok:lombok:1.18.38"))
 
-java {
-    withSourcesJar()
-    withJavadocJar()
+        testImplementation "org.ow2.asm:asm:9.8"
+        testImplementation(platform("org.junit:junit-bom:5.12.2"))
+        testImplementation "org.junit.jupiter:junit-jupiter"
+        testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+        testCompileOnly(testAnnotationProcessor("org.projectlombok:lombok:1.18.38"))
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+        maxParallelForks Runtime.runtime.availableProcessors()
+    }
+
+    checkstyle {
+        toolVersion = "9.3" //Latest version for Java 8: 9.3
+        configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+    }
+
+    build.dependsOn(test)
+    build.dependsOn(check)
 }
 
 templateProcessor {
     templateDir = project.file("src/main/templates")
     outputDir = layout.buildDirectory.dir("generated/templates/main/java")
     markAsSource(project.sourceSets.main)
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 artifacts {
@@ -50,12 +69,15 @@ javadoc {
     failOnError = false
 }
 
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
+jar {
+    manifest {
+        attributes "Multi-Release": "true"
     }
-    maxParallelForks Runtime.runtime.availableProcessors()
+
+    dependsOn ":j9:classes"
+    from(project(":j9").sourceSets.main.output) {
+        into "META-INF/versions/9"
+    }
 }
 
 publishing {
@@ -116,11 +138,6 @@ publishing {
     }
 }
 
-checkstyle {
-    toolVersion = "9.3" //Latest version for Java 8: 9.3
-    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-}
-
 signing {
     setRequired false
     sign configurations.archives
@@ -130,5 +147,3 @@ signing {
 project.tasks.withType(PublishToMavenRepository).forEach {
     it.dependsOn(project.tasks.withType(Sign))
 }
-build.dependsOn(test)
-build.dependsOn(check)

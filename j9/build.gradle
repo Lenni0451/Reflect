@@ -1,0 +1,11 @@
+base {
+    java.toolchain.languageVersion = JavaLanguageVersion.of(9)
+}
+
+configurations {
+    testImplementation.extendsFrom compileOnly
+}
+
+dependencies {
+    compileOnly project(":")
+}

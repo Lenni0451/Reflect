@@ -16,6 +16,7 @@ class ClassesTest {
     @Test
     void byName() {
         assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String")));
+        assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String", true)));
         assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String", null)));
         assertNotNull(assertDoesNotThrow(() -> Classes.byName("java.lang.String", true, null)));
         assertNull(assertDoesNotThrow(() -> Classes.byName("UnknownClass")));
@@ -26,6 +27,7 @@ class ClassesTest {
     @Test
     void forName() {
         assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String")));
+        assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String", true)));
         assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String", null)));
         assertNotNull(assertDoesNotThrow(() -> Classes.forName("java.lang.String", true, null)));
         assertThrows(ClassNotFoundException.class, () -> Classes.forName("UnknownClass"));
@@ -39,6 +41,11 @@ class ClassesTest {
         assertEquals(String.class, assertDoesNotThrow(() -> Classes.find("java.lang.String", true, ClassLoader.getSystemClassLoader())));
         assertThrows(ClassNotFoundException.class, () -> Classes.find("UnknownClass", true, Collections.singletonList(ClassLoader.getSystemClassLoader())));
         assertEquals(String.class, assertDoesNotThrow(() -> Classes.find("java.lang.String", true, Collections.singletonList(ClassLoader.getSystemClassLoader()))));
+    }
+
+    @Test
+    void getCallerClass() {
+        assertEquals(ClassesTest.class, Classes.getCallerClass(0));
     }
 
 }

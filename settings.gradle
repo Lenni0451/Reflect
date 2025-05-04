@@ -13,3 +13,5 @@ plugins {
 }
 
 rootProject.name = "Reflect"
+
+include("j9")
