@@ -121,7 +121,7 @@ public class ConstructorStream {
      * @param parameterTypes The parameter types of the constructor
      * @return This stream
      */
-    public ConstructorStream filter(@Nullable final Class<?>... parameterTypes) {
+    public ConstructorStream filterParameters(@Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             return this.filter(constructor -> constructor.parameterCount() == 0);
         } else {
@@ -136,7 +136,7 @@ public class ConstructorStream {
      * @param isStatic Whether the constructor should be static
      * @return This stream
      */
-    public ConstructorStream filter(final boolean isStatic) {
+    public ConstructorStream filterStatic(final boolean isStatic) {
         return this.filter(constructor -> constructor.modifier().isStatic() == isStatic);
     }
 
@@ -194,6 +194,17 @@ public class ConstructorStream {
      */
     public ConstructorStream copy() {
         return new ConstructorStream(this.parent, new ArrayList<>(this.constructors));
+    }
+
+
+    @Deprecated
+    public ConstructorStream filter(@Nullable final Class<?>... parameterTypes) {
+        return this.filterParameters(parameterTypes);
+    }
+
+    @Deprecated
+    public ConstructorStream filter(final boolean isStatic) {
+        return this.filterStatic(isStatic);
     }
 
 }

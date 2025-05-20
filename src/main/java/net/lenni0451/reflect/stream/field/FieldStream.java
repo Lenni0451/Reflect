@@ -123,7 +123,7 @@ public class FieldStream {
      * @param names The names of the fields
      * @return This stream
      */
-    public FieldStream filter(final Collection<String> names) {
+    public FieldStream filterNames(final Collection<String> names) {
         return this.filter(f -> names.contains(f.name()));
     }
 
@@ -134,7 +134,7 @@ public class FieldStream {
      * @param names The names of the fields
      * @return This stream
      */
-    public FieldStream filter(final String... names) {
+    public FieldStream filterNames(final String... names) {
         return this.filter(Arrays.asList(names));
     }
 
@@ -145,7 +145,7 @@ public class FieldStream {
      * @param clazz The type
      * @return This stream
      */
-    public FieldStream filter(final Class<?> clazz) {
+    public FieldStream filterType(final Class<?> clazz) {
         return this.filter(field -> field.type().equals(clazz));
     }
 
@@ -156,7 +156,7 @@ public class FieldStream {
      * @param isStatic Whether the fields should be static
      * @return This stream
      */
-    public FieldStream filter(final boolean isStatic) {
+    public FieldStream filterStatic(final boolean isStatic) {
         return this.filter(field -> field.modifier().isStatic() == isStatic);
     }
 
@@ -214,6 +214,27 @@ public class FieldStream {
      */
     public FieldStream copy() {
         return new FieldStream(this.parent, new ArrayList<>(this.fields));
+    }
+
+
+    @Deprecated
+    public FieldStream filter(final Collection<String> names) {
+        return this.filterNames(names);
+    }
+
+    @Deprecated
+    public FieldStream filter(final String... names) {
+        return this.filterNames(names);
+    }
+
+    @Deprecated
+    public FieldStream filter(final Class<?> type) {
+        return this.filterType(type);
+    }
+
+    @Deprecated
+    public FieldStream filter(final boolean isStatic) {
+        return this.filterStatic(isStatic);
     }
 
 }

@@ -192,7 +192,7 @@ public class MethodStream {
      * @param name The name of the method
      * @return This stream
      */
-    public MethodStream filter(final String name) {
+    public MethodStream filterName(final String name) {
         return this.filter(method -> method.name().equals(name));
     }
 
@@ -203,7 +203,7 @@ public class MethodStream {
      * @param names The names of the methods
      * @return This stream
      */
-    public MethodStream filter(final Collection<String> names) {
+    public MethodStream filterNames(final Collection<String> names) {
         return this.filter(method -> names.contains(method.name()));
     }
 
@@ -214,7 +214,7 @@ public class MethodStream {
      * @param names The names of the methods
      * @return This stream
      */
-    public MethodStream filter(final String... names) {
+    public MethodStream filterNames(final String... names) {
         return this.filter(Arrays.asList(names));
     }
 
@@ -225,7 +225,7 @@ public class MethodStream {
      * @param parameterTypes The parameter types of the method
      * @return This stream
      */
-    public MethodStream filter(@Nullable final Class<?>... parameterTypes) {
+    public MethodStream filterParameters(@Nullable final Class<?>... parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
             return this.filter(method -> method.parameterCount() == 0);
         } else {
@@ -240,7 +240,7 @@ public class MethodStream {
      * @param isStatic Whether the methods should be static
      * @return This stream
      */
-    public MethodStream filter(final boolean isStatic) {
+    public MethodStream filterStatic(final boolean isStatic) {
         return this.filter(method -> method.modifier().isStatic() == isStatic);
     }
 
@@ -298,6 +298,32 @@ public class MethodStream {
      */
     public MethodStream copy() {
         return new MethodStream(this.parent, new ArrayList<>(this.methods));
+    }
+
+
+    @Deprecated
+    public MethodStream filter(final String name) {
+        return this.filterName(name);
+    }
+
+    @Deprecated
+    public MethodStream filter(final Collection<String> names) {
+        return this.filterNames(names);
+    }
+
+    @Deprecated
+    public MethodStream filter(final String... names) {
+        return this.filterNames(names);
+    }
+
+    @Deprecated
+    public MethodStream filter(@Nullable final Class<?>... parameterTypes) {
+        return this.filterParameters(parameterTypes);
+    }
+
+    @Deprecated
+    public MethodStream filter(final boolean isStatic) {
+        return this.filterStatic(isStatic);
     }
 
 }
