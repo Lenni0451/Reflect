@@ -15,6 +15,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static net.lenni0451.reflect.accessor.AccessorUtils.addConstructor;
+import static net.lenni0451.reflect.accessor.AccessorUtils.makeAccessorName;
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
 /**
@@ -40,7 +41,7 @@ public class MethodAccessor {
      */
     @SneakyThrows
     public static <I> I makeInvoker(@Nonnull final Class<I> invokerClass, final Object instance, @Nonnull final Method method) {
-        String newClassName = slash(method.getDeclaringClass()) + "$MethodInvoker";
+        String newClassName = makeAccessorName("MethodInvoker", method.getDeclaringClass(), method.getName());
         boolean staticMethod = Modifier.isStatic(method.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, method, false);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
@@ -92,8 +93,9 @@ public class MethodAccessor {
      * @return The invoker instance implementation
      */
     public static <R> Function<Object[], R> makeArrayInvoker(final Object instance, @Nonnull final Method method) {
+        String newClassName = makeAccessorName("ArrayMethodInvoker", method.getDeclaringClass(), method.getName());
         boolean staticMethod = Modifier.isStatic(method.getModifiers());
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), slash(method.getDeclaringClass()) + "$ArrayMethodInvoker", null, slash(Object.class), new String[]{slash(Function.class)}, cb -> {
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(Function.class)}, cb -> {
             //Disable the inspection because the instance parameter can be null. Just invoking getClass() here would throw an exception
             //noinspection Convert2MethodRef
             addConstructor(BUILDER, cb, () -> instance.getClass(), staticMethod);
@@ -148,7 +150,7 @@ public class MethodAccessor {
      */
     public static <I> I makeDynamicInvoker(@Nonnull final Class<I> invokerClass, @Nonnull final Method method) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
-        String newClassName = slash(method.getDeclaringClass()) + "$DynamicMethodInvoker";
+        String newClassName = makeAccessorName("DynamicMethodInvoker", method.getDeclaringClass(), method.getName());
         Method invokerMethod = findInvokerMethod(invokerClass, method, true);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
             addConstructor(BUILDER, cb, null, false);
@@ -183,7 +185,8 @@ public class MethodAccessor {
      */
     public static <I, R> BiFunction<I, Object[], R> makeDynamicArrayInvoker(@Nonnull final Method method) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Dynamic invoker can only be used for non-static methods");
-        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), slash(method.getDeclaringClass()) + "$DynamicArrayMethodInvoker", null, slash(Object.class), new String[]{slash(BiFunction.class)}, cb -> {
+        String newClassName = makeAccessorName("DynamicArrayMethodInvoker", method.getDeclaringClass(), method.getName());
+        BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(BiFunction.class)}, cb -> {
             addConstructor(BUILDER, cb, null, false);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), "apply", mdesc(Object.class, Object.class, Object.class), null, null, mb -> {
                 mb

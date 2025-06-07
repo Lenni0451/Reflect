@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import static net.lenni0451.reflect.accessor.AccessorUtils.addConstructor;
+import static net.lenni0451.reflect.accessor.AccessorUtils.makeAccessorName;
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 
 /**
@@ -38,7 +39,7 @@ public class FieldAccessor {
      */
     @SneakyThrows
     public static <I> I makeSetter(@Nonnull final Class<?> invokerClass, final Object instance, @Nonnull final Field field) {
-        String newClassName = slash(field.getDeclaringClass()) + "$FieldSetter";
+        String newClassName = makeAccessorName("FieldSetter", field.getDeclaringClass(), field.getName());
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getType()}, void.class);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
@@ -86,7 +87,7 @@ public class FieldAccessor {
     @SneakyThrows
     public static <I> I makeDynamicSetter(@Nonnull final Class<I> invokerClass, @Nonnull final Field field) {
         if (Modifier.isStatic(field.getModifiers())) throw new IllegalArgumentException("Dynamic setter can only be used for non-static fields");
-        String newClassName = slash(field.getDeclaringClass()) + "$DynamicFieldSetter";
+        String newClassName = makeAccessorName("DynamicFieldSetter", field.getDeclaringClass(), field.getName());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass(), field.getType()}, void.class);
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
             addConstructor(BUILDER, cb, null, Modifier.isStatic(field.getModifiers()));
@@ -120,7 +121,7 @@ public class FieldAccessor {
      */
     @SneakyThrows
     public static <I> I makeGetter(@Nonnull final Class<I> invokerClass, final Object instance, @Nonnull final Field field) {
-        String newClassName = slash(field.getDeclaringClass()) + "$FieldGetter";
+        String newClassName = makeAccessorName("FieldGetter", field.getDeclaringClass(), field.getName());
         boolean staticField = Modifier.isStatic(field.getModifiers());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[0], field.getType());
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
@@ -165,7 +166,7 @@ public class FieldAccessor {
     @SneakyThrows
     public static <I> I makeDynamicGetter(@Nonnull final Class<I> invokerClass, @Nonnull final Field field) {
         if (Modifier.isStatic(field.getModifiers())) throw new IllegalArgumentException("Dynamic setter can only be used for non-static fields");
-        String newClassName = slash(field.getDeclaringClass()) + "$DynamicFieldGetter";
+        String newClassName = makeAccessorName("DynamicFieldGetter", field.getDeclaringClass(), field.getName());
         Method invokerMethod = findInvokerMethod(invokerClass, new Class[]{field.getDeclaringClass()}, field.getType());
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
             addConstructor(BUILDER, cb, null, Modifier.isStatic(field.getModifiers()));
