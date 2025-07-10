@@ -55,19 +55,19 @@ public class MethodAccessor {
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 if (staticMethod) {
                     pushArgs(mb, invokerMethod.getParameterTypes(), method.getParameterTypes());
-                    mb.method(BUILDER.opcode("INVOKESTATIC"), methodClass, method.getName(), methodDesc, interfaceMethod);
+                    mb.invokestatic(methodClass, method.getName(), methodDesc, interfaceMethod);
                 } else {
-                    mb.var(BUILDER.opcode("ALOAD"), 0);
-                    mb.field(BUILDER.opcode("GETFIELD"), newClassName, "instance", desc(instance.getClass()));
+                    mb.aload(0);
+                    mb.getfield(newClassName, "instance", desc(instance.getClass()));
                     pushArgs(mb, invokerMethod.getParameterTypes(), method.getParameterTypes());
                     if (interfaceMethod) {
-                        mb.method(BUILDER.opcode("INVOKEINTERFACE"), methodClass, method.getName(), methodDesc, true);
+                        mb.invokeinterface(methodClass, method.getName(), methodDesc, true);
                     } else {
-                        mb.method(BUILDER.opcode("INVOKEVIRTUAL"), methodClass, method.getName(), methodDesc, false);
+                        mb.invokevirtual(methodClass, method.getName(), methodDesc, false);
                     }
                 }
-                if (!method.getReturnType().equals(invokerMethod.getReturnType())) mb.type(BUILDER.opcode("CHECKCAST"), slash(invokerMethod.getReturnType()));
-                mb.insn(BUILDER.opcode(getReturnOpcode(invokerMethod.getReturnType())));
+                if (!method.getReturnType().equals(invokerMethod.getReturnType())) mb.checkcast(slash(invokerMethod.getReturnType()));
+                mb.return_(invokerMethod.getReturnType());
                 mb.maxs(invokerMethod.getParameterCount() + 1, invokerMethod.getParameterCount() + 1);
             });
         });
@@ -106,23 +106,23 @@ public class MethodAccessor {
             cb.method(BUILDER.opcode("ACC_PUBLIC"), "apply", mdesc(Object.class, Object.class), null, null, mb -> {
                 if (!staticMethod) {
                     mb
-                            .var(BUILDER.opcode("ALOAD"), 0)
-                            .field(BUILDER.opcode("GETFIELD"), cb.getName(), "instance", desc(instance.getClass()));
+                            .aload(0)
+                            .getfield(cb.getName(), "instance", desc(instance.getClass()));
                 }
                 pushArrayArgs(mb, method, 1);
                 if (staticMethod) {
-                    mb.method(BUILDER.opcode("INVOKESTATIC"), methodClass, method.getName(), methodDesc, interfaceMethod);
+                    mb.invokestatic(methodClass, method.getName(), methodDesc, interfaceMethod);
                 } else {
                     if (interfaceMethod) {
-                        mb.method(BUILDER.opcode("INVOKEINTERFACE"), methodClass, method.getName(), methodDesc, true);
+                        mb.invokeinterface(methodClass, method.getName(), methodDesc, true);
                     } else {
-                        mb.method(BUILDER.opcode("INVOKEVIRTUAL"), methodClass, method.getName(), methodDesc, false);
+                        mb.invokevirtual(methodClass, method.getName(), methodDesc, false);
                     }
                 }
-                if (method.getReturnType() == void.class) mb.insn(BUILDER.opcode("ACONST_NULL"));
+                if (method.getReturnType() == void.class) mb.aconstNull();
                 else mb.box(BUILDER, method.getReturnType());
                 mb
-                        .insn(BUILDER.opcode("ARETURN"))
+                        .areturn()
                         .maxs(method.getParameterCount() + 2, 2);
             });
         });
@@ -157,12 +157,12 @@ public class MethodAccessor {
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 pushArgs(mb, invokerMethod.getParameterTypes(), prepend(method.getParameterTypes(), method.getDeclaringClass()));
                 if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
-                    mb.method(BUILDER.opcode("INVOKEINTERFACE"), slash(method.getDeclaringClass()), method.getName(), desc(method), true);
+                    mb.invokeinterface(slash(method.getDeclaringClass()), method.getName(), desc(method), true);
                 } else {
-                    mb.method(BUILDER.opcode("INVOKEVIRTUAL"), slash(method.getDeclaringClass()), method.getName(), desc(method), false);
+                    mb.invokevirtual(slash(method.getDeclaringClass()), method.getName(), desc(method), false);
                 }
-                if (!method.getReturnType().equals(invokerMethod.getReturnType())) mb.type(BUILDER.opcode("CHECKCAST"), slash(invokerMethod.getReturnType()));
-                mb.insn(BUILDER.opcode(getReturnOpcode(invokerMethod.getReturnType())));
+                if (!method.getReturnType().equals(invokerMethod.getReturnType())) mb.checkcast(slash(invokerMethod.getReturnType()));
+                mb.return_(invokerMethod.getReturnType());
                 mb.maxs(invokerMethod.getParameterCount() + 1, invokerMethod.getParameterCount() + 1);
             });
         });
@@ -190,18 +190,18 @@ public class MethodAccessor {
             addConstructor(BUILDER, cb, null, false);
             cb.method(BUILDER.opcode("ACC_PUBLIC"), "apply", mdesc(Object.class, Object.class, Object.class), null, null, mb -> {
                 mb
-                        .var(BUILDER.opcode("ALOAD"), 1)
-                        .type(BUILDER.opcode("CHECKCAST"), slash(method.getDeclaringClass()));
+                        .aload(1)
+                        .checkcast(slash(method.getDeclaringClass()));
                 pushArrayArgs(mb, method, 2);
                 if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
-                    mb.method(BUILDER.opcode("INVOKEINTERFACE"), slash(method.getDeclaringClass()), method.getName(), desc(method), true);
+                    mb.invokeinterface(slash(method.getDeclaringClass()), method.getName(), desc(method), true);
                 } else {
-                    mb.method(BUILDER.opcode("INVOKEVIRTUAL"), slash(method.getDeclaringClass()), method.getName(), desc(method), false);
+                    mb.invokevirtual(slash(method.getDeclaringClass()), method.getName(), desc(method), false);
                 }
-                if (method.getReturnType() == void.class) mb.insn(BUILDER.opcode("ACONST_NULL"));
+                if (method.getReturnType() == void.class) mb.aconstNull();
                 else mb.box(BUILDER, method.getReturnType());
                 mb
-                        .insn(BUILDER.opcode("ARETURN"))
+                        .areturn()
                         .maxs(method.getParameterCount() + 2, 3);
             });
         });
@@ -245,24 +245,24 @@ public class MethodAccessor {
         for (int i = 0; i < supplied.length; i++) {
             Class<?> suppliedType = supplied[i];
             Class<?> targetType = target[i];
-            mb.var(BUILDER.opcode(getLoadOpcode(suppliedType)), stack);
-            if (!suppliedType.equals(targetType)) mb.type(BUILDER.opcode("CHECKCAST"), slash(targetType));
+            mb.load(suppliedType, stack);
+            if (!suppliedType.equals(targetType)) mb.checkcast(slash(targetType));
             stack += getStackSize(suppliedType);
         }
     }
 
     private static void pushArrayArgs(final MethodBuilder mb, final Method method, final int arrayIndex) {
         mb
-                .var(BUILDER.opcode("ALOAD"), arrayIndex)
-                .type(BUILDER.opcode("CHECKCAST"), desc(Object[].class))
-                .var(BUILDER.opcode("ASTORE"), arrayIndex);
+                .aload(arrayIndex)
+                .checkcast(desc(Object[].class))
+                .astore(arrayIndex);
         for (int i = 0; i < method.getParameterCount(); i++) {
             Class<?> parameter = method.getParameterTypes()[i];
             mb
-                    .var(BUILDER.opcode("ALOAD"), arrayIndex)
-                    .intPush(BUILDER, i)
-                    .insn(BUILDER.opcode("AALOAD"))
-                    .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
+                    .aload(arrayIndex)
+                    .intPush(i)
+                    .aaload()
+                    .checkcast(slash(boxed(parameter)))
                     .unbox(BUILDER, parameter);
         }
     }

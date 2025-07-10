@@ -248,24 +248,24 @@ public class ProxyBuilder {
     private void addConstructors(final ClassBuilder cb) {
         if (this.superClass == null) {
             cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class), null, null, mb -> mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
-                    .insn(BUILDER.opcode("RETURN"))
+                    .aload(0)
+                    .invokespecial(slash(Object.class), "<init>", mdesc(void.class), false)
+                    .return_()
                     .maxs(1, 1)
             );
         } else {
             Constructor<?>[] constructors = ProxyUtils.getPublicConstructors(this.superClass);
             for (Constructor<?> constructor : constructors) {
                 cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class, constructor.getParameterTypes()), null, null, mb -> {
-                    mb.var(BUILDER.opcode("ALOAD"), 0);
+                    mb.aload(0);
                     int index = 1;
                     for (Class<?> parameter : constructor.getParameterTypes()) {
-                        mb.var(BUILDER.opcode(getLoadOpcode(parameter)), index);
+                        mb.load(parameter, index);
                         index += getStackSize(parameter);
                     }
                     mb
-                            .method(BUILDER.opcode("INVOKESPECIAL"), slash(this.superClass), "<init>", mdesc(void.class, constructor.getParameterTypes()), false)
-                            .insn(BUILDER.opcode("RETURN"))
+                            .invokespecial(slash(this.superClass), "<init>", mdesc(void.class, constructor.getParameterTypes()), false)
+                            .return_()
                             .maxs(index, index);
                 });
             }
@@ -289,53 +289,53 @@ public class ProxyBuilder {
                 BytecodeLabel elseLabel = BUILDER.label();
 
                 mb
-                        .var(BUILDER.opcode("ALOAD"), 0) //this
-                        .field(BUILDER.opcode("GETFIELD"), cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class)) //this.invocationHandler
-                        .var(BUILDER.opcode("ALOAD"), 0) //this.invocationHandler, this
-                        .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, this
-                        .field(BUILDER.opcode("GETFIELD"), cb.getName(), "method" + methodId, desc(ProxyMethod.class)) //this.invocationHandler, this, this.methodN
-                        .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, this.methodN, this.methodN
-                        .jump(BUILDER.opcode("IFNONNULL"), elseLabel) //this.invocationHandler, this, this.methodN
-                        .insn(BUILDER.opcode("POP")); //this.invocationHandler, this
+                        .aload(0) //this
+                        .getfield(cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class)) //this.invocationHandler
+                        .aload(0) //this.invocationHandler, this
+                        .dup() //this.invocationHandler, this, this
+                        .getfield(cb.getName(), "method" + methodId, desc(ProxyMethod.class)) //this.invocationHandler, this, this.methodN
+                        .dup() //this.invocationHandler, this, this.methodN, this.methodN
+                        .ifnonnull(elseLabel) //this.invocationHandler, this, this.methodN
+                        .pop(); //this.invocationHandler, this
                 mb
-                        .var(BUILDER.opcode("ALOAD"), 0) //^, this
-                        .field(BUILDER.opcode("GETSTATIC"), cb.getName(), PROXY_METHOD_CLASSES_FIELD, desc(Class[].class)) //^, this, PROXY_METHOD_CLASSES
-                        .intPush(BUILDER, methodId) //^, this, PROXY_METHOD_CLASSES, methodId
-                        .insn(BUILDER.opcode("AALOAD")) //^, this, proxyMethodClass
-                        .var(BUILDER.opcode("ALOAD"), 0) //^, this, proxyMethodClass, this
-                        .field(BUILDER.opcode("GETSTATIC"), cb.getName(), METHODS_FIELD, desc(Method[].class)) //^, this, proxyMethodClass, this, METHODS
-                        .intPush(BUILDER, methodId) //^, this, proxyMethodClass, this, METHODS, methodId
-                        .insn(BUILDER.opcode("AALOAD")) //^, this, proxyMethodClass, this, method
-                        .method(BUILDER.opcode("INVOKESTATIC"), slash(ProxyRuntime.class), "instantiateProxyMethod", mdesc(ProxyMethod.class, Class.class, Object.class, Method.class), false) //^, this, proxyMethod
-                        .insn(BUILDER.opcode("DUP_X1")) //^, proxyMethod, this, proxyMethod
-                        .field(BUILDER.opcode("PUTFIELD"), cb.getName(), "method" + methodId, desc(ProxyMethod.class)); //^, proxyMethod
+                        .aload(0) //^, this
+                        .getstatic(cb.getName(), PROXY_METHOD_CLASSES_FIELD, desc(Class[].class)) //^, this, PROXY_METHOD_CLASSES
+                        .intPush(methodId) //^, this, PROXY_METHOD_CLASSES, methodId
+                        .aaload() //^, this, proxyMethodClass
+                        .aload(0) //^, this, proxyMethodClass, this
+                        .getstatic(cb.getName(), METHODS_FIELD, desc(Method[].class)) //^, this, proxyMethodClass, this, METHODS
+                        .intPush(methodId) //^, this, proxyMethodClass, this, METHODS, methodId
+                        .aaload() //^, this, proxyMethodClass, this, method
+                        .invokestatic(slash(ProxyRuntime.class), "instantiateProxyMethod", mdesc(ProxyMethod.class, Class.class, Object.class, Method.class), false) //^, this, proxyMethod
+                        .dupX1() //^, proxyMethod, this, proxyMethod
+                        .putfield(cb.getName(), "method" + methodId, desc(ProxyMethod.class)); //^, proxyMethod
                 mb
                         .label(elseLabel) //this.invocationHandler, this, proxyMethod
-                        .intPush(BUILDER, method.getParameterCount()) //this.invocationHandler, this, proxyMethod, parameterCount
-                        .type(BUILDER.opcode("ANEWARRAY"), slash(Object.class)); //this.invocationHandler, this, proxyMethod, parameters
+                        .intPush(method.getParameterCount()) //this.invocationHandler, this, proxyMethod, parameterCount
+                        .anewarray(slash(Object.class)); //this.invocationHandler, this, proxyMethod, parameters
 
                 int paramVarIndex = 1;
                 for (int param = 0; param < method.getParameterCount(); param++) {
                     Class<?> parameter = method.getParameterTypes()[param];
                     mb
-                            .insn(BUILDER.opcode("DUP")) //this.invocationHandler, this, proxyMethod, parameters, parameters
-                            .intPush(BUILDER, param) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex
-                            .var(BUILDER.opcode(getLoadOpcode(parameter)), paramVarIndex) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex, parameterValue
+                            .dup() //this.invocationHandler, this, proxyMethod, parameters, parameters
+                            .intPush(param) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex
+                            .load(parameter, paramVarIndex) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex, parameterValue
                             .box(BUILDER, parameter) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex, parameterValue
-                            .insn(BUILDER.opcode("AASTORE")); //this.invocationHandler, this, proxyMethod, parameters
+                            .aastore(); //this.invocationHandler, this, proxyMethod, parameters
                     paramVarIndex += getStackSize(parameter);
                 }
 
-                mb.method(BUILDER.opcode("INVOKEINTERFACE"), slash(InvocationHandler.class), "invoke", mdesc(Object.class, Object.class, ProxyMethod.class, Object[].class), true); //this.invocationHandler, this, proxyMethod, parameters
+                mb.invokeinterface(slash(InvocationHandler.class), "invoke", mdesc(Object.class, Object.class, ProxyMethod.class, Object[].class), true); //this.invocationHandler, this, proxyMethod, parameters
                 if (method.getReturnType() == void.class) {
-                    mb.insn(BUILDER.opcode("POP"));
+                    mb.pop();
                 } else {
                     mb
-                            .type(BUILDER.opcode("CHECKCAST"), slash(boxed(method.getReturnType())))
+                            .checkcast(slash(boxed(method.getReturnType())))
                             .unbox(BUILDER, method.getReturnType());
                 }
                 mb
-                        .insn(BUILDER.opcode(getReturnOpcode(method.getReturnType()))) //returnValue (if not void)
+                        .return_(method.getReturnType()) //returnValue (if not void)
                         .maxs(paramVarIndex, 1);
             });
         }
@@ -344,17 +344,17 @@ public class ProxyBuilder {
     private void addDefaultMethods(final ClassBuilder cb) {
         cb.method(BUILDER.opcode("ACC_PUBLIC"), "setInvocationHandler", mdesc(void.class, InvocationHandler.class), null, null, mb -> {
             mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .var(BUILDER.opcode("ALOAD"), 1)
-                    .field(BUILDER.opcode("PUTFIELD"), cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class))
-                    .insn(BUILDER.opcode("RETURN"))
+                    .aload(0)
+                    .aload(1)
+                    .putfield(cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class))
+                    .return_()
                     .maxs(2, 2);
         });
         cb.method(BUILDER.opcode("ACC_PUBLIC"), "getInvocationHandler", mdesc(InvocationHandler.class), null, null, mb -> {
             mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .field(BUILDER.opcode("GETFIELD"), cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class))
-                    .insn(BUILDER.opcode("ARETURN"))
+                    .aload(0)
+                    .getfield(cb.getName(), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class))
+                    .areturn()
                     .maxs(1, 1);
         });
     }

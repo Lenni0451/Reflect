@@ -9,6 +9,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.util.function.Consumer;
+import java.util.function.ToIntFunction;
 
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.bytecode.impl.asm.ASMBuilder.*;
@@ -16,10 +17,12 @@ import static net.lenni0451.reflect.bytecode.impl.asm.ASMBuilder.*;
 @ApiStatus.Internal
 class ASMClassBuilder implements ClassBuilder {
 
+    private final ToIntFunction<String> opcodeResolver;
     private final Object classWriter;
     private final String name;
 
-    public ASMClassBuilder(final Object classWriter, final String name) {
+    public ASMClassBuilder(final ToIntFunction<String> opcodeResolver, final Object classWriter, final String name) {
+        this.opcodeResolver = opcodeResolver;
         this.classWriter = classWriter;
         this.name = name;
     }
@@ -51,7 +54,7 @@ class ASMClassBuilder implements ClassBuilder {
         MethodHandle visitCode = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitCode", MethodType.methodType(void.class));
         MethodHandle visitEnd = TRUSTED_LOOKUP.findVirtual(CLASS_MethodVisitor, "visitEnd", MethodType.methodType(void.class));
 
-        ASMMethodBuilder builder = new ASMMethodBuilder(visitMethod.invoke(this.classWriter, access, name, descriptor, signature, exceptions));
+        ASMMethodBuilder builder = new ASMMethodBuilder(this.opcodeResolver, visitMethod.invoke(this.classWriter, access, name, descriptor, signature, exceptions));
         visitCode.invoke(builder.getMethodVisitor());
         consumer.accept(builder);
         visitEnd.invoke(builder.getMethodVisitor());

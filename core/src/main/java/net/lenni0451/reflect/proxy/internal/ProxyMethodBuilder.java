@@ -50,62 +50,62 @@ public class ProxyMethodBuilder {
             if (originalMethod != null) {
                 mb.typeLdc(BUILDER, originalMethod.getDeclaringClass()); //Super class
             } else {
-                mb.insn(BUILDER.opcode("DUP"));
+                mb.dup();
             }
             mb
                     .ldc(method.getName()) //Method name
-                    .intPush(BUILDER, method.getParameterCount())
-                    .type(BUILDER.opcode("ANEWARRAY"), slash(Class.class)); //Parameter array
+                    .intPush(method.getParameterCount())
+                    .anewarray(slash(Class.class)); //Parameter array
             for (int i = 0; i < method.getParameterTypes().length; i++) {
                 Class<?> parameter = method.getParameterTypes()[i];
                 mb
-                        .insn(BUILDER.opcode("DUP"))
-                        .intPush(BUILDER, i)
+                        .dup()
+                        .intPush(i)
                         .typeLdc(BUILDER, parameter)
-                        .insn(BUILDER.opcode("AASTORE"));
+                        .aastore();
             }
             mb
                     .typeLdc(BUILDER, method.getReturnType()) //Return type
-                    .method(BUILDER.opcode("INVOKESTATIC"), slash(ProxyRuntime.class), "getMethodHandles", mdesc(MethodHandle[].class, Class.class, Class.class, String.class, Class[].class, Class.class), false);
+                    .invokestatic(slash(ProxyRuntime.class), "getMethodHandles", mdesc(MethodHandle[].class, Class.class, Class.class, String.class, Class[].class, Class.class), false);
             mb //Store the method handles
-                    .insn(BUILDER.opcode("DUP"))
-                    .intPush(BUILDER, 0)
-                    .insn(BUILDER.opcode("AALOAD"))
-                    .field(BUILDER.opcode("PUTSTATIC"), cb.getName(), "INVOKE_OTHER", desc(MethodHandle.class))
+                    .dup()
+                    .intPush(0)
+                    .aaload()
+                    .putstatic(cb.getName(), "INVOKE_OTHER", desc(MethodHandle.class))
 
-                    .intPush(BUILDER, 1)
-                    .insn(BUILDER.opcode("AALOAD"))
-                    .field(BUILDER.opcode("PUTSTATIC"), cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class));
+                    .intPush(1)
+                    .aaload()
+                    .putstatic(cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class));
 
             mb
-                    .insn(BUILDER.opcode("RETURN"))
+                    .return_()
                     .maxs(6, 0);
         });
     }
 
     private static void addConstructor(final Class<?> proxyClass, final ClassBuilder cb) {
         cb.method(BUILDER.opcode("ACC_PUBLIC"), "<init>", mdesc(void.class, proxyClass, Method.class), null, null, mb -> mb
-                .var(BUILDER.opcode("ALOAD"), 0)
-                .method(BUILDER.opcode("INVOKESPECIAL"), slash(Object.class), "<init>", mdesc(void.class), false)
+                .aload(0)
+                .invokespecial(slash(Object.class), "<init>", mdesc(void.class), false)
 
-                .var(BUILDER.opcode("ALOAD"), 0)
-                .var(BUILDER.opcode("ALOAD"), 1)
-                .field(BUILDER.opcode("PUTFIELD"), cb.getName(), "instance", desc(proxyClass))
+                .aload(0)
+                .aload(1)
+                .putfield(cb.getName(), "instance", desc(proxyClass))
 
-                .var(BUILDER.opcode("ALOAD"), 0)
-                .var(BUILDER.opcode("ALOAD"), 2)
-                .field(BUILDER.opcode("PUTFIELD"), cb.getName(), "method", desc(Method.class))
+                .aload(0)
+                .aload(2)
+                .putfield(cb.getName(), "method", desc(Method.class))
 
-                .insn(BUILDER.opcode("RETURN"))
+                .return_()
                 .maxs(3, 3)
         );
     }
 
     private static void addMethodGetter(final ClassBuilder cb) {
         cb.method(BUILDER.opcode("ACC_PUBLIC"), "getInvokedMethod", mdesc(Method.class), null, null, mb -> mb
-                .var(BUILDER.opcode("ALOAD"), 0)
-                .field(BUILDER.opcode("GETFIELD"), cb.getName(), "method", desc(Method.class))
-                .insn(BUILDER.opcode("ARETURN"))
+                .aload(0)
+                .getfield(cb.getName(), "method", desc(Method.class))
+                .areturn()
                 .maxs(2, 1)
         );
     }
@@ -116,25 +116,25 @@ public class ProxyMethodBuilder {
             for (Class<?> parameter : method.getParameterTypes()) polymorphicSignature += desc(parameter);
             polymorphicSignature += ")" + desc(method.getReturnType());
 
-            mb.field(BUILDER.opcode("GETSTATIC"), cb.getName(), "INVOKE_OTHER", desc(MethodHandle.class));
+            mb.getstatic(cb.getName(), "INVOKE_OTHER", desc(MethodHandle.class));
             mb //Cast instance to owner class
-                    .var(BUILDER.opcode("ALOAD"), 1)
-                    .type(BUILDER.opcode("CHECKCAST"), slash(method.getDeclaringClass()));
+                    .aload(1)
+                    .checkcast(slash(method.getDeclaringClass()));
             for (int i = 0; i < method.getParameterTypes().length; i++) {
                 Class<?> parameter = method.getParameterTypes()[i];
                 mb //Load and cast all parameters
-                        .var(BUILDER.opcode("ALOAD"), 2)
-                        .intPush(BUILDER, i)
-                        .insn(BUILDER.opcode("AALOAD"))
-                        .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
+                        .aload(2)
+                        .intPush(i)
+                        .aaload()
+                        .checkcast(slash(boxed(parameter)))
                         .unbox(BUILDER, parameter);
             }
             mb //invokeExact() so the JVM can inline the method call
-                    .method(BUILDER.opcode("INVOKEVIRTUAL"), slash(MethodHandle.class), "invokeExact", polymorphicSignature, false);
-            if (method.getReturnType().equals(void.class)) mb.insn(BUILDER.opcode("ACONST_NULL"));
+                    .invokevirtual(slash(MethodHandle.class), "invokeExact", polymorphicSignature, false);
+            if (method.getReturnType().equals(void.class)) mb.aconstNull();
             else mb.box(BUILDER, method.getReturnType());
             mb
-                    .insn(BUILDER.opcode("ARETURN"))
+                    .areturn()
                     .maxs(method.getParameterCount() + 2, method.getParameterCount() + 1)
             ;
         });
@@ -148,36 +148,36 @@ public class ProxyMethodBuilder {
 
             BytecodeLabel elseLabel = BUILDER.label();
             mb
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .field(BUILDER.opcode("GETSTATIC"), cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class))
-                    .jump(BUILDER.opcode("IFNONNULL"), elseLabel)
-                    .type(BUILDER.opcode("NEW"), slash(AbstractMethodError.class))
-                    .insn(BUILDER.opcode("DUP"))
+                    .aload(0)
+                    .getstatic(cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class))
+                    .ifnonnull(elseLabel)
+                    .new_(slash(AbstractMethodError.class))
+                    .dup()
                     .ldc(slash(method.getDeclaringClass()) + "." + method.getName() + desc(method))
-                    .method(BUILDER.opcode("INVOKESPECIAL"), slash(AbstractMethodError.class), "<init>", mdesc(void.class, String.class), false)
-                    .insn(BUILDER.opcode("ATHROW"))
+                    .invokespecial(slash(AbstractMethodError.class), "<init>", mdesc(void.class, String.class), false)
+                    .athrow()
                     .label(elseLabel);
 
-            mb.field(BUILDER.opcode("GETSTATIC"), cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class));
+            mb.getstatic(cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class));
             mb //Cast instance to owner class
-                    .var(BUILDER.opcode("ALOAD"), 0)
-                    .field(BUILDER.opcode("GETFIELD"), cb.getName(), "instance", desc(proxyClass))
-                    .type(BUILDER.opcode("CHECKCAST"), slash(method.getDeclaringClass()));
+                    .aload(0)
+                    .getfield(cb.getName(), "instance", desc(proxyClass))
+                    .checkcast(slash(method.getDeclaringClass()));
             for (int i = 0; i < method.getParameterTypes().length; i++) {
                 Class<?> parameter = method.getParameterTypes()[i];
                 mb //Load and cast all parameters
-                        .var(BUILDER.opcode("ALOAD"), 1)
-                        .intPush(BUILDER, i)
-                        .insn(BUILDER.opcode("AALOAD"))
-                        .type(BUILDER.opcode("CHECKCAST"), slash(boxed(parameter)))
+                        .aload(1)
+                        .intPush(i)
+                        .aaload()
+                        .checkcast(slash(boxed(parameter)))
                         .unbox(BUILDER, parameter);
             }
             mb //invokeExact() so the JVM can inline the method call
-                    .method(BUILDER.opcode("INVOKEVIRTUAL"), slash(MethodHandle.class), "invokeExact", polymorphicSignature, false);
-            if (method.getReturnType().equals(void.class)) mb.insn(BUILDER.opcode("ACONST_NULL"));
+                    .invokevirtual(slash(MethodHandle.class), "invokeExact", polymorphicSignature, false);
+            if (method.getReturnType().equals(void.class)) mb.aconstNull();
             else mb.box(BUILDER, method.getReturnType());
             mb
-                    .insn(BUILDER.opcode("ARETURN"))
+                    .areturn()
                     .maxs(method.getParameterCount() + 2, method.getParameterCount() + 1)
             ;
         });
@@ -186,12 +186,12 @@ public class ProxyMethodBuilder {
     private static void addCancel(final Method method, final ClassBuilder cb) {
         cb.method(BUILDER.opcode("ACC_PUBLIC"), "cancel", mdesc(Object.class), null, null, mb -> {
             if (method.getReturnType() == void.class) {
-                mb.insn(BUILDER.opcode("ACONST_NULL"));
+                mb.aconstNull();
             } else if (method.getReturnType() == boolean.class) {
-                mb.field(BUILDER.opcode("GETSTATIC"), slash(Boolean.class), "FALSE", desc(Boolean.class));
+                mb.getstatic(slash(Boolean.class), "FALSE", desc(Boolean.class));
             } else if (method.getReturnType() == byte.class || method.getReturnType() == short.class || method.getReturnType() == char.class || method.getReturnType() == int.class) {
                 mb
-                        .intPush(BUILDER, 0)
+                        .intPush(0)
                         .box(BUILDER, method.getReturnType());
             } else if (method.getReturnType() == long.class) {
                 mb
@@ -206,9 +206,9 @@ public class ProxyMethodBuilder {
                         .ldc(0D)
                         .box(BUILDER, method.getReturnType());
             } else {
-                mb.insn(BUILDER.opcode("ACONST_NULL"));
+                mb.aconstNull();
             }
-            mb.insn(BUILDER.opcode("ARETURN"))
+            mb.areturn()
                     .maxs(1, 1);
         });
     }

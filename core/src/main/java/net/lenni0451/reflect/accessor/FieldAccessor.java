@@ -48,17 +48,17 @@ public class FieldAccessor {
             addConstructor(BUILDER, cb, () -> instance.getClass(), Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 if (staticField) {
-                    mb.var(BUILDER.opcode(getLoadOpcode(invokerMethod.getParameterTypes()[0])), 1);
-                    if (!invokerMethod.getParameterTypes()[0].equals(field.getType())) mb.type(BUILDER.opcode("CHECKCAST"), slash(field.getType()));
-                    mb.field(BUILDER.opcode("PUTSTATIC"), slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
+                    mb.load(invokerMethod.getParameterTypes()[0], 1);
+                    if (!invokerMethod.getParameterTypes()[0].equals(field.getType())) mb.checkcast(slash(field.getType()));
+                    mb.putstatic(slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
                 } else {
-                    mb.var(BUILDER.opcode("ALOAD"), 0);
-                    mb.field(BUILDER.opcode("GETFIELD"), newClassName, "instance", desc(instance.getClass()));
-                    mb.var(BUILDER.opcode(getLoadOpcode(invokerMethod.getParameterTypes()[0])), 1);
-                    if (!invokerMethod.getParameterTypes()[0].equals(field.getType())) mb.type(BUILDER.opcode("CHECKCAST"), slash(field.getType()));
-                    mb.field(BUILDER.opcode("PUTFIELD"), slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
+                    mb.aload(0);
+                    mb.getfield(newClassName, "instance", desc(instance.getClass()));
+                    mb.load(invokerMethod.getParameterTypes()[0], 1);
+                    if (!invokerMethod.getParameterTypes()[0].equals(field.getType())) mb.checkcast(slash(field.getType()));
+                    mb.putfield(slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
                 }
-                mb.insn(BUILDER.opcode("RETURN"));
+                mb.return_();
                 mb.maxs(2, 2);
             });
         });
@@ -92,12 +92,12 @@ public class FieldAccessor {
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, slash(Object.class), new String[]{slash(invokerClass)}, cb -> {
             addConstructor(BUILDER, cb, null, Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
-                mb.var(BUILDER.opcode("ALOAD"), 1);
-                if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mb.type(BUILDER.opcode("CHECKCAST"), slash(field.getDeclaringClass()));
-                mb.var(BUILDER.opcode(getLoadOpcode(invokerMethod.getParameterTypes()[1])), 2);
-                if (!invokerMethod.getParameterTypes()[1].equals(field.getType())) mb.type(BUILDER.opcode("CHECKCAST"), slash(field.getType()));
-                mb.field(BUILDER.opcode("PUTFIELD"), slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
-                mb.insn(BUILDER.opcode("RETURN"));
+                mb.aload(1);
+                if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mb.checkcast(slash(field.getDeclaringClass()));
+                mb.load(invokerMethod.getParameterTypes()[1], 2);
+                if (!invokerMethod.getParameterTypes()[1].equals(field.getType())) mb.checkcast(slash(field.getType()));
+                mb.putfield(slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
+                mb.return_();
                 mb.maxs(2, 3);
             });
         });
@@ -130,14 +130,14 @@ public class FieldAccessor {
             addConstructor(BUILDER, cb, () -> instance.getClass(), Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 if (staticField) {
-                    mb.field(BUILDER.opcode("GETSTATIC"), slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
+                    mb.getstatic(slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
                 } else {
-                    mb.var(BUILDER.opcode("ALOAD"), 0);
-                    mb.field(BUILDER.opcode("GETFIELD"), newClassName, "instance", desc(instance.getClass()));
-                    mb.field(BUILDER.opcode("GETFIELD"), slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
+                    mb.aload(0);
+                    mb.getfield(newClassName, "instance", desc(instance.getClass()));
+                    mb.getfield(slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
                 }
-                if (!field.getType().equals(invokerMethod.getReturnType())) mb.type(BUILDER.opcode("CHECKCAST"), slash(invokerMethod.getReturnType()));
-                mb.insn(BUILDER.opcode(getReturnOpcode(invokerMethod.getReturnType())));
+                if (!field.getType().equals(invokerMethod.getReturnType())) mb.checkcast(slash(invokerMethod.getReturnType()));
+                mb.return_(invokerMethod.getReturnType());
                 mb.maxs(1, 1);
             });
         });
@@ -171,11 +171,11 @@ public class FieldAccessor {
         BuiltClass builtClass = BUILDER.class_(BUILDER.opcode("ACC_SUPER", "ACC_FINAL", "ACC_SYNTHETIC"), newClassName, null, "java/lang/Object", new String[]{slash(invokerClass)}, cb -> {
             addConstructor(BUILDER, cb, null, Modifier.isStatic(field.getModifiers()));
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
-                mb.var(BUILDER.opcode("ALOAD"), 1);
-                if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mb.type(BUILDER.opcode("CHECKCAST"), slash(field.getDeclaringClass()));
-                mb.field(BUILDER.opcode("GETFIELD"), slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
-                if (!invokerMethod.getReturnType().equals(field.getType())) mb.type(BUILDER.opcode("CHECKCAST"), slash(invokerMethod.getReturnType()));
-                mb.insn(BUILDER.opcode(getReturnOpcode(invokerMethod.getReturnType())));
+                mb.aload(1);
+                if (!invokerMethod.getParameterTypes()[0].equals(field.getDeclaringClass())) mb.checkcast(slash(field.getDeclaringClass()));
+                mb.getfield(slash(field.getDeclaringClass()), field.getName(), desc(field.getType()));
+                if (!invokerMethod.getReturnType().equals(field.getType())) mb.checkcast(slash(invokerMethod.getReturnType()));
+                mb.return_(invokerMethod.getReturnType());
                 mb.maxs(1, 2);
             });
         });

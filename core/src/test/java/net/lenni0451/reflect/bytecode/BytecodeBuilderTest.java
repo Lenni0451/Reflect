@@ -17,9 +17,9 @@ class BytecodeBuilderTest {
         BytecodeBuilder builder = BytecodeBuilder.get();
         BuiltClass builtClass = builder.class_(builder.opcode("ACC_PUBLIC"), "net/lenni0451/reflect/bytecode/BytecodeBuilderTestSupplier", null, "java/lang/Object", new String[]{"java/util/function/Supplier"}, clazz -> {
             clazz.method(builder.opcode("ACC_PUBLIC"), "<init>", "()V", null, null, method -> method
-                    .var(builder.opcode("ALOAD"), 0)
-                    .method(builder.opcode("INVOKESPECIAL"), "java/lang/Object", "<init>", "()V", false)
-                    .insn(builder.opcode("RETURN"))
+                    .aload(0)
+                    .invokespecial("java/lang/Object", "<init>", "()V", false)
+                    .return_()
                     .maxs(1, 1));
             clazz.method(builder.opcode("ACC_PUBLIC"), "get", "()Ljava/lang/Object;", null, null, method -> {
                 BytecodeLabel start = builder.label();
@@ -27,14 +27,14 @@ class BytecodeBuilderTest {
                 BytecodeLabel handler = builder.label();
 
                 method
-                        .jump(builder.opcode("GOTO"), start)
+                        .goto_(start)
                         .label(start)
                         .ldc("Hello World")
-                        .insn(builder.opcode("ARETURN"))
+                        .areturn()
                         .label(end)
                         .label(handler)
-                        .insn(builder.opcode("ACONST_NULL"))
-                        .insn(builder.opcode("ARETURN"))
+                        .aconstNull()
+                        .areturn()
                         .tryCatch(start, end, handler, "java/lang/Exception")
                         .maxs(1, 1);
             });
