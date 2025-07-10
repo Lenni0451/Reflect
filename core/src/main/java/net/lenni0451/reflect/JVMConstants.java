@@ -1,5 +1,8 @@
 package net.lenni0451.reflect;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Internal
 public class JVMConstants {
 
     public static final boolean OPENJ9_RUNTIME = System.getProperty("java.vm.name").toLowerCase().contains("openj9");
@@ -9,6 +12,9 @@ public class JVMConstants {
     public static final String CLASS_INTERNAL_Unsafe = calc("jdk.internal.misc.Unsafe");
     public static final String CLASS_INTERNAL_Reflection = calc("jdk.internal.reflect.Reflection");
     public static final String CLASS_SUN_Reflection = calc("sun.reflect.Reflection");
+    public static final String CLASS_DirectMethodHandle_Constructor = calc("java.lang.invoke.DirectMethodHandle$Constructor");
+    public static final String CLASS_MethodHandleNatives_Constants = calc("java.lang.invoke.MethodHandleNatives$Constants");
+    public static final String CLASS_MemberName = calc("java.lang.invoke.MemberName");
 
     public static final String FIELD_MethodHandles_Lookup_IMPL_LOOKUP = calc("IMPL_LOOKUP");
     public static final String FIELD_URLClassLoader_ucp = calc("ucp");
@@ -20,6 +26,9 @@ public class JVMConstants {
     public static final String FIELD_Reflection_methodFilterMap = calc("methodFilterMap");
     public static final String FIELD_Class_module = calc("module");
     public static final String FIELD_Module_EVERYONE_MODULE = calc("EVERYONE_MODULE");
+    public static final String FIELD_MemberName_flags = calc("flags");
+    public static final String FIELD_MethodHandleNatives_Constants_MN_IS_METHOD = calc("MN_IS_METHOD");
+    public static final String FIELD_MethodHandleNatives_Constants_MN_IS_CONSTRUCTOR = calc("MN_IS_CONSTRUCTOR");
 
     public static final String METHOD_Class_getDeclaredClasses0 = calc("getDeclaredClasses0", OPENJ9_RUNTIME, "getDeclaredClassesImpl");
     public static final String METHOD_Class_getDeclaredFields0 = calc("getDeclaredFields0", OPENJ9_RUNTIME, "getDeclaredFieldsImpl");
@@ -32,9 +41,7 @@ public class JVMConstants {
     public static final String METHOD_URLClassPath_getURLs = calc("getURLs");
     public static final String METHOD_ClassLoader_defineClass = calc("defineClass");
     public static final String METHOD_Module_implAddExportsOrOpens = calc("implAddExportsOrOpens");
-    public static final String METHOD_Module_getPackages = calc("getPackages");
-    public static final String METHOD_InternalUnsafe_staticFieldOffset = calc("staticFieldOffset");
-    public static final String METHOD_InternalUnsafe_objectFieldOffset = calc("objectFieldOffset");
+    public static final String METHOD_MethodHandles_Lookup_getDirectMethod = calc("getDirectMethod");
 
 
     /**
