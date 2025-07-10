@@ -15,52 +15,70 @@ import java.util.Arrays;
 import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.utils.FieldInitializer.ThrowingSupplier.getFirst;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
+import static net.lenni0451.reflect.utils.FieldInitializer.*;
 
 /**
  * This class contains some useful methods for working with constructors.
  */
+@SuppressWarnings("DataFlowIssue")
 public class Constructors {
 
     private static final MethodHandle getDeclaredConstructors0 = reqInit(
             () -> {
-                if (JVMConstants.OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
+                if (OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0);
                 else return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredConstructors0, boolean.class);
             },
-            TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean")
+            TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredConstructors0, OPENJ9_RUNTIME ? "" : "boolean")
     );
-    private static final Class<?> MemberName = Classes.forName(CLASS_MemberName);
-    private static final Class<?> DirectMethodHandle_Constructor = Classes.forName(CLASS_DirectMethodHandle_Constructor);
-    private static final Class<?> MethodHandleNatives_Constants = Classes.forName(CLASS_MethodHandleNatives_Constants);
-    private static final MethodHandle getInitMethod = reqInit(
+    private static final Class<?> MemberName = condInit(
+            !OPENJ9_RUNTIME,
+            () -> Classes.forName(CLASS_MemberName)
+    );
+    private static final Class<?> DirectMethodHandle_Constructor = condInit(
+            !OPENJ9_RUNTIME,
+            () -> Classes.forName(CLASS_DirectMethodHandle_Constructor)
+    );
+    private static final Class<?> MethodHandleNatives_Constants = condInit(
+            !OPENJ9_RUNTIME,
+            () -> Classes.forName(CLASS_MethodHandleNatives_Constants)
+    );
+    private static final MethodHandle getInitMethod = reqOptInit(
+            !OPENJ9_RUNTIME,
             () -> TRUSTED_LOOKUP.findGetter(DirectMethodHandle_Constructor, "initMethod", MemberName),
             handle -> handle.asType(MethodType.methodType(Object.class, MethodHandle.class)),
             () -> new FieldNotFoundException(DirectMethodHandle_Constructor.getName(), "initMethod")
     );
-    private static final MethodHandle getFlags = reqInit(
+    private static final MethodHandle getFlags = reqOptInit(
+            !OPENJ9_RUNTIME,
             () -> TRUSTED_LOOKUP.findGetter(MemberName, FIELD_MemberName_flags, int.class),
             handle -> handle.asType(MethodType.methodType(int.class, Object.class)),
             () -> new FieldNotFoundException(MemberName.getName(), FIELD_MemberName_flags)
     );
-    private static final MethodHandle setFlags = reqInit(
+    private static final MethodHandle setFlags = reqOptInit(
+            !OPENJ9_RUNTIME,
             () -> TRUSTED_LOOKUP.findSetter(MemberName, FIELD_MemberName_flags, int.class),
             handle -> handle.asType(MethodType.methodType(void.class, Object.class, int.class)),
             () -> new FieldNotFoundException(MemberName.getName(), FIELD_MemberName_flags)
     );
-    private static final int MN_IS_METHOD = reqInit(
+    private static final Integer MN_IS_METHOD = reqOptInit(
+            !OPENJ9_RUNTIME,
             () -> TRUSTED_LOOKUP.findStaticGetter(MethodHandleNatives_Constants, FIELD_MethodHandleNatives_Constants_MN_IS_METHOD, int.class),
             handle -> (int) handle.invokeExact(),
             () -> new FieldNotFoundException(MethodHandleNatives_Constants.getName(), FIELD_MethodHandleNatives_Constants_MN_IS_METHOD)
     );
-    private static final int MN_IS_CONSTRUCTOR = reqInit(
+    private static final Integer MN_IS_CONSTRUCTOR = reqOptInit(
+            !OPENJ9_RUNTIME,
             () -> TRUSTED_LOOKUP.findStaticGetter(MethodHandleNatives_Constants, FIELD_MethodHandleNatives_Constants_MN_IS_CONSTRUCTOR, int.class),
             handle -> (int) handle.invokeExact(),
             () -> new FieldNotFoundException(MethodHandleNatives_Constants.getName(), FIELD_MethodHandleNatives_Constants_MN_IS_CONSTRUCTOR)
     );
-    private static final MethodHandle getDirectMethod = reqInit(
+    private static final MethodHandle getDirectMethod = reqOptInit(
+            !OPENJ9_RUNTIME,
             getFirst(
+                    //Java 8
                     () -> MethodHandles.insertArguments(TRUSTED_LOOKUP.findVirtual(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_getDirectMethod, MethodType.methodType(MethodHandle.class, byte.class, Class.class, MemberName, Class.class))
                             .asType(MethodType.methodType(MethodHandle.class, MethodHandles.Lookup.class, byte.class, Class.class, Object.class, Class.class)), 4, MethodHandles.Lookup.class),
+                    //Not Java 8 (no idea when this was changed)
                     () -> MethodHandles.insertArguments(TRUSTED_LOOKUP.findVirtual(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_getDirectMethod, MethodType.methodType(MethodHandle.class, byte.class, Class.class, MemberName, MethodHandles.Lookup.class))
                             .asType(MethodType.methodType(MethodHandle.class, MethodHandles.Lookup.class, byte.class, Class.class, Object.class, MethodHandles.Lookup.class)), 4, TRUSTED_LOOKUP)
             ),
@@ -79,7 +97,7 @@ public class Constructors {
      */
     @SneakyThrows
     public static <T> Constructor<T>[] getDeclaredConstructors(final Class<T> clazz) {
-        if (JVMConstants.OPENJ9_RUNTIME) return (Constructor<T>[]) getDeclaredConstructors0.invokeExact(clazz);
+        if (OPENJ9_RUNTIME) return (Constructor<T>[]) getDeclaredConstructors0.invokeExact(clazz);
         else return (Constructor<T>[]) getDeclaredConstructors0.invokeExact(clazz, false);
     }
 
@@ -128,6 +146,7 @@ public class Constructors {
      */
     @SneakyThrows
     public static MethodHandle makeInvokable(final MethodHandle handle) {
+        if (OPENJ9_RUNTIME) throw new UnsupportedOperationException("This method is not supported on OpenJ9 runtime");
         if (!DirectMethodHandle_Constructor.isInstance(handle)) throw new IllegalArgumentException("The method handle must be a DirectMethodHandle$Constructor");
         Object memberName = getInitMethod.invokeExact(handle);
         int flags = (int) getFlags.invokeExact(memberName);

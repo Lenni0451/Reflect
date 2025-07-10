@@ -26,13 +26,17 @@ class ConstructorsTest {
 
     @Test
     void makeInvokable() {
-        MethodHandle handle = assertDoesNotThrow(() -> JavaBypass.TRUSTED_LOOKUP.findConstructor(String.class, MethodType.methodType(void.class, char[].class)));
-        MethodHandle invokable = assertDoesNotThrow(() -> Constructors.makeInvokable(handle));
-        String s = "Hello!";
-        assertDoesNotThrow(() -> {
-            invokable.invokeExact(s, new char[]{'B', 'y', 'e', '!'});
-        });
-        assertEquals("Bye!", s);
+        if (JVMConstants.OPENJ9_RUNTIME) {
+            assertThrows(UnsupportedOperationException.class, () -> Constructors.makeInvokable(null));
+        } else {
+            MethodHandle handle = assertDoesNotThrow(() -> JavaBypass.TRUSTED_LOOKUP.findConstructor(String.class, MethodType.methodType(void.class, char[].class)));
+            MethodHandle invokable = assertDoesNotThrow(() -> Constructors.makeInvokable(handle));
+            String s = "Hello!";
+            assertDoesNotThrow(() -> {
+                invokable.invokeExact(s, new char[]{'B', 'y', 'e', '!'});
+            });
+            assertEquals("Bye!", s);
+        }
     }
 
 }
