@@ -1,0 +1,21 @@
+plugins {
+    id "java"
+    id "base.java"
+    id "base.checkstyle"
+    id "base.junit"
+}
+
+javadoc {
+    failOnError = false
+}
+
+dependencies {
+    compileOnly libs.findbugs
+    compileOnly libs.jetbrainsAnnotations
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
+
+    testCompileOnly libs.lombok
+    testAnnotationProcessor libs.lombok
+    testImplementation libs.asm
+}

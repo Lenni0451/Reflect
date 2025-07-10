@@ -1,11 +1,7 @@
-base {
-    java.toolchain.languageVersion = JavaLanguageVersion.of(9)
-}
-
-configurations {
-    testImplementation.extendsFrom compileOnly
+plugins {
+    id "project.defaults"
 }
 
 dependencies {
-    compileOnly project(":")
+    compileOnly project(":core")
 }

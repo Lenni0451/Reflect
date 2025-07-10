@@ -1,0 +1,16 @@
+[versions]
+
+[libraries]
+findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
+jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.0.2" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.38" }
+asm = { module = "org.ow2.asm:asm", version = "9.8" }
+
+junit-bom = { module = "org.junit:junit-bom", version = "5.13.3" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+[bundles]
+
+[plugins]
+templateProcessor = { id = "net.lenni0451.template-processor", version = "1.0.1" }

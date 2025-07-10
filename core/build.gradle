@@ -1,0 +1,11 @@
+plugins {
+    id "project.defaults"
+    id "extra.template_processor"
+    alias libs.plugins.templateProcessor
+}
+
+templateProcessor {
+    templateDir = project.file("src/main/templates")
+    outputDir = layout.buildDirectory.dir("generated/templates/main/java")
+    markAsSource(project.sourceSets.main)
+}
