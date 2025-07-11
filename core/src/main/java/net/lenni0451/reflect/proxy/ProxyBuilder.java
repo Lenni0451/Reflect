@@ -286,7 +286,7 @@ public class ProxyBuilder {
             final int methodId = i;
             Method method = methods[i];
             cb.method(BUILDER.opcode("ACC_PUBLIC"), method.getName(), desc(method), null, null, mb -> {
-                BytecodeLabel elseLabel = BUILDER.label();
+                BytecodeLabel elseLabel = mb.newLabel();
 
                 mb
                         .aload(0) //this
@@ -321,18 +321,18 @@ public class ProxyBuilder {
                             .dup() //this.invocationHandler, this, proxyMethod, parameters, parameters
                             .intPush(param) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex
                             .load(parameter, paramVarIndex) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex, parameterValue
-                            .box(BUILDER, parameter) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex, parameterValue
+                            .box(parameter) //this.invocationHandler, this, proxyMethod, parameters, parameters, parameterIndex, parameterValue
                             .aastore(); //this.invocationHandler, this, proxyMethod, parameters
                     paramVarIndex += getStackSize(parameter);
                 }
 
-                mb.invokeinterface(slash(InvocationHandler.class), "invoke", mdesc(Object.class, Object.class, ProxyMethod.class, Object[].class), true); //this.invocationHandler, this, proxyMethod, parameters
+                mb.invokeinterface(slash(InvocationHandler.class), "invoke", mdesc(Object.class, Object.class, ProxyMethod.class, Object[].class)); //this.invocationHandler, this, proxyMethod, parameters
                 if (method.getReturnType() == void.class) {
                     mb.pop();
                 } else {
                     mb
                             .checkcast(slash(boxed(method.getReturnType())))
-                            .unbox(BUILDER, method.getReturnType());
+                            .unbox(method.getReturnType());
                 }
                 mb
                         .return_(method.getReturnType()) //returnValue (if not void)

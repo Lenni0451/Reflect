@@ -127,12 +127,12 @@ public class ProxyMethodBuilder {
                         .intPush(i)
                         .aaload()
                         .checkcast(slash(boxed(parameter)))
-                        .unbox(BUILDER, parameter);
+                        .unbox(parameter);
             }
             mb //invokeExact() so the JVM can inline the method call
-                    .invokevirtual(slash(MethodHandle.class), "invokeExact", polymorphicSignature, false);
+                    .invokevirtual(slash(MethodHandle.class), "invokeExact", polymorphicSignature);
             if (method.getReturnType().equals(void.class)) mb.aconstNull();
-            else mb.box(BUILDER, method.getReturnType());
+            else mb.box(method.getReturnType());
             mb
                     .areturn()
                     .maxs(method.getParameterCount() + 2, method.getParameterCount() + 1)
@@ -146,7 +146,7 @@ public class ProxyMethodBuilder {
             for (Class<?> parameter : method.getParameterTypes()) polymorphicSignature += desc(parameter);
             polymorphicSignature += ")" + desc(method.getReturnType());
 
-            BytecodeLabel elseLabel = BUILDER.label();
+            BytecodeLabel elseLabel = mb.newLabel();
             mb
                     .aload(0)
                     .getstatic(cb.getName(), "INVOKE_SUPER", desc(MethodHandle.class))
@@ -170,12 +170,12 @@ public class ProxyMethodBuilder {
                         .intPush(i)
                         .aaload()
                         .checkcast(slash(boxed(parameter)))
-                        .unbox(BUILDER, parameter);
+                        .unbox(parameter);
             }
             mb //invokeExact() so the JVM can inline the method call
-                    .invokevirtual(slash(MethodHandle.class), "invokeExact", polymorphicSignature, false);
+                    .invokevirtual(slash(MethodHandle.class), "invokeExact", polymorphicSignature);
             if (method.getReturnType().equals(void.class)) mb.aconstNull();
-            else mb.box(BUILDER, method.getReturnType());
+            else mb.box(method.getReturnType());
             mb
                     .areturn()
                     .maxs(method.getParameterCount() + 2, method.getParameterCount() + 1)
@@ -192,19 +192,19 @@ public class ProxyMethodBuilder {
             } else if (method.getReturnType() == byte.class || method.getReturnType() == short.class || method.getReturnType() == char.class || method.getReturnType() == int.class) {
                 mb
                         .intPush(0)
-                        .box(BUILDER, method.getReturnType());
+                        .box(method.getReturnType());
             } else if (method.getReturnType() == long.class) {
                 mb
                         .ldc(0L)
-                        .box(BUILDER, method.getReturnType());
+                        .box(method.getReturnType());
             } else if (method.getReturnType() == float.class) {
                 mb
                         .ldc(0F)
-                        .box(BUILDER, method.getReturnType());
+                        .box(method.getReturnType());
             } else if (method.getReturnType() == double.class) {
                 mb
                         .ldc(0D)
-                        .box(BUILDER, method.getReturnType());
+                        .box(method.getReturnType());
             } else {
                 mb.aconstNull();
             }

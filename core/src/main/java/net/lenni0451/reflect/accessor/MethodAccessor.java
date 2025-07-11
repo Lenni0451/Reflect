@@ -61,9 +61,9 @@ public class MethodAccessor {
                     mb.getfield(newClassName, "instance", desc(instance.getClass()));
                     pushArgs(mb, invokerMethod.getParameterTypes(), method.getParameterTypes());
                     if (interfaceMethod) {
-                        mb.invokeinterface(methodClass, method.getName(), methodDesc, true);
+                        mb.invokeinterface(methodClass, method.getName(), methodDesc);
                     } else {
-                        mb.invokevirtual(methodClass, method.getName(), methodDesc, false);
+                        mb.invokevirtual(methodClass, method.getName(), methodDesc);
                     }
                 }
                 if (!method.getReturnType().equals(invokerMethod.getReturnType())) mb.checkcast(slash(invokerMethod.getReturnType()));
@@ -114,13 +114,13 @@ public class MethodAccessor {
                     mb.invokestatic(methodClass, method.getName(), methodDesc, interfaceMethod);
                 } else {
                     if (interfaceMethod) {
-                        mb.invokeinterface(methodClass, method.getName(), methodDesc, true);
+                        mb.invokeinterface(methodClass, method.getName(), methodDesc);
                     } else {
-                        mb.invokevirtual(methodClass, method.getName(), methodDesc, false);
+                        mb.invokevirtual(methodClass, method.getName(), methodDesc);
                     }
                 }
                 if (method.getReturnType() == void.class) mb.aconstNull();
-                else mb.box(BUILDER, method.getReturnType());
+                else mb.box(method.getReturnType());
                 mb
                         .areturn()
                         .maxs(method.getParameterCount() + 2, 2);
@@ -157,9 +157,9 @@ public class MethodAccessor {
             cb.method(BUILDER.opcode("ACC_PUBLIC"), invokerMethod.getName(), desc(invokerMethod), null, null, mb -> {
                 pushArgs(mb, invokerMethod.getParameterTypes(), prepend(method.getParameterTypes(), method.getDeclaringClass()));
                 if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
-                    mb.invokeinterface(slash(method.getDeclaringClass()), method.getName(), desc(method), true);
+                    mb.invokeinterface(slash(method.getDeclaringClass()), method.getName(), desc(method));
                 } else {
-                    mb.invokevirtual(slash(method.getDeclaringClass()), method.getName(), desc(method), false);
+                    mb.invokevirtual(slash(method.getDeclaringClass()), method.getName(), desc(method));
                 }
                 if (!method.getReturnType().equals(invokerMethod.getReturnType())) mb.checkcast(slash(invokerMethod.getReturnType()));
                 mb.return_(invokerMethod.getReturnType());
@@ -194,12 +194,12 @@ public class MethodAccessor {
                         .checkcast(slash(method.getDeclaringClass()));
                 pushArrayArgs(mb, method, 2);
                 if (Modifier.isInterface(method.getDeclaringClass().getModifiers())) {
-                    mb.invokeinterface(slash(method.getDeclaringClass()), method.getName(), desc(method), true);
+                    mb.invokeinterface(slash(method.getDeclaringClass()), method.getName(), desc(method));
                 } else {
-                    mb.invokevirtual(slash(method.getDeclaringClass()), method.getName(), desc(method), false);
+                    mb.invokevirtual(slash(method.getDeclaringClass()), method.getName(), desc(method));
                 }
                 if (method.getReturnType() == void.class) mb.aconstNull();
-                else mb.box(BUILDER, method.getReturnType());
+                else mb.box(method.getReturnType());
                 mb
                         .areturn()
                         .maxs(method.getParameterCount() + 2, 3);
@@ -263,7 +263,7 @@ public class MethodAccessor {
                     .intPush(i)
                     .aaload()
                     .checkcast(slash(boxed(parameter)))
-                    .unbox(BUILDER, parameter);
+                    .unbox(parameter);
         }
     }
 

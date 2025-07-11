@@ -73,8 +73,6 @@ public interface MethodBuilder {
 
     MethodBuilder dconst1();
 
-    MethodBuilder dconst2();
-
     MethodBuilder sipush(final int value);
 
     MethodBuilder bipush(final int value);
@@ -134,7 +132,7 @@ public interface MethodBuilder {
 
     MethodBuilder anewarray(final String type);
 
-    default MethodBuilder box(final BytecodeBuilder builder, final Class<?> primitive) {
+    default MethodBuilder box(final Class<?> primitive) {
         Class<?> boxed = boxed(primitive);
         if (boxed != primitive) {
             this.invokestatic(slash(boxed), "valueOf", mdesc(boxed, primitive), false);
@@ -142,10 +140,10 @@ public interface MethodBuilder {
         return this;
     }
 
-    default MethodBuilder unbox(final BytecodeBuilder builder, final Class<?> primitive) {
+    default MethodBuilder unbox(final Class<?> primitive) {
         Class<?> boxed = boxed(primitive);
         if (boxed != primitive) {
-            this.invokevirtual(slash(boxed), primitive.getSimpleName() + "Value", mdesc(primitive), false);
+            this.invokevirtual(slash(boxed), primitive.getSimpleName() + "Value", mdesc(primitive));
         }
         return this;
     }
@@ -160,15 +158,19 @@ public interface MethodBuilder {
 
     MethodBuilder invokespecial(final String owner, final String name, final String descriptor, final boolean isInterface);
 
-    MethodBuilder invokeinterface(final String owner, final String name, final String descriptor, final boolean isInterface);
+    MethodBuilder invokeinterface(final String owner, final String name, final String descriptor);
 
-    MethodBuilder invokevirtual(final String owner, final String name, final String descriptor, final boolean isInterface);
+    MethodBuilder invokevirtual(final String owner, final String name, final String descriptor);
 
     MethodBuilder invokestatic(final String owner, final String name, final String descriptor, final boolean isInterface);
+
+    MethodBuilder ifne(final BytecodeLabel label);
 
     MethodBuilder ifnonnull(final BytecodeLabel label);
 
     MethodBuilder goto_(final BytecodeLabel label);
+
+    BytecodeLabel newLabel();
 
     MethodBuilder label(final BytecodeLabel label);
 

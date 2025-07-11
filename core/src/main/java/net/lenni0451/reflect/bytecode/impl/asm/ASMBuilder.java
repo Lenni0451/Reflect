@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.builder.ClassBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
-import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
 import net.lenni0451.reflect.bytecode.wrapper.BytecodeType;
 import net.lenni0451.reflect.stream.RStream;
 import org.jetbrains.annotations.ApiStatus;
@@ -66,13 +65,6 @@ class ASMBuilder implements BytecodeBuilder {
         visitEnd.invoke(classWriter);
 
         return new ASMBuiltClass(classWriter, name);
-    }
-
-    @Override
-    @SneakyThrows
-    public BytecodeLabel label() {
-        MethodHandle constructor = TRUSTED_LOOKUP.findConstructor(CLASS_Label, MethodType.methodType(void.class));
-        return new BytecodeLabel(constructor.invoke());
     }
 
     @Override

@@ -8,16 +8,22 @@ plugins {
 dependencies {
     include project(":core")
     compileOnly project(":j9")
+    compileOnly project(":j24")
 }
 
 evaluationDependsOn(":j9")
+evaluationDependsOn(":j24")
 jar {
     manifest {
         attributes "Multi-Release": "true"
     }
 
     dependsOn project(":j9").tasks.named("classes")
+    dependsOn project(":j24").tasks.named("classes")
     from({ project(":j9").sourceSets.main.output }) {
         into "META-INF/versions/9"
+    }
+    from({ project(":j24").sourceSets.main.output }) {
+        into "META-INF/versions/24"
     }
 }

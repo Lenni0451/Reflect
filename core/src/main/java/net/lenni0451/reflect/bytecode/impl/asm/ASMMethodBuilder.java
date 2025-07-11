@@ -170,11 +170,6 @@ class ASMMethodBuilder implements MethodBuilder {
     }
 
     @Override
-    public MethodBuilder dconst2() {
-        return this.insn(this.opcodeResolver.applyAsInt("DCONST_2"));
-    }
-
-    @Override
     public MethodBuilder sipush(int value) {
         return this.int_(this.opcodeResolver.applyAsInt("SIPUSH"), value);
     }
@@ -275,18 +270,23 @@ class ASMMethodBuilder implements MethodBuilder {
     }
 
     @Override
-    public MethodBuilder invokeinterface(String owner, String name, String descriptor, boolean isInterface) {
-        return this.method(this.opcodeResolver.applyAsInt("INVOKEINTERFACE"), owner, name, descriptor, isInterface);
+    public MethodBuilder invokeinterface(String owner, String name, String descriptor) {
+        return this.method(this.opcodeResolver.applyAsInt("INVOKEINTERFACE"), owner, name, descriptor, false);
     }
 
     @Override
-    public MethodBuilder invokevirtual(String owner, String name, String descriptor, boolean isInterface) {
-        return this.method(this.opcodeResolver.applyAsInt("INVOKEVIRTUAL"), owner, name, descriptor, isInterface);
+    public MethodBuilder invokevirtual(String owner, String name, String descriptor) {
+        return this.method(this.opcodeResolver.applyAsInt("INVOKEVIRTUAL"), owner, name, descriptor, false);
     }
 
     @Override
     public MethodBuilder invokestatic(String owner, String name, String descriptor, boolean isInterface) {
         return this.method(this.opcodeResolver.applyAsInt("INVOKESTATIC"), owner, name, descriptor, isInterface);
+    }
+
+    @Override
+    public MethodBuilder ifne(BytecodeLabel label) {
+        return this.jump(this.opcodeResolver.applyAsInt("IFNE"), label);
     }
 
     @Override
@@ -297,6 +297,13 @@ class ASMMethodBuilder implements MethodBuilder {
     @Override
     public MethodBuilder goto_(BytecodeLabel label) {
         return this.jump(this.opcodeResolver.applyAsInt("GOTO"), label);
+    }
+
+    @Override
+    @SneakyThrows
+    public BytecodeLabel newLabel() {
+        MethodHandle constructor = TRUSTED_LOOKUP.findConstructor(CLASS_Label, MethodType.methodType(void.class));
+        return new BytecodeLabel(constructor.invoke());
     }
 
     @Override

@@ -13,3 +13,4 @@ rootProject.name = "Reflect"
 
 include("core")
 include("j9")
+include("j24")

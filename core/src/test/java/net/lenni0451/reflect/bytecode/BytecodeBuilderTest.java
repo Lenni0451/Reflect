@@ -22,9 +22,9 @@ class BytecodeBuilderTest {
                     .return_()
                     .maxs(1, 1));
             clazz.method(builder.opcode("ACC_PUBLIC"), "get", "()Ljava/lang/Object;", null, null, method -> {
-                BytecodeLabel start = builder.label();
-                BytecodeLabel end = builder.label();
-                BytecodeLabel handler = builder.label();
+                BytecodeLabel start = method.newLabel();
+                BytecodeLabel end = method.newLabel();
+                BytecodeLabel handler = method.newLabel();
 
                 method
                         .goto_(start)
