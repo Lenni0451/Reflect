@@ -271,7 +271,7 @@ class ASMMethodBuilder implements MethodBuilder {
 
     @Override
     public MethodBuilder invokeinterface(String owner, String name, String descriptor) {
-        return this.method(this.opcodeResolver.applyAsInt("INVOKEINTERFACE"), owner, name, descriptor, false);
+        return this.method(this.opcodeResolver.applyAsInt("INVOKEINTERFACE"), owner, name, descriptor, true);
     }
 
     @Override
