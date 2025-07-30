@@ -1,29 +1,82 @@
+import org.gradle.api.attributes.java.TargetJvmVersion
+
 plugins {
     id "project.defaults"
-    id "configuration.include"
     id "base.maven_publish"
     id "publishing.aggregating_publisher"
+    alias libs.plugins.jarTransformer
+}
+
+configurations {
+    include
+    includeJ9
+    include.extendsFrom(includeJ9)
+    includeJ24
+    include.extendsFrom(includeJ24)
 }
 
 dependencies {
     include project(":core")
-    compileOnly project(":j9")
-    compileOnly project(":j24")
+    includeJ9(project(":j9")) {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 9)
+        }
+    }
+    includeJ24(project(":j24")) {
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 24)
+        }
+    }
 }
 
-evaluationDependsOn(":j9")
-evaluationDependsOn(":j24")
 jar {
     manifest {
         attributes "Multi-Release": "true"
     }
-
-    dependsOn project(":j9").tasks.named("classes")
-    dependsOn project(":j24").tasks.named("classes")
-    from({ project(":j9").sourceSets.main.output }) {
-        into "META-INF/versions/9"
+    dependsOn(configurations.include)
+    from {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations.include.collect {
+            zipTree(it)
+        }
+    } {
+        exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
     }
-    from({ project(":j24").sourceSets.main.output }) {
-        into "META-INF/versions/24"
+}
+
+jarTransformer {
+    dependency {
+        configuration = configurations.includeJ9
+        exclude {
+            excludes = [
+                    "META-INF"
+            ]
+        }
+        repackage {
+            relocations = [
+                    "net.lenni0451": "META-INF.versions.9.net.lenni0451"
+            ]
+            remapClasses = true
+            remapManifest = false
+            removeEmptyDirs = true
+            remapLog4jPlugins = false
+        }
+    }
+    dependency {
+        configuration = configurations.includeJ24
+        exclude {
+            excludes = [
+                    "META-INF"
+            ]
+        }
+        repackage {
+            relocations = [
+                    "net.lenni0451": "META-INF.versions.24.net.lenni0451"
+            ]
+            remapClasses = true
+            remapManifest = false
+            removeEmptyDirs = true
+            remapLog4jPlugins = false
+        }
     }
 }
