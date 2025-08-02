@@ -14,6 +14,5 @@ test {
         events "passed", "skipped", "failed"
     }
     maxParallelForks = Runtime.runtime.availableProcessors()
-    javaLauncher = javaToolchains.launcherFor(java.toolchain)
 }
 build.dependsOn(test)
