@@ -14,4 +14,3 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 
 [plugins]
 templateProcessor = { id = "net.lenni0451.template-processor", version = "1.0.1" }
-jarTransformer = { id = "net.lenni0451.jar-transformer", version = "1.0.1" }
