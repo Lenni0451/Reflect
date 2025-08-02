@@ -6,10 +6,10 @@ jobs:
         runs-on: "ubuntu-latest"
         strategy:
             matrix:
-                java: ["8", "11", "17", "21", "23"]
+                java: ["17", "21", "24"]
                 distribution: ["temurin", "semeru"]
                 exclude:
-                  - java: "23"
+                  - java: "24"
                     distribution: "semeru"
         name: "Java ${{ matrix.java }} (${{ matrix.distribution }})"
         steps:
