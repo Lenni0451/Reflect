@@ -1,0 +1,19 @@
+plugins {
+    id "project.defaults"
+    id "extra.template_processor"
+    alias libs.plugins.templateProcessor
+}
+
+dependencies {
+    compileOnly project(":core")
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ["--add-exports", "java.base/jdk.internal.misc=ALL-UNNAMED"]
+}
+
+templateProcessor {
+    templateDir = project.file("src/main/templates")
+    outputDir = layout.buildDirectory.dir("generated/templates/main/java")
+    markAsSource(project.sourceSets.main)
+}

@@ -1,0 +1,74 @@
+public static void main(String[] args) throws Throwable {
+    Class<?> internalUnsafeClass = JavaBypass.INTERNAL_UNSAFE.getClass();
+    ClassNode classNode = loadClassNode(internalUnsafeClass);
+
+    JsonArray out = new JsonArray();
+    for (Method method : internalUnsafeClass.getDeclaredMethods()) {
+        if (!Modifier.isPublic(method.getModifiers())) continue;
+        if (Modifier.isStatic(method.getModifiers())) continue;
+        String[] argNames = getArgNames(method, classNode);
+
+        JsonObject methodJson = new JsonObject();
+        methodJson.addProperty("name", method.getName());
+        methodJson.addProperty("returnType", trimClassName(method.getReturnType()));
+        JsonArray argArray = new JsonArray();
+        for (int i = 0; i < method.getParameterCount(); i++) {
+            JsonObject argJson = new JsonObject();
+            argJson.addProperty("name", argNames[i]);
+            argJson.addProperty("type", trimClassName(method.getParameterTypes()[i]));
+            argArray.add(argJson);
+        }
+        methodJson.add("args", argArray);
+        out.add(methodJson);
+    }
+    System.out.println(out);
+}
+
+private static <E extends Throwable> ClassNode loadClassNode(final Class<?> clazz) throws E {
+    try {
+        ClassReader classReader = new ClassReader(Main.class.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/') + ".class").readAllBytes());
+        ClassNode classNode = new ClassNode();
+        classReader.accept(classNode, ClassReader.SKIP_FRAMES);
+        return classNode;
+    } catch (Throwable t) {
+        throw (E) t;
+    }
+}
+
+private static String trimClassName(final Class<?> clazz) {
+    String name = clazz.getName();
+    if (clazz.isArray()) {
+        Class<?> componentType = clazz;
+        int dimensions = 0;
+        while (componentType.isArray()) {
+            componentType = componentType.getComponentType();
+            dimensions++;
+        }
+        return trimClassName(componentType) + "[]".repeat(Math.max(0, dimensions));
+    }
+    if (name.startsWith("java.lang.") && name.split("\\.").length == 3) return name.split("\\.")[2];
+    return name;
+}
+
+private static String[] getArgNames(final Method method, final ClassNode classNode) {
+    String[] names = new String[method.getParameterCount()];
+    for (int i = 0; i < names.length; i++) names[i] = "arg" + i;
+
+    MethodNode methodNode = classNode.methods.stream().filter(m -> m.name.equals(method.getName())).filter(m -> m.desc.equals(Type.getMethodDescriptor(method))).findFirst().orElse(null);
+    if (methodNode == null) return names;
+    if (methodNode.localVariables == null) return names;
+
+    Type[] argTypes = Type.getArgumentTypes(method);
+    int index = 1;
+    for (int i = 0; i < names.length; i++) {
+        Type argType = argTypes[i];
+        for (int j = 0; j < methodNode.localVariables.size(); j++) {
+            if (methodNode.localVariables.get(j).index == index) {
+                names[i] = methodNode.localVariables.get(j).name;
+                break;
+            }
+        }
+        index += argType.getSize();
+    }
+    return names;
+}
