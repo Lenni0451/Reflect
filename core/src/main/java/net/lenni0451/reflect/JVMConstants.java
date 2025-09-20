@@ -2,6 +2,9 @@ package net.lenni0451.reflect;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import static net.lenni0451.reflect.utils.FieldInitializer.ThrowingSupplier.getFirst;
+import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
+
 @ApiStatus.Internal
 public class JVMConstants {
 
@@ -11,6 +14,17 @@ public class JVMConstants {
      * Most features of Reflect should work on OpenJ9, but some features are not supported. They will throw an {@link UnsupportedOperationException} if used on OpenJ9.
      */
     public static final boolean OPENJ9_RUNTIME = System.getProperty("java.vm.name").toLowerCase().contains("openj9");
+    public static final int JAVA_VERSION = reqInit(
+            getFirst(
+                    () -> {
+                        Class<?> versionClass = Class.forName("java.lang.Runtime$Version");
+                        Object version = Runtime.class.getDeclaredMethod("version").invoke(null);
+                        return (int) versionClass.getDeclaredMethod("major").invoke(version);
+                    },
+                    () -> Integer.parseInt(System.getProperty("java.specification.version").split("\\.")[0])
+            ),
+            () -> new IllegalStateException("Could not determine Java version")
+    );
 
     public static final String CLASS_InstrumentationImpl = calc("sun.instrument.InstrumentationImpl");
     public static final String CLASS_MethodHandles_Lookup_ClassOption = calc("java.lang.invoke.MethodHandles$Lookup$ClassOption");
