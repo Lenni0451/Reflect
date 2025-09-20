@@ -7,6 +7,8 @@ import sun.reflect.Reflection;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 
+import static net.lenni0451.reflect.JVMConstants.METHOD_SecurityManager_getClassContext;
+
 /**
  * This class contains methods which need to be replaced by other implementations for newer JDKs.
  */
@@ -14,8 +16,8 @@ class Classes$MR {
 
     private static final SecurityManager SECURITY_MANAGER = new SecurityManager();
     private static final MethodHandle GET_CLASS_CONTEXT = FieldInitializer.reqInit(
-            () -> JavaBypass.TRUSTED_LOOKUP.findVirtual(SecurityManager.class, "getClassContext", MethodType.methodType(Class[].class)),
-            () -> new MethodNotFoundException(SecurityManager.class.getName(), "getClassContext")
+            () -> JavaBypass.TRUSTED_LOOKUP.findVirtual(SecurityManager.class, METHOD_SecurityManager_getClassContext, MethodType.methodType(Class[].class)),
+            () -> new MethodNotFoundException(SecurityManager.class.getName(), METHOD_SecurityManager_getClassContext)
     );
 
     public static Class<?> getCallerClass(final int depth) throws Throwable {

@@ -10,44 +10,45 @@ import org.intellij.lang.annotations.MagicConstant;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 
+import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 class LocalStackFrameImpl implements LocalStackFrame {
 
-    private static final Class<?> liveStackFrameInfo = Classes.forName("java.lang.LiveStackFrameInfo");
-    private static final Class<?> primitiveSlot32 = Classes.forName("java.lang.LiveStackFrameInfo$PrimitiveSlot32");
-    private static final Class<?> primitiveSlot64 = Classes.forName("java.lang.LiveStackFrameInfo$PrimitiveSlot64");
+    private static final Class<?> liveStackFrameInfo = Classes.forName(CLASS_LiveStackFrameInfo);
+    private static final Class<?> primitiveSlot32 = Classes.forName(CLASS_LiveStackFrameInfo_PrimitiveSlot32);
+    private static final Class<?> primitiveSlot64 = Classes.forName(CLASS_LiveStackFrameInfo_PrimitiveSlot64);
 
     private static final MethodHandle liveStackFrameInfo_getMonitors = reqInit(
-            () -> TRUSTED_LOOKUP.findVirtual(liveStackFrameInfo, "getMonitors", MethodType.methodType(Object[].class)),
+            () -> TRUSTED_LOOKUP.findVirtual(liveStackFrameInfo, METHOD_LiveStackFrameInfo_getMonitors, MethodType.methodType(Object[].class)),
             handle -> handle.asType(MethodType.methodType(Object[].class, StackWalker.StackFrame.class)),
-            () -> new MethodNotFoundException(liveStackFrameInfo.getName(), "getMonitors", Object[].class)
+            () -> new MethodNotFoundException(liveStackFrameInfo.getName(), METHOD_LiveStackFrameInfo_getMonitors, Object[].class)
     );
     private static final MethodHandle liveStackFrameInfo_getLocals = reqInit(
-            () -> TRUSTED_LOOKUP.findVirtual(liveStackFrameInfo, "getLocals", MethodType.methodType(Object[].class)),
+            () -> TRUSTED_LOOKUP.findVirtual(liveStackFrameInfo, METHOD_LiveStackFrameInfo_getLocals, MethodType.methodType(Object[].class)),
             handle -> handle.asType(MethodType.methodType(Object[].class, StackWalker.StackFrame.class)),
-            () -> new MethodNotFoundException(liveStackFrameInfo.getName(), "getLocals", Object[].class)
+            () -> new MethodNotFoundException(liveStackFrameInfo.getName(), METHOD_LiveStackFrameInfo_getLocals, Object[].class)
     );
     private static final MethodHandle liveStackFrameInfo_getStack = reqInit(
-            () -> TRUSTED_LOOKUP.findVirtual(liveStackFrameInfo, "getStack", MethodType.methodType(Object[].class)),
+            () -> TRUSTED_LOOKUP.findVirtual(liveStackFrameInfo, METHOD_LiveStackFrameInfo_getStack, MethodType.methodType(Object[].class)),
             handle -> handle.asType(MethodType.methodType(Object[].class, StackWalker.StackFrame.class)),
-            () -> new MethodNotFoundException(liveStackFrameInfo.getName(), "getStack", Object[].class)
+            () -> new MethodNotFoundException(liveStackFrameInfo.getName(), METHOD_LiveStackFrameInfo_getStack, Object[].class)
     );
     private static final MethodHandle liveStackFrameInfo_mode = reqInit(
-            () -> TRUSTED_LOOKUP.findGetter(liveStackFrameInfo, "mode", int.class),
+            () -> TRUSTED_LOOKUP.findGetter(liveStackFrameInfo, METHOD_LiveStackFrameInfo_mode, int.class),
             handle -> handle.asType(MethodType.methodType(int.class, StackWalker.StackFrame.class)),
-            () -> new FieldNotFoundException(liveStackFrameInfo.getName(), "mode")
+            () -> new FieldNotFoundException(liveStackFrameInfo.getName(), METHOD_LiveStackFrameInfo_mode)
     );
     private static final MethodHandle primitiveSlot32_value = reqInit(
-            () -> TRUSTED_LOOKUP.findGetter(primitiveSlot32, "value", int.class),
+            () -> TRUSTED_LOOKUP.findGetter(primitiveSlot32, METHOD_LiveStackFrameInfo_PrimitiveSlot32_value, int.class),
             handle -> handle.asType(MethodType.methodType(int.class, Object.class)),
-            () -> new FieldNotFoundException(primitiveSlot32.getName(), "value")
+            () -> new FieldNotFoundException(primitiveSlot32.getName(), METHOD_LiveStackFrameInfo_PrimitiveSlot32_value)
     );
     private static final MethodHandle primitiveSlot64_value = reqInit(
-            () -> TRUSTED_LOOKUP.findGetter(primitiveSlot64, "value", long.class),
+            () -> TRUSTED_LOOKUP.findGetter(primitiveSlot64, METHOD_LiveStackFrameInfo_PrimitiveSlot64_value, long.class),
             handle -> handle.asType(MethodType.methodType(long.class, Object.class)),
-            () -> new FieldNotFoundException(primitiveSlot64.getName(), "value")
+            () -> new FieldNotFoundException(primitiveSlot64.getName(), METHOD_LiveStackFrameInfo_PrimitiveSlot64_value)
     );
 
     private static final int MODE_INTERPRETED = 0x01;

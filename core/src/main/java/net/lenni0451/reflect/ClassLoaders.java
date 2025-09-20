@@ -88,8 +88,8 @@ public class ClassLoaders {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Object ucp;
         try {
-            ucp = RStream.of(classLoader).withSuper().fields().by("ucp").get();
-            RStream.of(ucp).methods().by("addURL", URL.class).invokeArgs(url);
+            ucp = RStream.of(classLoader).withSuper().fields().by(FIELD_URLClassLoader_ucp).get();
+            RStream.of(ucp).methods().by(METHOD_URLClassPath_addURL, URL.class).invokeArgs(url);
         } catch (Throwable t) {
             throw new IllegalStateException("Unable to find URLClassPath of classloader", t);
         }
@@ -97,7 +97,7 @@ public class ClassLoaders {
         //Move the URL to the front of the classpath, so it gets loaded first
         MOVE_URL_UP:
         {
-            List<URL> path = RStream.of(ucp).fields().by("path").get();
+            List<URL> path = RStream.of(ucp).fields().by(FIELD_URLClassPath_path).get();
             for (int i = 0; i < path.size(); i++) {
                 if (url.equals(path.get(i))) {
                     path.add(0, path.remove(i));
@@ -116,7 +116,7 @@ public class ClassLoaders {
 
         //Move the loader for that URL to the front of the list
         Class<?> jarLoaderClass = Classes.forName(ucp.getClass().getName() + "$JarLoader");
-        List<Object> loaders = RStream.of(ucp).fields().by("loaders").get();
+        List<Object> loaders = RStream.of(ucp).fields().by(FIELD_URLClassPath_loaders).get();
         for (Object loader : loaders) {
             if (jarLoaderClass.equals(loader.getClass())) {
                 URL loaderUrl = RStream.of(loader).fields().filter(URL.class).by(0).get();

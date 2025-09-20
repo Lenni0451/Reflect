@@ -10,18 +10,20 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static net.lenni0451.reflect.JVMConstants.CLASS_LiveStackFrame;
+import static net.lenni0451.reflect.JVMConstants.METHOD_LiveStackFrame_getStackWalker;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 public class LocalCapturer {
 
-    private static final Class<?> liveStackFrame = Classes.forName("java.lang.LiveStackFrame");
+    private static final Class<?> liveStackFrame = Classes.forName(CLASS_LiveStackFrame);
     private static final StackWalker stackWalker = reqInit(
             () -> {
-                MethodHandle getStackWalker = TRUSTED_LOOKUP.findStatic(liveStackFrame, "getStackWalker", MethodType.methodType(StackWalker.class, Set.class));
+                MethodHandle getStackWalker = TRUSTED_LOOKUP.findStatic(liveStackFrame, METHOD_LiveStackFrame_getStackWalker, MethodType.methodType(StackWalker.class, Set.class));
                 return (StackWalker) getStackWalker.invokeExact(Set.of(StackWalker.Option.RETAIN_CLASS_REFERENCE));
             },
-            () -> new MethodNotFoundException(liveStackFrame.getName(), "getStackWalker", StackWalker.class)
+            () -> new MethodNotFoundException(liveStackFrame.getName(), METHOD_LiveStackFrame_getStackWalker, StackWalker.class)
     );
 
     public static void forEach(final Consumer<LocalStackFrame> consumer) {

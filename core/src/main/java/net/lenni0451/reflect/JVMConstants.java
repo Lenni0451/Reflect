@@ -20,9 +20,15 @@ public class JVMConstants {
     public static final String CLASS_DirectMethodHandle_Constructor = calc("java.lang.invoke.DirectMethodHandle$Constructor");
     public static final String CLASS_MethodHandleNatives_Constants = calc("java.lang.invoke.MethodHandleNatives$Constants");
     public static final String CLASS_MemberName = calc("java.lang.invoke.MemberName");
+    public static final String CLASS_LiveStackFrame = calc("java.lang.LiveStackFrame");
+    public static final String CLASS_LiveStackFrameInfo = calc("java.lang.LiveStackFrameInfo");
+    public static final String CLASS_LiveStackFrameInfo_PrimitiveSlot32 = calc("java.lang.LiveStackFrameInfo$PrimitiveSlot32");
+    public static final String CLASS_LiveStackFrameInfo_PrimitiveSlot64 = calc("java.lang.LiveStackFrameInfo$PrimitiveSlot64");
 
     public static final String FIELD_MethodHandles_Lookup_IMPL_LOOKUP = calc("IMPL_LOOKUP");
     public static final String FIELD_URLClassLoader_ucp = calc("ucp");
+    public static final String FIELD_URLClassPath_path = calc("path");
+    public static final String FIELD_URLClassPath_loaders = calc("loaders");
     public static final String FIELD_Enum_$VALUES = calc("$VALUES");
     public static final String FIELD_Class_enumConstants = calc("enumConstants");
     public static final String FIELD_Class_enumConstantDirectory = calc("enumConstantDirectory");
@@ -42,11 +48,22 @@ public class JVMConstants {
     public static final String METHOD_InstrumentationImpl_loadAgent = calc("loadAgent");
     public static final String METHOD_Unsafe_defineAnonymousClass = calc("defineAnonymousClass");
     public static final String METHOD_MethodHandles_Lookup_defineHiddenClass = calc("defineHiddenClass");
+    public static final String METHOD_MethodHandles_Lookup_getDirectMethod = calc("getDirectMethod");
+    public static final String METHOD_MethodHandles_Lookup_ensureInitialized = calc("ensureInitialized");
     public static final String METHOD_URLClassPath_addURL = calc("addURL");
     public static final String METHOD_URLClassPath_getURLs = calc("getURLs");
     public static final String METHOD_ClassLoader_defineClass = calc("defineClass");
     public static final String METHOD_Module_implAddExportsOrOpens = calc("implAddExportsOrOpens");
-    public static final String METHOD_MethodHandles_Lookup_getDirectMethod = calc("getDirectMethod");
+    public static final String METHOD_SecurityManager_getClassContext = calc("getClassContext");
+    public static final String METHOD_LiveStackFrame_getStackWalker = calc("getStackWalker");
+    public static final String METHOD_LiveStackFrameInfo_getMonitors = calc("getMonitors");
+    public static final String METHOD_LiveStackFrameInfo_getLocals = calc("getLocals");
+    public static final String METHOD_LiveStackFrameInfo_getStack = calc("getStack");
+    public static final String METHOD_LiveStackFrameInfo_mode = calc("mode");
+    public static final String METHOD_LiveStackFrameInfo_PrimitiveSlot32_value = calc("value");
+    public static final String METHOD_LiveStackFrameInfo_PrimitiveSlot64_value = calc("value");
+
+    public static final String VM_OPTION_ObjectAlignmentInBytes = calc("ObjectAlignmentInBytes");
 
 
     /**

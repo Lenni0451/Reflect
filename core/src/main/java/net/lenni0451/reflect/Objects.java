@@ -22,7 +22,7 @@ public class Objects {
     public static final int OBJECT_ALIGNMENT = init(() -> {
         if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
             HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
-            if (mxBean != null) return Integer.parseInt(mxBean.getVMOption("ObjectAlignmentInBytes").getValue());
+            if (mxBean != null) return Integer.parseInt(mxBean.getVMOption(JVMConstants.VM_OPTION_ObjectAlignmentInBytes).getValue());
         }
         return 8; //Default to 8 and hope for the best
     });

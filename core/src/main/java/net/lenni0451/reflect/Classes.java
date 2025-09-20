@@ -11,6 +11,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
+import static net.lenni0451.reflect.JVMConstants.METHOD_MethodHandles_Lookup_ensureInitialized;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
 import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
@@ -26,7 +27,7 @@ public class Classes {
             () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0)
     );
     private static final MethodHandle ensureInitialized = optInit(
-            () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, "ensureInitialized", Class.class),
+            () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_ensureInitialized, Class.class),
             TRUSTED_LOOKUP::unreflect
     );
 
