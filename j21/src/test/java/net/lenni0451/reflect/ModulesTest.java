@@ -17,8 +17,23 @@ class ModulesTest {
     }
 
     @Test
+    void testOpenModule() {
+        assertDoesNotThrow(() -> Modules.openModule(ModulesTest.class, ModulesTest.class.getPackageName()));
+    }
+
+    @Test
     void openEntireModule() {
         assertDoesNotThrow(() -> Modules.openEntireModule(ModulesTest.class));
+    }
+
+    @Test
+    void enableNativeAccess() {
+        assertDoesNotThrow(() -> Modules.enableNativeAccess(ModulesTest.class));
+    }
+
+    @Test
+    void enableNativeAccessToAllUnnamed() {
+        assertDoesNotThrow(Modules::enableNativeAccessToAllUnnamed);
     }
 
 

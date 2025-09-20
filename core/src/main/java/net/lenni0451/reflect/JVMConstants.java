@@ -68,6 +68,8 @@ public class JVMConstants {
     public static final String METHOD_URLClassPath_getURLs = calc("getURLs");
     public static final String METHOD_ClassLoader_defineClass = calc("defineClass");
     public static final String METHOD_Module_implAddExportsOrOpens = calc("implAddExportsOrOpens");
+    public static final String METHOD_Module_implAddEnableNativeAccess = calc("implAddEnableNativeAccess");
+    public static final String METHOD_Module_implAddEnableNativeAccessToAllUnnamed = calc("implAddEnableNativeAccessToAllUnnamed");
     public static final String METHOD_SecurityManager_getClassContext = calc("getClassContext");
     public static final String METHOD_LiveStackFrame_getStackWalker = calc("getStackWalker");
     public static final String METHOD_LiveStackFrameInfo_getMonitors = calc("getMonitors");

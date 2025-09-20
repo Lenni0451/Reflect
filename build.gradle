@@ -6,33 +6,27 @@ plugins {
     id "publishing.aggregating_publisher"
 }
 
+def VERSION_SUBMODULES = [9, 11, 21, 24]
+
 configurations {
     include
 }
 
 dependencies {
     include(project(":core"))
-    include(project(":j9")) {
-        attributes {
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 9)
-        }
-    }
-    include(project(":j11")) {
-        attributes {
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 11)
-        }
-    }
-    include(project(":j24")) {
-        attributes {
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 24)
+    VERSION_SUBMODULES.each { version ->
+        include(project(":j$version")) {
+            attributes {
+                attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, version)
+            }
         }
     }
 }
 
 evaluationDependsOn(":core")
-evaluationDependsOn(":j9")
-evaluationDependsOn(":j11")
-evaluationDependsOn(":j24")
+VERSION_SUBMODULES.each { version ->
+    evaluationDependsOn(":j$version")
+}
 jar {
     dependsOn(configurations.include)
     manifest {
@@ -40,18 +34,12 @@ jar {
     }
 
     dependsOn project(":core").tasks.named("classes")
-    dependsOn project(":j9").tasks.named("classes")
-    dependsOn project(":j11").tasks.named("classes")
-    dependsOn project(":j24").tasks.named("classes")
     from({ project(":core").sourceSets.main.output }) {
     }
-    from({ project(":j9").sourceSets.main.output }) {
-        into "META-INF/versions/9"
-    }
-    from({ project(":j11").sourceSets.main.output }) {
-        into "META-INF/versions/11"
-    }
-    from({ project(":j24").sourceSets.main.output }) {
-        into "META-INF/versions/24"
+    VERSION_SUBMODULES.each { version ->
+        dependsOn project(":j$version").tasks.named("classes")
+        from({ project(":j$version").sourceSets.main.output }) {
+            into "META-INF/versions/$version"
+        }
     }
 }

@@ -29,6 +29,16 @@ public class Modules {
             TRUSTED_LOOKUP::unreflect,
             () -> new MethodNotFoundException(Module.class.getName(), METHOD_Module_implAddExportsOrOpens, String.class, Module.class, boolean.class, boolean.class)
     );
+    private static final MethodHandle implAddEnableNativeAccess = reqInit(
+            () -> Methods.getDeclaredMethod(Module.class, METHOD_Module_implAddEnableNativeAccess),
+            TRUSTED_LOOKUP::unreflect,
+            () -> new MethodNotFoundException(Module.class.getName(), METHOD_Module_implAddEnableNativeAccess)
+    );
+    private static final MethodHandle implAddEnableNativeAccessToAllUnnamed = reqInit(
+            () -> Methods.getDeclaredMethod(Module.class, METHOD_Module_implAddEnableNativeAccessToAllUnnamed),
+            TRUSTED_LOOKUP::unreflect,
+            () -> new MethodNotFoundException(Module.class.getName(), METHOD_Module_implAddEnableNativeAccessToAllUnnamed)
+    );
 
     /**
      * Copy the module from one class to another.<br>
@@ -90,8 +100,7 @@ public class Modules {
      */
     @SneakyThrows
     public static void enableNativeAccess(final Class<?> clazz) {
-        //Nothing to do in Java 9
-        //Check out the Java 21+ version
+        implAddEnableNativeAccess.invoke(clazz.getModule());
     }
 
     /**
@@ -100,8 +109,7 @@ public class Modules {
      */
     @SneakyThrows
     public static void enableNativeAccessToAllUnnamed() {
-        //Nothing to do in Java 9
-        //Check out the Java 21+ version
+        implAddEnableNativeAccessToAllUnnamed.invoke();
     }
 
 }
