@@ -1,0 +1,5552 @@
+{
+    "template": "InternalUnsafeAccess.mustache",
+    "target": "net/lenni0451/reflect/accessor/InternalUnsafeAccess.java",
+    "globals": {
+        "sourceVersion": "11"
+    },
+    "variables": [
+        {
+            "name": "allocateInstance",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Class"
+                }
+            ]
+        },
+        {
+            "name": "loadFence",
+            "returnType": "void",
+            "args": []
+        },
+        {
+            "name": "storeFence",
+            "returnType": "void",
+            "args": []
+        },
+        {
+            "name": "fullFence",
+            "returnType": "void",
+            "args": []
+        },
+        {
+            "name": "getObject",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putObject",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "getBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putBoolean",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putByte",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "putByte",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putShort",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "putShort",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putChar",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "putChar",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putInt",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "putInt",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putLong",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putLong",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getFloat",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getFloat",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putFloat",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "putFloat",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getDouble",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getDouble",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putDouble",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "putDouble",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getObjectVolatile",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putObjectVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "getBooleanVolatile",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putBooleanVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getByteVolatile",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putByteVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getShortVolatile",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putShortVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getCharVolatile",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putCharVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getIntVolatile",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putIntVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getLongVolatile",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putLongVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getFloatVolatile",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putFloatVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getDoubleVolatile",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putDoubleVolatile",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getObjectOpaque",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putObjectOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "getBooleanOpaque",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putBooleanOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getByteOpaque",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putByteOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getShortOpaque",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putShortOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getCharOpaque",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putCharOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getIntOpaque",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putIntOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getLongOpaque",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putLongOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getFloatOpaque",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putFloatOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getDoubleOpaque",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putDoubleOpaque",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getObjectAcquire",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putObjectRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "getBooleanAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putBooleanRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getByteAcquire",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putByteRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getShortAcquire",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putShortRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getCharAcquire",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putCharRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getIntAcquire",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putIntRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getLongAcquire",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putLongRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getFloatAcquire",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putFloatRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getDoubleAcquire",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putDoubleRelease",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getShortUnaligned",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getShortUnaligned",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "putShortUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "putShortUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getCharUnaligned",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getCharUnaligned",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putCharUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "putCharUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getIntUnaligned",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getIntUnaligned",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putIntUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "putIntUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getLongUnaligned",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getLongUnaligned",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putLongUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putLongUnaligned",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                },
+                {
+                    "name": "bigEndian",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetObject",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg3",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeObject",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg3",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeObjectAcquire",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "Object"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeObjectRelease",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "Object"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetLong",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "long"
+                },
+                {
+                    "name": "arg3",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "long"
+                },
+                {
+                    "name": "arg3",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeLongAcquire",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeLongRelease",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetInt",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "int"
+                },
+                {
+                    "name": "arg3",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                },
+                {
+                    "name": "arg2",
+                    "type": "int"
+                },
+                {
+                    "name": "arg3",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeIntAcquire",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "int"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeIntRelease",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "int"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetByte",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeByteAcquire",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeByteRelease",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetShort",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeShortAcquire",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeShortRelease",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetObjectPlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "Object"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetObjectAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "Object"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetObjectRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "Object"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetObject",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "Object"
+                },
+                {
+                    "name": "x",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetLongPlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetLongAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetLongRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetLong",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetIntPlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "int"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetIntAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "int"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetIntRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "int"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetInt",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "int"
+                },
+                {
+                    "name": "x",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetBytePlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetByteAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetByteRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetByte",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "byte"
+                },
+                {
+                    "name": "x",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetShortPlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetShortAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetShortRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetShort",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "short"
+                },
+                {
+                    "name": "x",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetObject",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "park",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "boolean"
+                },
+                {
+                    "name": "arg1",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "unpark",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "throwException",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "Throwable"
+                }
+            ]
+        },
+        {
+            "name": "defineClass",
+            "returnType": "Class",
+            "args": [
+                {
+                    "name": "name",
+                    "type": "String"
+                },
+                {
+                    "name": "b",
+                    "type": "byte[]"
+                },
+                {
+                    "name": "off",
+                    "type": "int"
+                },
+                {
+                    "name": "len",
+                    "type": "int"
+                },
+                {
+                    "name": "loader",
+                    "type": "ClassLoader"
+                },
+                {
+                    "name": "protectionDomain",
+                    "type": "java.security.ProtectionDomain"
+                }
+            ]
+        },
+        {
+            "name": "objectFieldOffset",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "c",
+                    "type": "Class"
+                },
+                {
+                    "name": "name",
+                    "type": "String"
+                }
+            ]
+        },
+        {
+            "name": "objectFieldOffset",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "f",
+                    "type": "java.lang.reflect.Field"
+                }
+            ]
+        },
+        {
+            "name": "staticFieldBase",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "f",
+                    "type": "java.lang.reflect.Field"
+                }
+            ]
+        },
+        {
+            "name": "staticFieldOffset",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "f",
+                    "type": "java.lang.reflect.Field"
+                }
+            ]
+        },
+        {
+            "name": "shouldBeInitialized",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "c",
+                    "type": "Class"
+                }
+            ]
+        },
+        {
+            "name": "ensureClassInitialized",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "c",
+                    "type": "Class"
+                }
+            ]
+        },
+        {
+            "name": "loadLoadFence",
+            "returnType": "void",
+            "args": []
+        },
+        {
+            "name": "storeStoreFence",
+            "returnType": "void",
+            "args": []
+        },
+        {
+            "name": "unalignedAccess",
+            "returnType": "boolean",
+            "args": []
+        },
+        {
+            "name": "getAddress",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAddress",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putAddress",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "putAddress",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "x",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getUncompressedObject",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "allocateMemory",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "bytes",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "reallocateMemory",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "bytes",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "setMemory",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                },
+                {
+                    "name": "bytes",
+                    "type": "long"
+                },
+                {
+                    "name": "value",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "setMemory",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "bytes",
+                    "type": "long"
+                },
+                {
+                    "name": "value",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "copyMemory",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "srcAddress",
+                    "type": "long"
+                },
+                {
+                    "name": "destAddress",
+                    "type": "long"
+                },
+                {
+                    "name": "bytes",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "copyMemory",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "srcBase",
+                    "type": "Object"
+                },
+                {
+                    "name": "srcOffset",
+                    "type": "long"
+                },
+                {
+                    "name": "destBase",
+                    "type": "Object"
+                },
+                {
+                    "name": "destOffset",
+                    "type": "long"
+                },
+                {
+                    "name": "bytes",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "copySwapMemory",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "srcBase",
+                    "type": "Object"
+                },
+                {
+                    "name": "srcOffset",
+                    "type": "long"
+                },
+                {
+                    "name": "destBase",
+                    "type": "Object"
+                },
+                {
+                    "name": "destOffset",
+                    "type": "long"
+                },
+                {
+                    "name": "bytes",
+                    "type": "long"
+                },
+                {
+                    "name": "elemSize",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "copySwapMemory",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "srcAddress",
+                    "type": "long"
+                },
+                {
+                    "name": "destAddress",
+                    "type": "long"
+                },
+                {
+                    "name": "bytes",
+                    "type": "long"
+                },
+                {
+                    "name": "elemSize",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "freeMemory",
+            "returnType": "void",
+            "args": [
+                {
+                    "name": "address",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "arrayBaseOffset",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "arrayClass",
+                    "type": "Class"
+                }
+            ]
+        },
+        {
+            "name": "arrayIndexScale",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "arrayClass",
+                    "type": "Class"
+                }
+            ]
+        },
+        {
+            "name": "addressSize",
+            "returnType": "int",
+            "args": []
+        },
+        {
+            "name": "pageSize",
+            "returnType": "int",
+            "args": []
+        },
+        {
+            "name": "defineClass0",
+            "returnType": "Class",
+            "args": [
+                {
+                    "name": "arg0",
+                    "type": "String"
+                },
+                {
+                    "name": "arg1",
+                    "type": "byte[]"
+                },
+                {
+                    "name": "arg2",
+                    "type": "int"
+                },
+                {
+                    "name": "arg3",
+                    "type": "int"
+                },
+                {
+                    "name": "arg4",
+                    "type": "ClassLoader"
+                },
+                {
+                    "name": "arg5",
+                    "type": "java.security.ProtectionDomain"
+                }
+            ]
+        },
+        {
+            "name": "defineAnonymousClass",
+            "returnType": "Class",
+            "args": [
+                {
+                    "name": "hostClass",
+                    "type": "Class"
+                },
+                {
+                    "name": "data",
+                    "type": "byte[]"
+                },
+                {
+                    "name": "cpPatches",
+                    "type": "Object[]"
+                }
+            ]
+        },
+        {
+            "name": "allocateUninitializedArray",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "componentType",
+                    "type": "Class"
+                },
+                {
+                    "name": "length",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetChar",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeCharAcquire",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeCharRelease",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetChar",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetCharAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetCharRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetCharPlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "char"
+                },
+                {
+                    "name": "x",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeBooleanAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeBooleanRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetBooleanAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetBooleanRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetBooleanPlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "boolean"
+                },
+                {
+                    "name": "x",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetFloat",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeFloat",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeFloatAcquire",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeFloatRelease",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetFloatPlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetFloatAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetFloatRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetFloat",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "float"
+                },
+                {
+                    "name": "x",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "compareAndSetDouble",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeDouble",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeDoubleAcquire",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "compareAndExchangeDoubleRelease",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetDoublePlain",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetDoubleAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetDoubleRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "weakCompareAndSetDouble",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "expected",
+                    "type": "double"
+                },
+                {
+                    "name": "x",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getLoadAverage",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "loadavg",
+                    "type": "double[]"
+                },
+                {
+                    "name": "nelems",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddIntRelease",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddIntAcquire",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddLongRelease",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddLongAcquire",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddByteRelease",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddByteAcquire",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddShortRelease",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddShortAcquire",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddCharRelease",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddCharAcquire",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddFloat",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddFloatRelease",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddFloatAcquire",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddDouble",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddDoubleRelease",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getAndAddDoubleAcquire",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "delta",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetIntRelease",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetIntAcquire",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetLongRelease",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetLongAcquire",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetObjectRelease",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetObjectAcquire",
+            "returnType": "Object",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "Object"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetByteRelease",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetByteAcquire",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetBooleanRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetBooleanAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetShortRelease",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetShortAcquire",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetCharRelease",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetCharAcquire",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetFloat",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetFloatRelease",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetFloatAcquire",
+            "returnType": "float",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "float"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetDouble",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetDoubleRelease",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getAndSetDoubleAcquire",
+            "returnType": "double",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "newValue",
+                    "type": "double"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrBooleanRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrBooleanAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndBooleanRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndBooleanAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorBoolean",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorBooleanRelease",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorBooleanAcquire",
+            "returnType": "boolean",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "boolean"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrByteRelease",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrByteAcquire",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndByteRelease",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndByteAcquire",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorByte",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorByteRelease",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorByteAcquire",
+            "returnType": "byte",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "byte"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrCharRelease",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrCharAcquire",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndCharRelease",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndCharAcquire",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorChar",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorCharRelease",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorCharAcquire",
+            "returnType": "char",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "char"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrShortRelease",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrShortAcquire",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndShortRelease",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndShortAcquire",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorShort",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorShortRelease",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorShortAcquire",
+            "returnType": "short",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "short"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrIntRelease",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrIntAcquire",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndIntRelease",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndIntAcquire",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorInt",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorIntRelease",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorIntAcquire",
+            "returnType": "int",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "int"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrLongRelease",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseOrLongAcquire",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndLongRelease",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseAndLongAcquire",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorLong",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorLongRelease",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "getAndBitwiseXorLongAcquire",
+            "returnType": "long",
+            "args": [
+                {
+                    "name": "o",
+                    "type": "Object"
+                },
+                {
+                    "name": "offset",
+                    "type": "long"
+                },
+                {
+                    "name": "mask",
+                    "type": "long"
+                }
+            ]
+        },
+        {
+            "name": "isBigEndian",
+            "returnType": "boolean",
+            "args": []
+        }
+    ]
+}

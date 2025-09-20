@@ -1,9 +1,5 @@
 package net.lenni0451.reflect.accessor;
 
-import jdk.internal.misc.Unsafe;
-import lombok.SneakyThrows;
-import net.lenni0451.reflect.JavaBypass;
-
 /**
  * This class wraps access to the jdk internal Unsafe class.<br>
  * The internal Unsafe class was added in Java 11. All methods in this class throw {@link UnsupportedOperationException} on Java versions below 11.<br>
@@ -16,12 +12,9 @@ import net.lenni0451.reflect.JavaBypass;
  */
 public class InternalUnsafeAccess {
 
-    private static final Unsafe UNSAFE = (Unsafe) JavaBypass.INTERNAL_UNSAFE;
-
     {{#each this}}
-    @SneakyThrows
     public static {{returnType}} {{name}}({{#args}}final {{..type}} {{..name}}{{#iterHasNext}}, {{/iterHasNext}}{{/args}}) {
-        {{#isNotEq returnType "void"}}return {{/isNotEq}}UNSAFE.{{name}}({{#args}}{{..name}}{{#iterHasNext}}, {{/iterHasNext}}{{/args}});
+        throw new UnsupportedOperationException("Method {{name}}({{#args}}{{..type}}{{#iterHasNext}}, {{/iterHasNext}}{{/args}}) is not supported on this Java version");
     }
 
     {{/each}}
