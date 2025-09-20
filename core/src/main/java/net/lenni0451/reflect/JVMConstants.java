@@ -5,6 +5,11 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public class JVMConstants {
 
+    /**
+     * OpenJ9 runtime detection.<br>
+     * Since OpenJ9 is not a fork of OpenJDK, but a completely different JVM, some internal implementations are different.<br>
+     * Most features of Reflect should work on OpenJ9, but some features are not supported. They will throw an {@link UnsupportedOperationException} if used on OpenJ9.
+     */
     public static final boolean OPENJ9_RUNTIME = System.getProperty("java.vm.name").toLowerCase().contains("openj9");
 
     public static final String CLASS_InstrumentationImpl = calc("sun.instrument.InstrumentationImpl");
