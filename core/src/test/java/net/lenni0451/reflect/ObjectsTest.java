@@ -1,6 +1,5 @@
 package net.lenni0451.reflect;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -26,13 +25,9 @@ class ObjectsTest {
 
     @Test
     void cast() {
-        if (JVMConstants.OPENJ9_RUNTIME) {
-            Assertions.assertThrows(UnsupportedOperationException.class, () -> Objects.cast(new byte[0], CustomByteArrayOutputStream.class));
-        } else {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            Objects.cast(baos, CustomByteArrayOutputStream.class);
-            assertEquals("Hello World", baos.toString());
-        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Objects.cast(baos, CustomByteArrayOutputStream.class);
+        assertEquals("Hello World", baos.toString());
     }
 
 

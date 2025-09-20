@@ -10,8 +10,26 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class Arrays {
 
+    private static final int ARRAY_LENGTH_OFFSET;
+
     static {
-        if (JVMConstants.OPENJ9_RUNTIME) throw new UnsupportedOperationException("OpenJ9 is not supported");
+        //Find the memory offset of the length field in an array
+        int lengthOffset = -1;
+        byte[] test = new byte[123];
+        for (int i = 0; i < Objects.BYTE_ARRAY_BASE_OFFSET; i++) {
+            int arrayLength = test.length;
+            if (UnsafeAccess.getInt(test, i) == arrayLength) {
+                int newLength = arrayLength + 1;
+                UnsafeAccess.putInt(test, i, newLength);
+                if (test.length == newLength) {
+                    lengthOffset = i;
+                    break;
+                }
+                //Reset the memory if it's not the length field
+                UnsafeAccess.putInt(test, i, arrayLength);
+            }
+        }
+        ARRAY_LENGTH_OFFSET = lengthOffset;
     }
 
     /**
@@ -23,8 +41,9 @@ public class Arrays {
      * @param newLength The new length
      */
     public static void setLength(final Object array, final int newLength) {
+        if (ARRAY_LENGTH_OFFSET == -1) throw new UnsupportedOperationException("Could not find the array length field offset");
         if (!array.getClass().isArray()) throw new IllegalArgumentException("Object is not an array");
-        UnsafeAccess.putInt(array, Objects.OBJECT_HEADER_SIZE, newLength);
+        UnsafeAccess.putInt(array, ARRAY_LENGTH_OFFSET, newLength);
     }
 
     /**
@@ -35,7 +54,7 @@ public class Arrays {
      * @param value The value to fill the array with
      */
     public static void fill(final byte[] array, final byte value) {
-        UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length, value);
+        UnsafeAccess.setMemory(array, Objects.BYTE_ARRAY_BASE_OFFSET, (long) array.length * Objects.BYTE_ARRAY_INDEX_SCALE, value);
     }
 
     /**
@@ -47,10 +66,10 @@ public class Arrays {
      */
     public static void fill(final short[] array, final short value) {
         if (value == 0) {
-            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 2L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.SHORT_ARRAY_BASE_OFFSET, (long) array.length * Objects.SHORT_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
-            for (int i = 0; i < array.length * 2; i += 2) {
-                UnsafeAccess.putShort(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+            for (int i = 0; i < array.length; i++) {
+                UnsafeAccess.putShort(array, (long) Objects.SHORT_ARRAY_BASE_OFFSET + (long) i * Objects.SHORT_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -64,10 +83,10 @@ public class Arrays {
      */
     public static void fill(final char[] array, final char value) {
         if (value == 0) {
-            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 2L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.CHAR_ARRAY_BASE_OFFSET, (long) array.length * Objects.CHAR_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
-            for (int i = 0; i < array.length * 2; i += 2) {
-                UnsafeAccess.putChar(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+            for (int i = 0; i < array.length; i++) {
+                UnsafeAccess.putChar(array, (long) Objects.CHAR_ARRAY_BASE_OFFSET + (long) i * Objects.CHAR_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -81,10 +100,10 @@ public class Arrays {
      */
     public static void fill(final int[] array, final int value) {
         if (value == 0) {
-            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 4L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.INT_ARRAY_BASE_OFFSET, (long) array.length * Objects.INT_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
-            for (int i = 0; i < array.length * 4; i += 4) {
-                UnsafeAccess.putInt(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+            for (int i = 0; i < array.length; i++) {
+                UnsafeAccess.putInt(array, (long) Objects.INT_ARRAY_BASE_OFFSET + (long) i * Objects.INT_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -98,10 +117,10 @@ public class Arrays {
      */
     public static void fill(final long[] array, final long value) {
         if (value == 0) {
-            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 8L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.LONG_ARRAY_BASE_OFFSET, (long) array.length * Objects.LONG_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
-            for (int i = 0; i < array.length * 8; i += 8) {
-                UnsafeAccess.putLong(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+            for (int i = 0; i < array.length; i++) {
+                UnsafeAccess.putLong(array, (long) Objects.LONG_ARRAY_BASE_OFFSET + (long) i * Objects.LONG_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -115,10 +134,10 @@ public class Arrays {
      */
     public static void fill(final float[] array, final float value) {
         if (value == 0) {
-            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 4L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.FLOAT_ARRAY_BASE_OFFSET, (long) array.length * Objects.FLOAT_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
-            for (int i = 0; i < array.length * 4; i += 4) {
-                UnsafeAccess.putFloat(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+            for (int i = 0; i < array.length; i++) {
+                UnsafeAccess.putFloat(array, (long) Objects.FLOAT_ARRAY_BASE_OFFSET + (long) i * Objects.FLOAT_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -132,10 +151,10 @@ public class Arrays {
      */
     public static void fill(final double[] array, final double value) {
         if (value == 0) {
-            UnsafeAccess.setMemory(array, Objects.ARRAY_HEADER_SIZE, array.length * 8L, (byte) 0);
+            UnsafeAccess.setMemory(array, Objects.DOUBLE_ARRAY_BASE_OFFSET, (long) array.length * Objects.DOUBLE_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
-            for (int i = 0; i < array.length * 8; i += 8) {
-                UnsafeAccess.putDouble(array, (long) Objects.ARRAY_HEADER_SIZE + i, value);
+            for (int i = 0; i < array.length; i++) {
+                UnsafeAccess.putDouble(array, (long) Objects.DOUBLE_ARRAY_BASE_OFFSET + (long) i * Objects.DOUBLE_ARRAY_INDEX_SCALE, value);
             }
         }
     }

@@ -16,12 +16,9 @@ import static net.lenni0451.reflect.utils.FieldInitializer.init;
 public class Objects {
 
     private static final ThreadLocal<Object[]> OBJECT_ARRAY_CACHE = ThreadLocal.withInitial(() -> new Object[1]);
-    public static final long ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(Object[].class);
-    public static final int ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(Object[].class);
     public static final int ADDRESS_SIZE = UnsafeAccess.addressSize();
     public static final int OOP_SIZE = CompressedOopsClass.getOopSize();
     public static final int OBJECT_HEADER_SIZE = BooleanHeaderClass.getHeaderSize();
-    public static final int ARRAY_HEADER_SIZE = OBJECT_HEADER_SIZE + 4;
     public static final int OBJECT_ALIGNMENT = init(() -> {
         if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
             HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
@@ -37,7 +34,26 @@ public class Objects {
         return result;
     });
     public static final long COMPRESSED_OOP_BASE = toNativeAddress(null);
-    public static final long KLASS_OFFSET = Objects.OBJECT_HEADER_SIZE - Objects.OOP_SIZE;
+    public static final long KLASS_OFFSET = JVMConstants.OPENJ9_RUNTIME ? 0 : OBJECT_HEADER_SIZE - OOP_SIZE;
+    //Array constants
+    public static final int BOOLEAN_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(boolean[].class);
+    public static final int BOOLEAN_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(boolean[].class);
+    public static final int BYTE_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(byte[].class);
+    public static final int BYTE_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(byte[].class);
+    public static final int SHORT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(short[].class);
+    public static final int SHORT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(short[].class);
+    public static final int CHAR_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(char[].class);
+    public static final int CHAR_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(char[].class);
+    public static final int INT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(int[].class);
+    public static final int INT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(int[].class);
+    public static final int LONG_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(long[].class);
+    public static final int LONG_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(long[].class);
+    public static final int FLOAT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(float[].class);
+    public static final int FLOAT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(float[].class);
+    public static final int DOUBLE_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(double[].class);
+    public static final int DOUBLE_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(double[].class);
+    public static final int OBJECT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(Object[].class);
+    public static final int OBJECT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(Object[].class);
 
     /**
      * <b>Use {@link Objects#toJVMAddress(Object)}.</b>
@@ -58,8 +74,8 @@ public class Objects {
         Object[] array = OBJECT_ARRAY_CACHE.get();
         array[0] = o;
         long jvmAddress;
-        if (OOP_SIZE == 4) jvmAddress = UnsafeAccess.getInt(array, ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
-        else if (OOP_SIZE == 8) jvmAddress = UnsafeAccess.getLong(array, ARRAY_BASE_OFFSET);
+        if (OOP_SIZE == 4) jvmAddress = UnsafeAccess.getInt(array, OBJECT_ARRAY_BASE_OFFSET) & 0xFFFFFFFFL;
+        else if (OOP_SIZE == 8) jvmAddress = UnsafeAccess.getLong(array, OBJECT_ARRAY_BASE_OFFSET);
         else throw new InvalidOOPSizeException();
         array[0] = null;
         return jvmAddress;
@@ -116,8 +132,8 @@ public class Objects {
      */
     public static <T> T fromJVMAddress(final long jvmAddress) {
         Object[] array = OBJECT_ARRAY_CACHE.get();
-        if (OOP_SIZE == 4) UnsafeAccess.putInt(array, ARRAY_BASE_OFFSET, (int) jvmAddress);
-        else if (OOP_SIZE == 8) UnsafeAccess.putLong(array, ARRAY_BASE_OFFSET, jvmAddress);
+        if (OOP_SIZE == 4) UnsafeAccess.putInt(array, OBJECT_ARRAY_BASE_OFFSET, (int) jvmAddress);
+        else if (OOP_SIZE == 8) UnsafeAccess.putLong(array, OBJECT_ARRAY_BASE_OFFSET, jvmAddress);
         else throw new InvalidOOPSizeException();
         Object o = array[0];
         array[0] = null;
@@ -205,11 +221,9 @@ public class Objects {
      * @param klass The class pointer
      * @param <T>   The type of the object
      * @return The casted object
-     * @throws ClassCastException            If the object can not be casted
-     * @throws UnsupportedOperationException If the JVM is OpenJ9
+     * @throws ClassCastException If the object can not be casted
      */
     public static <T> T cast(final Object o, final long klass) {
-        if (JVMConstants.OPENJ9_RUNTIME) throw new UnsupportedOperationException("OpenJ9 is not supported");
         if (OOP_SIZE == 4) UnsafeAccess.putInt(o, KLASS_OFFSET, (int) klass);
         else if (OOP_SIZE == 8) UnsafeAccess.putLong(o, KLASS_OFFSET, klass);
         else throw new InvalidOOPSizeException();
