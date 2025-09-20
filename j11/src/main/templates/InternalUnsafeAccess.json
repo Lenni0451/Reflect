@@ -3061,7 +3061,7 @@
         },
         {
             "name": "arrayBaseOffset",
-            "returnType": "int",
+            "returnType": "long",
             "args": [
                 {
                     "name": "arrayClass",

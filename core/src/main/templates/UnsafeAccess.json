@@ -1400,6 +1400,7 @@
         },
         {
             "name": [
+                "arrayBaseOffsetInt",
                 "arrayBaseOffset"
             ],
             "args": [
@@ -1411,7 +1412,25 @@
             "returnType": "int",
             "notices": [
                 "Found in {@code sun.misc.Unsafe}.",
-                "Found in {@code jdk.internal.misc.Unsafe}."
+                "Found in {@code jdk.internal.misc.Unsafe}.",
+                "Available in the internal Unsafe until Java 24."
+            ]
+        },
+        {
+            "name": [
+                "arrayBaseOffsetLong",
+                "arrayBaseOffset"
+            ],
+            "args": [
+                {
+                    "type": "Class",
+                    "name": "arrayClass"
+                }
+            ],
+            "returnType": "long",
+            "notices": [
+                "Found in {@code jdk.internal.misc.Unsafe}.",
+                "Since Java 25 the method returns a long instead of an int."
             ]
         },
         {

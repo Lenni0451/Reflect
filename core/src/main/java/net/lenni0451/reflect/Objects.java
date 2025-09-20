@@ -36,23 +36,23 @@ public class Objects {
     public static final long COMPRESSED_OOP_BASE = toNativeAddress(null);
     public static final long KLASS_OFFSET = JVMConstants.OPENJ9_RUNTIME ? 0 : OBJECT_HEADER_SIZE - OOP_SIZE;
     //Array constants
-    public static final int BOOLEAN_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(boolean[].class);
+    public static final long BOOLEAN_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(boolean[].class);
     public static final int BOOLEAN_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(boolean[].class);
-    public static final int BYTE_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(byte[].class);
+    public static final long BYTE_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(byte[].class);
     public static final int BYTE_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(byte[].class);
-    public static final int SHORT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(short[].class);
+    public static final long SHORT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(short[].class);
     public static final int SHORT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(short[].class);
-    public static final int CHAR_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(char[].class);
+    public static final long CHAR_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(char[].class);
     public static final int CHAR_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(char[].class);
-    public static final int INT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(int[].class);
+    public static final long INT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(int[].class);
     public static final int INT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(int[].class);
-    public static final int LONG_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(long[].class);
+    public static final long LONG_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(long[].class);
     public static final int LONG_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(long[].class);
-    public static final int FLOAT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(float[].class);
+    public static final long FLOAT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(float[].class);
     public static final int FLOAT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(float[].class);
-    public static final int DOUBLE_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(double[].class);
+    public static final long DOUBLE_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(double[].class);
     public static final int DOUBLE_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(double[].class);
-    public static final int OBJECT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(Object[].class);
+    public static final long OBJECT_ARRAY_BASE_OFFSET = UnsafeAccess.arrayBaseOffset(Object[].class);
     public static final int OBJECT_ARRAY_INDEX_SCALE = UnsafeAccess.arrayIndexScale(Object[].class);
 
     /**

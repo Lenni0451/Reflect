@@ -1,6 +1,7 @@
 package net.lenni0451.reflect.accessor;
 
 import lombok.SneakyThrows;
+import net.lenni0451.reflect.JVMConstants;
 import net.lenni0451.reflect.JavaBypass;
 import net.lenni0451.reflect.Objects;
 
@@ -45,6 +46,17 @@ public class UnsafeAccess {
     }
 
     {{/each}}
+    /**
+     * Wrapper method for calling the correct arrayBaseOffset method depending on the Java version.
+     **/
+    public static long arrayBaseOffset(final Class<?> arrayClass) {
+        try {
+            return arrayBaseOffsetLong(arrayClass);
+        } catch (UnsupportedOperationException e) {
+            return arrayBaseOffsetInt(arrayClass);
+        }
+    }
+
 
     @Nullable
     @SneakyThrows

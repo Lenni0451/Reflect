@@ -54,7 +54,7 @@ public class Arrays {
      * @param value The value to fill the array with
      */
     public static void fill(final boolean[] array, final boolean value) {
-        UnsafeAccess.setMemory(array, Objects.BYTE_ARRAY_BASE_OFFSET, (long) array.length * Objects.BYTE_ARRAY_INDEX_SCALE, (byte) (value ? 1 : 0));
+        UnsafeAccess.setMemory(array, Objects.BOOLEAN_ARRAY_BASE_OFFSET, (long) array.length * Objects.BOOLEAN_ARRAY_INDEX_SCALE, (byte) (value ? 1 : 0));
     }
 
     /**
@@ -80,7 +80,7 @@ public class Arrays {
             UnsafeAccess.setMemory(array, Objects.SHORT_ARRAY_BASE_OFFSET, (long) array.length * Objects.SHORT_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
             for (int i = 0; i < array.length; i++) {
-                UnsafeAccess.putShort(array, (long) Objects.SHORT_ARRAY_BASE_OFFSET + (long) i * Objects.SHORT_ARRAY_INDEX_SCALE, value);
+                UnsafeAccess.putShort(array, Objects.SHORT_ARRAY_BASE_OFFSET + (long) i * Objects.SHORT_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -97,7 +97,7 @@ public class Arrays {
             UnsafeAccess.setMemory(array, Objects.CHAR_ARRAY_BASE_OFFSET, (long) array.length * Objects.CHAR_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
             for (int i = 0; i < array.length; i++) {
-                UnsafeAccess.putChar(array, (long) Objects.CHAR_ARRAY_BASE_OFFSET + (long) i * Objects.CHAR_ARRAY_INDEX_SCALE, value);
+                UnsafeAccess.putChar(array, Objects.CHAR_ARRAY_BASE_OFFSET + (long) i * Objects.CHAR_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -114,7 +114,7 @@ public class Arrays {
             UnsafeAccess.setMemory(array, Objects.INT_ARRAY_BASE_OFFSET, (long) array.length * Objects.INT_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
             for (int i = 0; i < array.length; i++) {
-                UnsafeAccess.putInt(array, (long) Objects.INT_ARRAY_BASE_OFFSET + (long) i * Objects.INT_ARRAY_INDEX_SCALE, value);
+                UnsafeAccess.putInt(array, Objects.INT_ARRAY_BASE_OFFSET + (long) i * Objects.INT_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -131,7 +131,7 @@ public class Arrays {
             UnsafeAccess.setMemory(array, Objects.LONG_ARRAY_BASE_OFFSET, (long) array.length * Objects.LONG_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
             for (int i = 0; i < array.length; i++) {
-                UnsafeAccess.putLong(array, (long) Objects.LONG_ARRAY_BASE_OFFSET + (long) i * Objects.LONG_ARRAY_INDEX_SCALE, value);
+                UnsafeAccess.putLong(array, Objects.LONG_ARRAY_BASE_OFFSET + (long) i * Objects.LONG_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -148,7 +148,7 @@ public class Arrays {
             UnsafeAccess.setMemory(array, Objects.FLOAT_ARRAY_BASE_OFFSET, (long) array.length * Objects.FLOAT_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
             for (int i = 0; i < array.length; i++) {
-                UnsafeAccess.putFloat(array, (long) Objects.FLOAT_ARRAY_BASE_OFFSET + (long) i * Objects.FLOAT_ARRAY_INDEX_SCALE, value);
+                UnsafeAccess.putFloat(array, Objects.FLOAT_ARRAY_BASE_OFFSET + (long) i * Objects.FLOAT_ARRAY_INDEX_SCALE, value);
             }
         }
     }
@@ -165,7 +165,7 @@ public class Arrays {
             UnsafeAccess.setMemory(array, Objects.DOUBLE_ARRAY_BASE_OFFSET, (long) array.length * Objects.DOUBLE_ARRAY_INDEX_SCALE, (byte) 0);
         } else {
             for (int i = 0; i < array.length; i++) {
-                UnsafeAccess.putDouble(array, (long) Objects.DOUBLE_ARRAY_BASE_OFFSET + (long) i * Objects.DOUBLE_ARRAY_INDEX_SCALE, value);
+                UnsafeAccess.putDouble(array, Objects.DOUBLE_ARRAY_BASE_OFFSET + (long) i * Objects.DOUBLE_ARRAY_INDEX_SCALE, value);
             }
         }
     }

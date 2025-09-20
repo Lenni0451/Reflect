@@ -1,7 +1,5 @@
 package net.lenni0451.reflect;
 
-import lombok.SneakyThrows;
-
 /**
  * This class contains some useful methods for working with modules.
  */
@@ -40,7 +38,6 @@ public class Modules {
      * @param clazz The class to open the module of
      * @param pkg   The package to open
      */
-    @SneakyThrows
     public static void openModule(final Class<?> clazz, final String pkg) {
         //Nothing to do in Java 8
         //Check out the Java 9+ version
@@ -53,7 +50,6 @@ public class Modules {
      *
      * @param clazz The class to open the module of
      */
-    @SneakyThrows
     public static void openEntireModule(final Class<?> clazz) {
         //Nothing to do in Java 8
         //Check out the Java 9+ version
