@@ -67,15 +67,15 @@ public class JavaBypass {
         return process(
                 () -> reqInit(
                         getFirst(() -> {
-                            MethodHandles.lookup(); //Load class before getting the trusted lookup
-                            Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
-                            long lookupFieldOffset = UNSAFE.staticFieldOffset(lookupField);
-                            return (MethodHandles.Lookup) UNSAFE.getObject(UNSAFE.staticFieldBase(lookupField), lookupFieldOffset);
-                        }, () -> {
                             MethodHandles.Lookup lookup = (MethodHandles.Lookup) ReflectionFactory.getReflectionFactory()
                                     .newConstructorForSerialization(MethodHandles.Lookup.class, MethodHandles.Lookup.class.getDeclaredConstructor(Class.class))
                                     .newInstance(MethodHandles.Lookup.class);
                             return (MethodHandles.Lookup) lookup.findStaticGetter(MethodHandles.Lookup.class, FIELD_MethodHandles_Lookup_IMPL_LOOKUP, MethodHandles.Lookup.class).invokeExact();
+                        }, () -> {
+                            MethodHandles.lookup(); //Load class before getting the trusted lookup
+                            Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
+                            long lookupFieldOffset = UNSAFE.staticFieldOffset(lookupField);
+                            return (MethodHandles.Lookup) UNSAFE.getObject(UNSAFE.staticFieldBase(lookupField), lookupFieldOffset);
                         }),
                         () -> new IllegalStateException("Lookup field was null")
                 ),
