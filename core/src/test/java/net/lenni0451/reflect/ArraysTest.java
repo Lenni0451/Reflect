@@ -14,6 +14,19 @@ class ArraysTest {
     }
 
     @Test
+    void fillBooleanArray() {
+        boolean[] expected = new boolean[10];
+        java.util.Arrays.fill(expected, true);
+
+        boolean[] array = new boolean[10];
+        Arrays.fill(array, true);
+        Assertions.assertArrayEquals(expected, array);
+
+        Arrays.fill(array, false);
+        Assertions.assertArrayEquals(new boolean[10], array);
+    }
+
+    @Test
     void fillByteArray() {
         byte[] expected = new byte[10];
         java.util.Arrays.fill(expected, (byte) (Byte.MAX_VALUE - 1));

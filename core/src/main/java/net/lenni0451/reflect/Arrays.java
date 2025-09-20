@@ -47,6 +47,17 @@ public class Arrays {
     }
 
     /**
+     * Fill a boolean array with a value.<br>
+     * This directly writes to the memory of the array and is therefore very fast.
+     *
+     * @param array The array
+     * @param value The value to fill the array with
+     */
+    public static void fill(final boolean[] array, final boolean value) {
+        UnsafeAccess.setMemory(array, Objects.BYTE_ARRAY_BASE_OFFSET, (long) array.length * Objects.BYTE_ARRAY_INDEX_SCALE, (byte) (value ? 1 : 0));
+    }
+
+    /**
      * Fill a byte array with a value.<br>
      * This directly writes to the memory of the array and is therefore very fast.
      *
