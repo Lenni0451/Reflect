@@ -53,7 +53,21 @@ public class Objects {
         while ((i >>= 1) != 0) result++;
         return result;
     });
-    public static final long COMPRESSED_OOP_BASE = toNativeAddress(null);
+    /**
+     * The base address for compressed OOPs.<br>
+     * The JVM can use different modes of memory layouts, so this can vary.
+     * <table>
+     *     <tr><th>Mode</th><th>Base</th><th>Shift</th><th>Condition</th></tr>
+     *     <tr><td>None</td><td>0</td><td>0</td><td>The heap is not compressed,</td></tr>
+     *     <tr><td>Zero-Based</td><td>0</td><td>3</td><td>The OS allocated the heap in the lower 32GB of virtual memory</td></tr>
+     *     <tr><td>Disjoint Base</td><td>Non-Zero (e.g. 0x10000000)</td><td>3 (sometimes 0 if the heap is very small and fits in the first 4GB)</td><td>The heap is "floating" somewhere else, but the bits still align nicely</td></tr>
+     *     <tr><td>Heap-Based (Scaled)</td><td>Non-zero arbitrary address</td><td>3</td><td></td></tr>
+     * </table>
+     * At the moment, this value is hardcoded to 0, because detecting the actual base address isn't trivial and would probably require native code.<br>
+     * Since most JVMs use zero-based compressed OOPs (unless required otherwise), this should work fine for most use-cases.<br>
+     * If you want to check the memory layout of your JVM, you can use the {@code -Xlog:gc+heap+coops}/{@code -Xlog:gc+heap+coops=debug,gc+init=info:stdout} option (OpenJDK 9+).
+     */
+    public static final long COMPRESSED_OOP_BASE = 0;
     public static final long KLASS_OFFSET = JVMConstants.OPENJ9_RUNTIME ? 0 : OBJECT_HEADER_SIZE - OOP_SIZE;
 
     /**
