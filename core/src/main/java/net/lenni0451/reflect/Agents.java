@@ -1,13 +1,14 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
+import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.invoke.MethodHandle;
-import java.util.Base64;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -15,6 +16,7 @@ import java.util.zip.ZipEntry;
 import static net.lenni0451.reflect.JVMConstants.CLASS_InstrumentationImpl;
 import static net.lenni0451.reflect.JVMConstants.METHOD_InstrumentationImpl_loadAgent;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
+import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
 import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
 
 /**
@@ -22,46 +24,8 @@ import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
  */
 public class Agents {
 
-    /*
-        ClassNode node = new ClassNode();
-        node.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "net/lenni0451/reflect/AgentLoader", null, "java/lang/Object", null);
-
-        node.visitField(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "instrumentation", "Ljava/lang/instrument/Instrumentation;", null, null).visitEnd();
-        { //<init>
-            MethodVisitor method = node.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
-            method.visitCode();
-            method.visitVarInsn(Opcodes.ALOAD, 0);
-            method.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-            method.visitInsn(Opcodes.RETURN);
-            method.visitEnd();
-        }
-        { //agentmain
-            MethodVisitor method = node.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "agentmain", "(Ljava/lang/String;Ljava/lang/instrument/Instrumentation;)V", null, null);
-            method.visitCode();
-            method.visitVarInsn(Opcodes.ALOAD, 1);
-            method.visitFieldInsn(Opcodes.PUTSTATIC, node.name, "instrumentation", "Ljava/lang/instrument/Instrumentation;");
-            method.visitInsn(Opcodes.RETURN);
-            method.visitEnd();
-        }
-        { //premain
-            MethodVisitor method = node.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, "premain", "(Ljava/lang/String;Ljava/lang/instrument/Instrumentation;)V", null, null);
-            method.visitCode();
-            method.visitVarInsn(Opcodes.ALOAD, 1);
-            method.visitFieldInsn(Opcodes.PUTSTATIC, node.name, "instrumentation", "Ljava/lang/instrument/Instrumentation;");
-            method.visitInsn(Opcodes.RETURN);
-            method.visitEnd();
-        }
-
-        node.visitEnd();
-        byte[] bytes = ASMUtils.toBytes(node, new BasicClassProvider());
-        Files.write(new File("agentloader.bin").toPath(), bytes);
-     */
-    private static final String DUMMY_AGENT_CLASS = "yv66vgAAADQAEQEAIW5ldC9sZW5uaTA0NTEvcmVmbGVjdC9BZ2VudExvYWRlcgcAAQEAEGphdmEvbGFuZy9PYmplY3QHAAMBAA9p" +
-            "bnN0cnVtZW50YXRpb24BACZMamF2YS9sYW5nL2luc3RydW1lbnQvSW5zdHJ1bWVudGF0aW9uOwEABjxpbml0PgEAAygpVgwABwAI" +
-            "CgAEAAkBAAlhZ2VudG1haW4BADsoTGphdmEvbGFuZy9TdHJpbmc7TGphdmEvbGFuZy9pbnN0cnVtZW50L0luc3RydW1lbnRhdGlv" +
-            "bjspVgwABQAGCQACAA0BAAdwcmVtYWluAQAEQ29kZQABAAIABAAAAAEACQAFAAYAAAADAAEABwAIAAEAEAAAABEAAQABAAAABSq3" +
-            "AAqxAAAAAAAJAAsADAABABAAAAARAAEAAgAAAAUrswAOsQAAAAAACQAPAAwAAQAQAAAAEQABAAIAAAAFK7MADrEAAAAAAAA=";
     private static final String DUMMY_AGENT_CLASS_NAME = String.join(".", "net", "lenni0451", "reflect", "AgentLoader"); //Prevent repackaging tools from changing the name
+    private static final String INSTRUMENTATION_FIELD_NAME = "instrumentation";
     private static final Class<?> instrumentationImpl = optInit(
             () -> Class.forName(CLASS_InstrumentationImpl)
     );
@@ -92,19 +56,17 @@ public class Agents {
      * @throws IOException If an I/O error occurs
      */
     public static void createDummyAgent(final File agentJar, final String agentName) throws IOException {
-        JarOutputStream jos = new JarOutputStream(new FileOutputStream(agentJar));
-        jos.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+        try (JarOutputStream jos = new JarOutputStream(new FileOutputStream(agentJar))) {
+            jos.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
 
-        Manifest manifest = new Manifest();
-        manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-        manifest.getMainAttributes().putValue("Launcher-Agent-Class", agentName);
-        manifest.getMainAttributes().putValue("Can-Redefine-Classes", "true");
-        manifest.getMainAttributes().putValue("Can-Retransform-Classes", "true");
-        manifest.getMainAttributes().putValue("Can-Set-Native-Method-Prefix", "true");
-        manifest.write(jos);
-
-        jos.closeEntry();
-        jos.close();
+            Manifest manifest = new Manifest();
+            manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+            manifest.getMainAttributes().putValue("Launcher-Agent-Class", agentName);
+            manifest.getMainAttributes().putValue("Can-Redefine-Classes", "true");
+            manifest.getMainAttributes().putValue("Can-Retransform-Classes", "true");
+            manifest.getMainAttributes().putValue("Can-Set-Native-Method-Prefix", "true");
+            manifest.write(jos);
+        }
     }
 
     /**
@@ -150,12 +112,32 @@ public class Agents {
             agentLoaderClass = ClassLoader.getSystemClassLoader().loadClass(DUMMY_AGENT_CLASS_NAME);
         } catch (ClassNotFoundException e) {
             //Load the agent loader into the system class loader
-            agentLoaderClass = ClassLoaders.defineClass(ClassLoader.getSystemClassLoader(), DUMMY_AGENT_CLASS_NAME, Base64.getDecoder().decode(DUMMY_AGENT_CLASS));
+            agentLoaderClass = ClassLoaders.defineClass(ClassLoader.getSystemClassLoader(), DUMMY_AGENT_CLASS_NAME, generateAgentClass());
 
             load(createDummyAgent(agentLoaderClass));
         }
 
         return Fields.get(null, Fields.getDeclaredField(agentLoaderClass, "instrumentation"));
+    }
+
+    private static byte[] generateAgentClass() {
+        BytecodeBuilder builder = BytecodeBuilder.get();
+        BuiltClass clazz = builder.class_(builder.opcode("ACC_PUBLIC"), slash(DUMMY_AGENT_CLASS_NAME), null, slash(Object.class), null, cb -> {
+            cb.field(builder.opcode("ACC_PUBLIC", "ACC_STATIC"), INSTRUMENTATION_FIELD_NAME, desc(Instrumentation.class), null, null);
+            cb.method(builder.opcode("ACC_PUBLIC"), "<init>", "()V", null, null, mb -> mb
+                    .aload(0)
+                    .invokespecial(slash(Object.class), "<init>", "()V", false)
+                    .return_()
+            );
+            for (String methodName : new String[]{"agentmain", "premain"}) {
+                cb.method(builder.opcode("ACC_PUBLIC", "ACC_STATIC"), methodName, mdesc(void.class, String.class, Instrumentation.class), null, null, mb -> mb
+                        .aload(1)
+                        .putstatic(slash(DUMMY_AGENT_CLASS_NAME), INSTRUMENTATION_FIELD_NAME, desc(Instrumentation.class))
+                        .return_()
+                );
+            }
+        });
+        return clazz.toBytes();
     }
 
 }
