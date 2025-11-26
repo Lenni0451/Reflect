@@ -128,12 +128,14 @@ public class Agents {
                     .aload(0)
                     .invokespecial(slash(Object.class), "<init>", "()V", false)
                     .return_()
+                    .maxs(1, 1)
             );
             for (String methodName : new String[]{"agentmain", "premain"}) {
                 cb.method(builder.opcode("ACC_PUBLIC", "ACC_STATIC"), methodName, mdesc(void.class, String.class, Instrumentation.class), null, null, mb -> mb
                         .aload(1)
                         .putstatic(slash(DUMMY_AGENT_CLASS_NAME), INSTRUMENTATION_FIELD_NAME, desc(Instrumentation.class))
                         .return_()
+                        .maxs(1, 2)
                 );
             }
         });
