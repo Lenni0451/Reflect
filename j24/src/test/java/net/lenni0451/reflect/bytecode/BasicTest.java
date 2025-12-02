@@ -4,17 +4,20 @@ import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BytecodeLabel;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BasicTest {
 
+    private static final String CLASS_NAME = "net/lenni0451/reflect/bytecode/TestClass";
+
     @Test
-    void test() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void test() throws Throwable {
         BytecodeBuilder builder = BytecodeBuilder.get();
-        Class<?> clazz = builder.class_(builder.opcode("ACC_PUBLIC"), "net/lenni0451/reflect/bytecode/TestClass", null, "java/lang/Object", new String[0], cb -> {
+        Class<?> clazz = builder.class_(builder.opcode("ACC_PUBLIC"), CLASS_NAME, null, "java/lang/Object", new String[0], cb -> {
+            cb.field(builder.opcode("ACC_PUBLIC", "ACC_STATIC"), "testField", "I", null, 123);
             cb.method(builder.opcode("ACC_PUBLIC") | builder.opcode("ACC_STATIC"), "testMethod", "(Z)Ljava/lang/String;", null, null, mb -> {
                 BytecodeLabel elseLabel = mb.newLabel();
                 BytecodeLabel endLabel = mb.newLabel();
@@ -31,6 +34,8 @@ public class BasicTest {
                 mb.maxs(1, 1);
             });
         }).defineMetafactory(BasicTest.class);
+        Field testField = clazz.getDeclaredField("testField");
+        assertEquals(123, testField.getInt(null));
         Method testMethod = clazz.getDeclaredMethod("testMethod", boolean.class);
         assertEquals("arg is false", testMethod.invoke(null, false));
         assertEquals("arg is true", testMethod.invoke(null, true));

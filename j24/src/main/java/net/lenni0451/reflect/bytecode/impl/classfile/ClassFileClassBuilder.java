@@ -7,6 +7,7 @@ import net.lenni0451.reflect.bytecode.builder.MethodBuilder;
 
 import java.lang.classfile.MethodSignature;
 import java.lang.classfile.Signature;
+import java.lang.classfile.attribute.ConstantValueAttribute;
 import java.lang.classfile.attribute.ExceptionsAttribute;
 import java.lang.classfile.attribute.SignatureAttribute;
 import java.lang.constant.ClassDesc;
@@ -31,12 +32,25 @@ public class ClassFileClassBuilder implements ClassBuilder {
 
     @Override
     public void field(int access, String name, String descriptor, String signature, Object defaultValue, Consumer<FieldBuilder> consumer) {
-        this.classBuilder.withField(name, ClassDesc.ofInternalName(descriptor), fieldBuilder -> {
+        this.classBuilder.withField(name, ClassDesc.ofDescriptor(descriptor), fieldBuilder -> {
             fieldBuilder.withFlags(access);
             if (signature != null) {
                 fieldBuilder.with(SignatureAttribute.of(Signature.parseFrom(signature)));
             }
-            //TODO: default value (ConstantValueAttribute)
+            if (defaultValue != null) {
+                switch (defaultValue) {
+                    case Boolean b -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().intEntry(b ? 1 : 0)));
+                    case Byte b -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().intEntry(b)));
+                    case Short s -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().intEntry(s)));
+                    case Character c -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().intEntry(c)));
+                    case Integer i -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().intEntry(i)));
+                    case Long l -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().longEntry(l)));
+                    case Float f -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().floatEntry(f)));
+                    case Double d -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().doubleEntry(d)));
+                    case String s -> fieldBuilder.with(ConstantValueAttribute.of(this.classBuilder.constantPool().stringEntry(s)));
+                    default -> throw new IllegalArgumentException("Unsupported constant value type: " + defaultValue.getClass().getName());
+                }
+            }
             consumer.accept(new ClassFileFieldBuilder(fieldBuilder));
         });
     }
