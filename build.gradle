@@ -7,7 +7,6 @@ plugins {
 }
 
 def VERSION_SUBMODULES = [9, 11, 21, 24]
-def VERSION_SUBMODULES_CURSEFORGE = [9, 11, 21]
 
 configurations {
     include
@@ -35,49 +34,12 @@ jar {
     }
 
     dependsOn project(":core").tasks.named("classes")
-    from({ project(":core").sourceSets.main.output })
+    from({ project(":core").sourceSets.main.output }) {
+    }
     VERSION_SUBMODULES.each { version ->
         dependsOn project(":j$version").tasks.named("classes")
         from({ project(":j$version").sourceSets.main.output }) {
             into "META-INF/versions/$version"
-        }
-    }
-}
-
-tasks.register("curseforge", Jar) {
-    //Publish a special jar for CurseForge that excludes the Java 24 classes
-    //At the time of writing, CurseForge doesn't support Java 24 yet
-    //See for details: https://github.com/Lenni0451/Reflect/issues/65
-    //This jar will be removed once CurseForge officially supports Java 24
-    archiveClassifier = "curseforge"
-
-    manifest {
-        attributes "Multi-Release": "true"
-    }
-
-    //Copied from "base.java.gradle"
-    var projectName = project.name
-    from("LICENSE") {
-        rename { "${it}_${projectName}" }
-    }
-    exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
-
-    //Include core classes (same as main jar)
-    dependsOn project(":core").tasks.named("classes")
-    from({ project(":core").sourceSets.main.output })
-
-    //Include versioned submodules, excluding j24
-    VERSION_SUBMODULES_CURSEFORGE.each { version ->
-        dependsOn project(":j$version").tasks.named("classes")
-        from({ project(":j$version").sourceSets.main.output }) {
-            into "META-INF/versions/$version"
-        }
-    }
-}
-publishing {
-    publications {
-        maven {
-            artifact curseforge
         }
     }
 }
