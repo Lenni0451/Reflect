@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.invoke.MethodHandle;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -74,14 +76,38 @@ public class Agents {
      * The method used was added in Java 9 and is not available in Java 8.
      *
      * @param agentJar The path to the agent jar
-     * @throws IllegalStateException If the loadAgent method does not exist
+     * @throws IllegalStateException If the agent could not be loaded for any reason
      */
     @SneakyThrows
     public static void load(final File agentJar) {
         if (loadAgent == null) {
             throw new IllegalStateException("Loading an Agent during runtime is not possible because the " + METHOD_InstrumentationImpl_loadAgent + " method does not exist");
         }
-        loadAgent.invokeExact(agentJar.getAbsolutePath());
+        try {
+            loadAgent.invokeExact(agentJar.getAbsolutePath());
+        } catch (InternalError e) {
+            //The JVM throws an InternalError if anything goes wrong while loading the agent
+            //Sadly there are multiple reasons why this can happen and all of them lead to the same exception
+            //On Windows this can happen if the path or name of the jar contains any non-ascii characters
+            //This code attempts to copy the agent to the run directory with a simple name and load it from there
+            File simpleAgentJar = new File(".reflect_temp_agent" + System.nanoTime() + ".jar");
+            try {
+                Files.copy(agentJar.toPath(), simpleAgentJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                //Try to load the agent by name only
+                loadAgent.invokeExact(simpleAgentJar.getName());
+                //If no exception was thrown the agent was loaded successfully
+            } catch (Throwable t) {
+                //If it still fails, throw the original exception and add some context
+                IllegalStateException finalException = new IllegalStateException("Failed to load agent from jar: " + agentJar.getAbsolutePath(), e);
+                finalException.addSuppressed(t);
+                throw finalException;
+            } finally {
+                //Try to delete the simple agent jar immediately
+                //It seems to not be locked after loading, but just to be sure it is also marked for deletion on exit
+                simpleAgentJar.deleteOnExit();
+                simpleAgentJar.delete();
+            }
+        }
     }
 
     /**
