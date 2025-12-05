@@ -21,7 +21,14 @@ public class JVMConstants {
                         Object version = Runtime.class.getDeclaredMethod("version").invoke(null);
                         return (int) versionClass.getDeclaredMethod("major").invoke(version);
                     },
-                    () -> Integer.parseInt(System.getProperty("java.specification.version").split("\\.")[0])
+                    () -> {
+                        String[] specificationVersion = System.getProperty("java.specification.version").split("\\.");
+                        if (specificationVersion[0].equals("1")) {
+                            return Integer.parseInt(specificationVersion[1]);
+                        } else {
+                            return Integer.parseInt(specificationVersion[0]);
+                        }
+                    }
             ),
             () -> new IllegalStateException("Could not determine Java version")
     );
