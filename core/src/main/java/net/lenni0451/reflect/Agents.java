@@ -3,12 +3,14 @@ package net.lenni0451.reflect;
 import lombok.SneakyThrows;
 import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
+import net.lenni0451.reflect.exceptions.FieldNotFoundException;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.jar.JarOutputStream;
@@ -130,20 +132,32 @@ public class Agents {
      *
      * @return The instrumentation instance
      * @throws IOException           If an IO error occurs
-     * @throws IllegalStateException If the loadAgent method does not exist
+     * @throws IllegalStateException If the agent could not be loaded for any reason
      */
     public static Instrumentation getInstrumentation() throws IOException {
+        ClassLoader targetClassLoader = ClassLoader.getSystemClassLoader();
         Class<?> agentLoaderClass;
         try {
-            agentLoaderClass = ClassLoader.getSystemClassLoader().loadClass(DUMMY_AGENT_CLASS_NAME);
+            agentLoaderClass = targetClassLoader.loadClass(DUMMY_AGENT_CLASS_NAME);
         } catch (ClassNotFoundException e) {
             //Load the agent loader into the system class loader
-            agentLoaderClass = ClassLoaders.defineClass(ClassLoader.getSystemClassLoader(), DUMMY_AGENT_CLASS_NAME, generateAgentClass());
+            agentLoaderClass = ClassLoaders.defineClass(targetClassLoader, DUMMY_AGENT_CLASS_NAME, generateAgentClass());
 
             load(createDummyAgent(agentLoaderClass));
         }
 
-        return Fields.get(null, Fields.getDeclaredField(agentLoaderClass, "instrumentation"));
+        if (agentLoaderClass == null) {
+            throw new IllegalStateException("Agent loader class is null", new ClassNotFoundException(DUMMY_AGENT_CLASS_NAME));
+        }
+        Field field = Fields.getDeclaredField(agentLoaderClass, INSTRUMENTATION_FIELD_NAME);
+        if (field == null) {
+            throw new IllegalStateException("Instrumentation field not found in agent loader class", new FieldNotFoundException(agentLoaderClass.getName(), INSTRUMENTATION_FIELD_NAME));
+        }
+        Instrumentation instrumentation = Fields.get(null, field);
+        if (instrumentation == null) {
+            throw new IllegalStateException("Instrumentation instance in class " + agentLoaderClass.getName() + " in loader " + targetClassLoader + " is null");
+        }
+        return instrumentation;
     }
 
     private static byte[] generateAgentClass() {
