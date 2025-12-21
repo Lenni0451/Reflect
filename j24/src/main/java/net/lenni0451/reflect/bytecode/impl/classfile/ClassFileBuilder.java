@@ -28,7 +28,7 @@ public class ClassFileBuilder implements BytecodeBuilder {
                 classBuilder.with(SignatureAttribute.of(ClassSignature.parseFrom(signature)));
             }
             if (interfaces != null && interfaces.length > 0) {
-                classBuilder.with(Interfaces.ofSymbols(Arrays.stream(interfaces).map(ClassDesc::of).toList()));
+                classBuilder.with(Interfaces.ofSymbols(Arrays.stream(interfaces).map(ClassDesc::ofInternalName).toList()));
             }
             consumer.accept(new ClassFileClassBuilder(name, classBuilder));
         }));
