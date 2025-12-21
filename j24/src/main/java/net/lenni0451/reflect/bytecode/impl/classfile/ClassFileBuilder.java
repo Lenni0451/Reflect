@@ -17,18 +17,29 @@ import java.util.function.Consumer;
 
 public class ClassFileBuilder implements BytecodeBuilder {
 
+    public static ClassDesc getClassDesc(final String name) {
+        if (name.startsWith("[") || name.length() == 1) {
+            return ClassDesc.ofDescriptor(name);
+        } else if (name.startsWith("L") && name.endsWith(";")) {
+            return ClassDesc.ofDescriptor(name);
+        } else {
+            return ClassDesc.ofInternalName(name);
+        }
+    }
+
+
     @Override
     public BuiltClass class_(int access, String name, String signature, String superName, String[] interfaces, Consumer<ClassBuilder> consumer) {
-        ClassDesc desc = ClassDesc.ofInternalName(name);
+        ClassDesc desc = ClassFileBuilder.getClassDesc(name);
         return new ClassFileBuiltClass(name, ClassFile.of().build(desc, classBuilder -> {
             classBuilder
                     .withFlags(access)
-                    .withSuperclass(ClassDesc.ofInternalName(superName));
+                    .withSuperclass(ClassFileBuilder.getClassDesc(superName));
             if (signature != null) {
                 classBuilder.with(SignatureAttribute.of(ClassSignature.parseFrom(signature)));
             }
             if (interfaces != null && interfaces.length > 0) {
-                classBuilder.with(Interfaces.ofSymbols(Arrays.stream(interfaces).map(ClassDesc::ofInternalName).toList()));
+                classBuilder.with(Interfaces.ofSymbols(Arrays.stream(interfaces).map(ClassFileBuilder::getClassDesc).toList()));
             }
             consumer.accept(new ClassFileClassBuilder(name, classBuilder));
         }));
@@ -36,7 +47,7 @@ public class ClassFileBuilder implements BytecodeBuilder {
 
     @Override
     public BytecodeType type(String descriptor) {
-        return new BytecodeType(ClassDesc.ofInternalName(descriptor));
+        return new BytecodeType(ClassFileBuilder.getClassDesc(descriptor));
     }
 
     @Override

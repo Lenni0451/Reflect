@@ -32,7 +32,7 @@ public class ClassFileClassBuilder implements ClassBuilder {
 
     @Override
     public void field(int access, String name, String descriptor, String signature, Object defaultValue, Consumer<FieldBuilder> consumer) {
-        this.classBuilder.withField(name, ClassDesc.ofDescriptor(descriptor), fieldBuilder -> {
+        this.classBuilder.withField(name, ClassFileBuilder.getClassDesc(descriptor), fieldBuilder -> {
             fieldBuilder.withFlags(access);
             if (signature != null) {
                 fieldBuilder.with(SignatureAttribute.of(Signature.parseFrom(signature)));
@@ -63,7 +63,7 @@ public class ClassFileClassBuilder implements ClassBuilder {
             }
             if (exceptions != null && exceptions.length > 0) {
                 ClassDesc[] exceptionDescs = new ClassDesc[exceptions.length];
-                for (int i = 0; i < exceptions.length; i++) exceptionDescs[i] = ClassDesc.ofInternalName(exceptions[i]);
+                for (int i = 0; i < exceptions.length; i++) exceptionDescs[i] = ClassFileBuilder.getClassDesc(exceptions[i]);
                 methodBuilder.with(ExceptionsAttribute.ofSymbols(exceptionDescs));
             }
             methodBuilder.withCode(codeBuilder -> {

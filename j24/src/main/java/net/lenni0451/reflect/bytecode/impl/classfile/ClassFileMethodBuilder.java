@@ -261,67 +261,67 @@ public class ClassFileMethodBuilder implements MethodBuilder {
 
     @Override
     public MethodBuilder new_(String type) {
-        this.codeBuilder.new_(ClassDesc.ofInternalName(type));
+        this.codeBuilder.new_(ClassFileBuilder.getClassDesc(type));
         return this;
     }
 
     @Override
     public MethodBuilder checkcast(String type) {
-        this.codeBuilder.checkcast(ClassDesc.ofInternalName(type));
+        this.codeBuilder.checkcast(ClassFileBuilder.getClassDesc(type));
         return this;
     }
 
     @Override
     public MethodBuilder anewarray(String type) {
-        this.codeBuilder.anewarray(ClassDesc.ofInternalName(type));
+        this.codeBuilder.anewarray(ClassFileBuilder.getClassDesc(type));
         return this;
     }
 
     @Override
     public MethodBuilder putfield(String owner, String name, String descriptor) {
-        this.codeBuilder.putfield(ClassDesc.ofInternalName(owner), name, ClassDesc.ofDescriptor(descriptor));
+        this.codeBuilder.putfield(ClassFileBuilder.getClassDesc(owner), name, ClassFileBuilder.getClassDesc(descriptor));
         return this;
     }
 
     @Override
     public MethodBuilder putstatic(String owner, String name, String descriptor) {
-        this.codeBuilder.putstatic(ClassDesc.ofInternalName(owner), name, ClassDesc.ofDescriptor(descriptor));
+        this.codeBuilder.putstatic(ClassFileBuilder.getClassDesc(owner), name, ClassFileBuilder.getClassDesc(descriptor));
         return this;
     }
 
     @Override
     public MethodBuilder getfield(String owner, String name, String descriptor) {
-        this.codeBuilder.getfield(ClassDesc.ofInternalName(owner), name, ClassDesc.ofDescriptor(descriptor));
+        this.codeBuilder.getfield(ClassFileBuilder.getClassDesc(owner), name, ClassFileBuilder.getClassDesc(descriptor));
         return this;
     }
 
     @Override
     public MethodBuilder getstatic(String owner, String name, String descriptor) {
-        this.codeBuilder.getstatic(ClassDesc.ofInternalName(owner), name, ClassDesc.ofDescriptor(descriptor));
+        this.codeBuilder.getstatic(ClassFileBuilder.getClassDesc(owner), name, ClassFileBuilder.getClassDesc(descriptor));
         return this;
     }
 
     @Override
     public MethodBuilder invokespecial(String owner, String name, String descriptor, boolean isInterface) {
-        this.codeBuilder.invokespecial(ClassDesc.ofInternalName(owner), name, MethodTypeDesc.ofDescriptor(descriptor), isInterface);
+        this.codeBuilder.invokespecial(ClassFileBuilder.getClassDesc(owner), name, MethodTypeDesc.ofDescriptor(descriptor), isInterface);
         return this;
     }
 
     @Override
     public MethodBuilder invokeinterface(String owner, String name, String descriptor) {
-        this.codeBuilder.invokeinterface(ClassDesc.ofInternalName(owner), name, MethodTypeDesc.ofDescriptor(descriptor));
+        this.codeBuilder.invokeinterface(ClassFileBuilder.getClassDesc(owner), name, MethodTypeDesc.ofDescriptor(descriptor));
         return this;
     }
 
     @Override
     public MethodBuilder invokevirtual(String owner, String name, String descriptor) {
-        this.codeBuilder.invokevirtual(ClassDesc.ofInternalName(owner), name, MethodTypeDesc.ofDescriptor(descriptor));
+        this.codeBuilder.invokevirtual(ClassFileBuilder.getClassDesc(owner), name, MethodTypeDesc.ofDescriptor(descriptor));
         return this;
     }
 
     @Override
     public MethodBuilder invokestatic(String owner, String name, String descriptor, boolean isInterface) {
-        this.codeBuilder.invokestatic(ClassDesc.ofInternalName(owner), name, MethodTypeDesc.ofDescriptor(descriptor), isInterface);
+        this.codeBuilder.invokestatic(ClassFileBuilder.getClassDesc(owner), name, MethodTypeDesc.ofDescriptor(descriptor), isInterface);
         return this;
     }
 
@@ -375,7 +375,7 @@ public class ClassFileMethodBuilder implements MethodBuilder {
 
     @Override
     public MethodBuilder tryCatch(BytecodeLabel start, BytecodeLabel end, BytecodeLabel handler, String type) {
-        this.codeBuilder.exceptionCatch((Label) start.getHandle(), (Label) end.getHandle(), (Label) handler.getHandle(), ClassDesc.ofInternalName(type));
+        this.codeBuilder.exceptionCatch((Label) start.getHandle(), (Label) end.getHandle(), (Label) handler.getHandle(), ClassFileBuilder.getClassDesc(type));
         return this;
     }
 
