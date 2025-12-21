@@ -275,7 +275,7 @@ public class ProxyBuilder {
     private void addFields(final ClassBuilder cb, final Method[] methods) {
         cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_STATIC", "ACC_FINAL"), METHODS_FIELD, desc(Method[].class), null, null);
         cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_STATIC", "ACC_FINAL"), PROXY_METHOD_CLASSES_FIELD, desc(Class[].class), null, null);
-        cb.field(BUILDER.opcode("ACC_PRIVATE", "ACC_FINAL"), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class), null, null);
+        cb.field(BUILDER.opcode("ACC_PRIVATE"), INVOCATION_HANDLER_FIELD, desc(InvocationHandler.class), null, null);
         for (int i = 0; i < methods.length; i++) {
             cb.field(BUILDER.opcode("ACC_PRIVATE"), "method" + i, desc(ProxyMethod.class), null, null);
         }
