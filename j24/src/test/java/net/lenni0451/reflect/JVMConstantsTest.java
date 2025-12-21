@@ -1,6 +1,5 @@
-package net.lenni0451.reflect.bytecode;
+package net.lenni0451.reflect;
 
-import net.lenni0451.reflect.JVMConstants;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
