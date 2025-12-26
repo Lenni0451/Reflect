@@ -55,6 +55,15 @@ class ClassLoadersTest {
     }
 
     @Test
+    void defineClassOnBootstrapClassLoader() {
+        ClassLoader bootstrapClassLoader = System.class.getClassLoader(); // Typically null, but implementation-dependant
+        Class<?> supplier = assertDoesNotThrow(() -> ClassLoaders.defineClass(bootstrapClassLoader, null, testClassBytes));
+        Supplier<String> instance = assertDoesNotThrow(() -> (Supplier<String>) supplier.getDeclaredConstructor().newInstance());
+        String response = assertDoesNotThrow(instance::get);
+        assertEquals("Hello World", response);
+    }
+
+    @Test
     void defineAnonymousClass() {
         Class<?> supplier = assertDoesNotThrow(() -> ClassLoaders.defineAnonymousClass(ClassLoadersTest.class, testClassBytes));
         Supplier<String> instance = assertDoesNotThrow(() -> (Supplier<String>) supplier.getDeclaredConstructor().newInstance());
