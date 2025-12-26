@@ -14,6 +14,7 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 import static net.lenni0451.reflect.JVMConstants.*;
+import static net.lenni0451.reflect.JavaBypass.INTERNAL_UNSAFE;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.JavaBypass.UNSAFE;
 import static net.lenni0451.reflect.utils.FieldInitializer.*;
@@ -27,6 +28,14 @@ public class ClassLoaders {
             () -> Methods.getDeclaredMethod(ClassLoader.class, METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class),
             TRUSTED_LOOKUP::unreflect,
             () -> new MethodNotFoundException(ClassLoader.class.getName(), METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class)
+    );
+    private static final MethodHandle unsafeDefineClass = optInit(
+            () -> Methods.getDeclaredMethod(UNSAFE.getClass(), METHOD_Unsafe_defineClass, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class),
+            TRUSTED_LOOKUP::unreflect
+    );
+    private static final MethodHandle internalUnsafeDefineClass = optInit(
+            () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_INTERNAL_Unsafe_defineClass, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class),
+            TRUSTED_LOOKUP::unreflect
     );
     private static final Class<?> classOptionClass = optInit(
             () -> Class.forName(CLASS_MethodHandles_Lookup_ClassOption)
@@ -167,7 +176,18 @@ public class ClassLoaders {
      */
     @SneakyThrows
     public static Class<?> defineClass(final ClassLoader classLoader, final String name, final byte[] bytecode, final int offset, final int length, final ProtectionDomain protectionDomain) {
-        return (Class<?>) defineClass.invokeExact(classLoader, name, bytecode, offset, length, protectionDomain);
+        if (classLoader != null) {
+            return (Class<?>) defineClass.invokeExact(classLoader, name, bytecode, offset, length, protectionDomain);
+        } else {
+            // A null classloader likely represents the bootstrap classloader
+            if (unsafeDefineClass != null) {
+                // Use sun.misc.Unsafe for Java 8
+                return (Class<?>) unsafeDefineClass.invokeExact(UNSAFE, name, bytecode, offset, length, classLoader, protectionDomain);
+            } else {
+                // Use jdk.internal.misc.Unsafe
+                return (Class<?>) internalUnsafeDefineClass.invoke(INTERNAL_UNSAFE, name, bytecode, offset, length, classLoader, protectionDomain);
+            }
+        }
     }
 
     /**

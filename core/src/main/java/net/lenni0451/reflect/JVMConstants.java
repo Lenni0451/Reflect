@@ -67,7 +67,9 @@ public class JVMConstants {
     public static final String METHOD_Class_getDeclaredConstructors0 = calc("getDeclaredConstructors0", OPENJ9_RUNTIME, "getDeclaredConstructorsImpl");
     public static final String METHOD_Class_getDeclaredMethods0 = calc("getDeclaredMethods0", OPENJ9_RUNTIME, "getDeclaredMethodsImpl");
     public static final String METHOD_InstrumentationImpl_loadAgent = calc("loadAgent");
+    public static final String METHOD_INTERNAL_Unsafe_defineClass = calc("defineClass");
     public static final String METHOD_Unsafe_defineAnonymousClass = calc("defineAnonymousClass");
+    public static final String METHOD_Unsafe_defineClass = calc("defineClass");
     public static final String METHOD_MethodHandles_Lookup_defineHiddenClass = calc("defineHiddenClass");
     public static final String METHOD_MethodHandles_Lookup_getDirectMethod = calc("getDirectMethod");
     public static final String METHOD_MethodHandles_Lookup_ensureInitialized = calc("ensureInitialized");
