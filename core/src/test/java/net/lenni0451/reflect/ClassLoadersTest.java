@@ -48,10 +48,12 @@ class ClassLoadersTest {
 
     @Test
     void defineClass() {
-        Class<?> supplier = assertDoesNotThrow(() -> ClassLoaders.defineClass(ClassLoadersTest.class.getClassLoader(), null, testClassBytes));
+        ClassLoader classLoader = ClassLoadersTest.class.getClassLoader();
+        Class<?> supplier = assertDoesNotThrow(() -> ClassLoaders.defineClass(classLoader, null, testClassBytes));
         Supplier<String> instance = assertDoesNotThrow(() -> (Supplier<String>) supplier.getDeclaredConstructor().newInstance());
         String response = assertDoesNotThrow(instance::get);
         assertEquals("Hello World", response);
+        assertEquals(classLoader, supplier.getClassLoader());
     }
 
     @Test
@@ -61,6 +63,7 @@ class ClassLoadersTest {
         Supplier<String> instance = assertDoesNotThrow(() -> (Supplier<String>) supplier.getDeclaredConstructor().newInstance());
         String response = assertDoesNotThrow(instance::get);
         assertEquals("Hello World", response);
+        assertEquals(bootstrapClassLoader, supplier.getClassLoader());
     }
 
     @Test
