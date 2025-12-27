@@ -14,9 +14,7 @@ import java.security.ProtectionDomain;
 import java.util.List;
 
 import static net.lenni0451.reflect.JVMConstants.*;
-import static net.lenni0451.reflect.JavaBypass.INTERNAL_UNSAFE;
-import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
-import static net.lenni0451.reflect.JavaBypass.UNSAFE;
+import static net.lenni0451.reflect.JavaBypass.*;
 import static net.lenni0451.reflect.utils.FieldInitializer.*;
 
 /**
@@ -139,7 +137,8 @@ public class ClassLoaders {
 
 
     /**
-     * Define a class using the given class loader.
+     * Define a class using the given class loader.<br>
+     * If the class loader is null (likely the bootstrap class loader), Unsafe is used to define the class.
      *
      * @param classLoader The class loader to use
      * @param name        The name of the class
@@ -151,7 +150,8 @@ public class ClassLoaders {
     }
 
     /**
-     * Define a class using the given class loader.
+     * Define a class using the given class loader.<br>
+     * If the class loader is null (likely the bootstrap class loader), Unsafe is used to define the class.
      *
      * @param classLoader      The class loader to use
      * @param name             The name of the class
@@ -164,7 +164,8 @@ public class ClassLoaders {
     }
 
     /**
-     * Define a class using the given class loader.
+     * Define a class using the given class loader.<br>
+     * If the class loader is null (likely the bootstrap class loader), Unsafe is used to define the class.
      *
      * @param classLoader      The class loader to use
      * @param name             The name of the class
@@ -183,16 +184,19 @@ public class ClassLoaders {
             if (unsafeDefineClass != null) {
                 // Use sun.misc.Unsafe for Java 8
                 return (Class<?>) unsafeDefineClass.invokeExact(UNSAFE, name, bytecode, offset, length, classLoader, protectionDomain);
-            } else {
+            } else if (internalUnsafeDefineClass != null) {
                 // Use jdk.internal.misc.Unsafe
                 return (Class<?>) internalUnsafeDefineClass.invoke(INTERNAL_UNSAFE, name, bytecode, offset, length, classLoader, protectionDomain);
+            } else {
+                String className = INTERNAL_UNSAFE != null ? INTERNAL_UNSAFE.getClass().getName() : UNSAFE.getClass().getName();
+                throw new MethodNotFoundException(className, METHOD_INTERNAL_Unsafe_defineClass, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class);
             }
         }
     }
 
     /**
      * Define an anonymous class.<br>
-     * In Java 15 and above the {@code MethodHandles.Lookup#defineHiddenClass} method is used. On older versions the <code>Unsafe#defineAnonymousClass</code> method is used.<br>
+     * In Java 15 and above the {@code MethodHandles.Lookup#defineHiddenClass} method is used. On older versions the {@code Unsafe#defineAnonymousClass} method is used.<br>
      * The flags are case-insensitive and only used on Java 15 and above.
      *
      * @param parent   The parent class
