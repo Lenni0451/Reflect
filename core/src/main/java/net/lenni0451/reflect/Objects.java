@@ -6,8 +6,10 @@ import net.lenni0451.reflect.accessor.UnsafeAccess;
 import net.lenni0451.reflect.exceptions.InvalidOOPSizeException;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Array;
 
+import static net.lenni0451.reflect.utils.FieldInitializer.ThrowingSupplier.getFirst;
 import static net.lenni0451.reflect.utils.FieldInitializer.init;
 
 /**
@@ -39,13 +41,30 @@ public class Objects {
     public static final int ADDRESS_SIZE = UnsafeAccess.addressSize();
     public static final int OOP_SIZE = CompressedOopsClass.getOopSize();
     public static final int OBJECT_HEADER_SIZE = BooleanHeaderClass.getHeaderSize();
-    public static final int OBJECT_ALIGNMENT = init(() -> {
+    public static final int OBJECT_ALIGNMENT = init(getFirst(() -> {
+        //Try to get the option from the JVM arguments
+        //This only works if the option is explicitly set
+        String option = "-XX:" + JVMConstants.VM_OPTION_ObjectAlignmentInBytes + "=";
+        RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+        for (String arg : runtimeMxBean.getInputArguments()) {
+            if (arg.startsWith(option)) {
+                return Integer.parseInt(arg.substring(option.length()));
+            }
+        }
+        return null;
+    }, () -> {
         if (!JVMConstants.OPENJ9_RUNTIME) { //OpenJ9 does not support this
             HotSpotDiagnosticMXBean mxBean = ManagementFactory.getPlatformMXBean(HotSpotDiagnosticMXBean.class);
-            if (mxBean != null) return Integer.parseInt(mxBean.getVMOption(JVMConstants.VM_OPTION_ObjectAlignmentInBytes).getValue());
+            if (mxBean != null) {
+                return Integer.parseInt(mxBean.getVMOption(JVMConstants.VM_OPTION_ObjectAlignmentInBytes).getValue());
+            }
         }
-        return 8; //Default to 8 and hope for the best
-    });
+        return null;
+    }, () -> {
+        //Default to 8 and hope for the best
+        //The alignment usually is 8, unless the heap is huge (>32GB)
+        return 8;
+    }));
     public static final boolean COMPRESSED_OOPS = ADDRESS_SIZE != OOP_SIZE;
     public static final int COMPRESSED_OOP_SHIFT = init(() -> {
         int i = OBJECT_ALIGNMENT;
