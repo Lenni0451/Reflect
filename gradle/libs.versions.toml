@@ -2,7 +2,7 @@
 
 [libraries]
 findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
-jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.0.2-1" }
+jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.1.0" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
 asm = { module = "org.ow2.asm:asm", version = "9.9.1" }
 
