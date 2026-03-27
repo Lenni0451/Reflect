@@ -5,10 +5,7 @@ import net.lenni0451.reflect.Fields;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -17,63 +14,63 @@ import java.util.function.Predicate;
  */
 public class ObjectPrinter {
 
-    private static final List<Class<?>> PRIMITIVE_CLASSES = FieldInitializer.init(new ArrayList<>(), list -> {
-        list.add(Boolean.class);
-        list.add(Byte.class);
-        list.add(Short.class);
-        list.add(Character.class);
-        list.add(Integer.class);
-        list.add(Long.class);
-        list.add(Float.class);
-        list.add(Double.class);
-        list.add(String.class);
-    });
-    private static final List<Converter> CONVERTERS = FieldInitializer.init(new ArrayList<>(), list -> {
-        list.add(new Converter(Class::isArray, (array, out, valueToString, includeSuper) -> {
-            out.append(array.getClass().getComponentType().getSimpleName()).append("[]{");
-            int size = Array.getLength(array);
-            for (int i = 0; i < size; i++) {
-                Object value = Array.get(array, i);
-                out.append(valueToString.apply(value)).append(", ");
-            }
-            if (size > 0) out.setLength(out.length() - 2);
-            out.append("}");
-        }));
-        list.add(new Converter(Iterable.class::isAssignableFrom, (it, out, valueToString, includeSuper) -> {
-            Iterable<?> iterable = (Iterable<?>) it;
-            out.append(it.getClass().getSimpleName()).append("{");
-            boolean hasElements = false;
-            for (Object value : iterable) {
-                hasElements = true;
-                out.append(valueToString.apply(value)).append(", ");
-            }
-            if (hasElements) out.setLength(out.length() - 2);
-            out.append("}");
-        }));
-        list.add(new Converter(Map.class::isAssignableFrom, (m, out, valueToString, includeSuper) -> {
-            Map<?, ?> map = (Map<?, ?>) m;
-            out.append(m.getClass().getSimpleName()).append("{");
-            boolean hasEntries = false;
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                hasEntries = true;
-                out.append(valueToString.apply(entry.getKey())).append("=").append(valueToString.apply(entry.getValue())).append(", ");
-            }
-            if (hasEntries) out.setLength(out.length() - 2);
-            out.append("}");
-        }));
+    private static final List<Class<?>> PRIMITIVE_CLASSES = Arrays.asList(
+            Boolean.class,
+            Byte.class,
+            Short.class,
+            Character.class,
+            Integer.class,
+            Long.class,
+            Float.class,
+            Double.class,
+            String.class
+    );
+    private static final List<Converter> CONVERTERS = Arrays.asList(
+            new Converter(Class::isArray, (array, out, valueToString, includeSuper) -> {
+                out.append(array.getClass().getComponentType().getSimpleName()).append("[]{");
+                int size = Array.getLength(array);
+                for (int i = 0; i < size; i++) {
+                    Object value = Array.get(array, i);
+                    out.append(valueToString.apply(value)).append(", ");
+                }
+                if (size > 0) out.setLength(out.length() - 2);
+                out.append("}");
+            }),
+            new Converter(Iterable.class::isAssignableFrom, (it, out, valueToString, includeSuper) -> {
+                Iterable<?> iterable = (Iterable<?>) it;
+                out.append(it.getClass().getSimpleName()).append("{");
+                boolean hasElements = false;
+                for (Object value : iterable) {
+                    hasElements = true;
+                    out.append(valueToString.apply(value)).append(", ");
+                }
+                if (hasElements) out.setLength(out.length() - 2);
+                out.append("}");
+            }),
+            new Converter(Map.class::isAssignableFrom, (m, out, valueToString, includeSuper) -> {
+                Map<?, ?> map = (Map<?, ?>) m;
+                out.append(m.getClass().getSimpleName()).append("{");
+                boolean hasEntries = false;
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    hasEntries = true;
+                    out.append(valueToString.apply(entry.getKey())).append("=").append(valueToString.apply(entry.getValue())).append(", ");
+                }
+                if (hasEntries) out.setLength(out.length() - 2);
+                out.append("}");
+            }),
 
-        //Has to be last
-        list.add(new Converter(c -> true, (o, out, valueToString, includeSuper) -> {
-            out.append(o.getClass().getSimpleName()).append("{");
-            Field[] fields = getFields(o.getClass(), includeSuper);
-            for (Field field : fields) {
-                Object value = Fields.get(o, field);
-                out.append(field.getName()).append("=").append(valueToString.apply(value)).append(", ");
-            }
-            if (fields.length > 0) out.setLength(out.length() - 2);
-            out.append("}");
-        }));
-    });
+            //Has to be last
+            new Converter(c -> true, (o, out, valueToString, includeSuper) -> {
+                out.append(o.getClass().getSimpleName()).append("{");
+                Field[] fields = getFields(o.getClass(), includeSuper);
+                for (Field field : fields) {
+                    Object value = Fields.get(o, field);
+                    out.append(field.getName()).append("=").append(valueToString.apply(value)).append(", ");
+                }
+                if (fields.length > 0) out.setLength(out.length() - 2);
+                out.append("}");
+            })
+    );
 
     /**
      * Convert an object to a string using reflection to access all fields.<br>

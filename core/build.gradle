@@ -4,6 +4,10 @@ plugins {
     alias libs.plugins.templateProcessor
 }
 
+dependencies {
+    api libs.commons.unchecked
+}
+
 templateProcessor {
     templateDir = project.file("src/main/templates")
     outputDir = layout.buildDirectory.dir("generated/templates/main/java")

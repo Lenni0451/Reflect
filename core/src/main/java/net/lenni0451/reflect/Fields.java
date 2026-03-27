@@ -1,6 +1,7 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.accessor.UnsafeAccess;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 
@@ -12,20 +13,22 @@ import java.lang.reflect.Modifier;
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredFields0;
 import static net.lenni0451.reflect.JVMConstants.OPENJ9_RUNTIME;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with fields.
  */
 public class Fields {
 
-    private static final MethodHandle getDeclaredFields0 = reqInit(
-            () -> {
-                if (JVMConstants.OPENJ9_RUNTIME) return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
-                else return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
-            },
-            TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean")
-    );
+    private static final MethodHandle getDeclaredFields0 = FieldInitializer
+            .attempt(() -> {
+                if (JVMConstants.OPENJ9_RUNTIME) {
+                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0);
+                } else {
+                    return Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredFields0, boolean.class);
+                }
+            })
+            .map(TRUSTED_LOOKUP::unreflect)
+            .require(() -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredFields0, OPENJ9_RUNTIME ? "" : "boolean"));
 
     /**
      * Get the offset of a field required for getting/setting the value of the field using unsafe.<br>

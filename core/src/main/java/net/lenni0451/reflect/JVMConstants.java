@@ -1,9 +1,7 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import org.jetbrains.annotations.ApiStatus;
-
-import static net.lenni0451.reflect.utils.FieldInitializer.ThrowingSupplier.getFirst;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 @ApiStatus.Internal
 public class JVMConstants {
@@ -14,24 +12,21 @@ public class JVMConstants {
      * Most features of Reflect should work on OpenJ9, but some features are not supported. They will throw an {@link UnsupportedOperationException} if used on OpenJ9.
      */
     public static final boolean OPENJ9_RUNTIME = System.getProperty("java.vm.name").toLowerCase().contains("openj9");
-    public static final int JAVA_VERSION = reqInit(
-            getFirst(
-                    () -> {
-                        Class<?> versionClass = Class.forName("java.lang.Runtime$Version");
-                        Object version = Runtime.class.getDeclaredMethod("version").invoke(null);
-                        return (int) versionClass.getDeclaredMethod("major").invoke(version);
-                    },
-                    () -> {
-                        String[] specificationVersion = System.getProperty("java.specification.version").split("\\.");
-                        if (specificationVersion[0].equals("1")) {
-                            return Integer.parseInt(specificationVersion[1]);
-                        } else {
-                            return Integer.parseInt(specificationVersion[0]);
-                        }
-                    }
-            ),
-            () -> new IllegalStateException("Could not determine Java version")
-    );
+    public static final int JAVA_VERSION = FieldInitializer.firstOf(
+            () -> {
+                Class<?> versionClass = Class.forName("java.lang.Runtime$Version");
+                Object version = Runtime.class.getDeclaredMethod("version").invoke(null);
+                return (int) versionClass.getDeclaredMethod("major").invoke(version);
+            },
+            () -> {
+                String[] specificationVersion = System.getProperty("java.specification.version").split("\\.");
+                if (specificationVersion[0].equals("1")) {
+                    return Integer.parseInt(specificationVersion[1]);
+                } else {
+                    return Integer.parseInt(specificationVersion[0]);
+                }
+            }
+    ).require(() -> new IllegalStateException("Could not determine Java version"));
 
     public static final String CLASS_InstrumentationImpl = calc("sun.instrument.InstrumentationImpl");
     public static final String CLASS_MethodHandles_Lookup_ClassOption = calc("java.lang.invoke.MethodHandles$Lookup$ClassOption");
@@ -79,6 +74,7 @@ public class JVMConstants {
     public static final String METHOD_Module_implAddExportsOrOpens = calc("implAddExportsOrOpens");
     public static final String METHOD_Module_implAddEnableNativeAccess = calc("implAddEnableNativeAccess");
     public static final String METHOD_Module_implAddEnableNativeAccessToAllUnnamed = calc("implAddEnableNativeAccessToAllUnnamed");
+    public static final String METHOD_Module_addEnableNativeAccessToAllUnnamed = calc("addEnableNativeAccessToAllUnnamed");
     public static final String METHOD_SecurityManager_getClassContext = calc("getClassContext");
     public static final String METHOD_LiveStackFrame_getStackWalker = calc("getStackWalker");
     public static final String METHOD_LiveStackFrameInfo_getMonitors = calc("getMonitors");

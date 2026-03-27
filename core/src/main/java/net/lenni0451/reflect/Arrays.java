@@ -1,5 +1,6 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.accessor.UnsafeAccess;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -10,11 +11,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class Arrays {
 
-    private static final int ARRAY_LENGTH_OFFSET;
-
-    static {
+    private static final int ARRAY_LENGTH_OFFSET = FieldInitializer.attempt(() -> {
         //Find the memory offset of the length field in an array
-        int lengthOffset = -1;
         byte[] test = new byte[123];
         for (int i = 0; i < Objects.BYTE_ARRAY_BASE_OFFSET; i++) {
             int arrayLength = test.length;
@@ -22,15 +20,14 @@ public class Arrays {
                 int newLength = arrayLength + 1;
                 UnsafeAccess.putInt(test, i, newLength);
                 if (test.length == newLength) {
-                    lengthOffset = i;
-                    break;
+                    return i;
                 }
                 //Reset the memory if it's not the length field
                 UnsafeAccess.putInt(test, i, arrayLength);
             }
         }
-        ARRAY_LENGTH_OFFSET = lengthOffset;
-    }
+        return null;
+    }).orElse(-1).intValue();
 
     /**
      * Set the length of an array.<br>

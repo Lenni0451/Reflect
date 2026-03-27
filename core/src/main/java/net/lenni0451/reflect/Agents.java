@@ -1,6 +1,7 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.bytecode.builder.BytecodeBuilder;
 import net.lenni0451.reflect.bytecode.wrapper.BuiltClass;
 import net.lenni0451.reflect.exceptions.FieldNotFoundException;
@@ -21,7 +22,6 @@ import static net.lenni0451.reflect.JVMConstants.CLASS_InstrumentationImpl;
 import static net.lenni0451.reflect.JVMConstants.METHOD_InstrumentationImpl_loadAgent;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
 import static net.lenni0451.reflect.bytecode.BytecodeUtils.*;
-import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
 
 /**
  * This class contains some useful methods for working with agents.
@@ -30,13 +30,13 @@ public class Agents {
 
     private static final String DUMMY_AGENT_CLASS_NAME = String.join(".", "net", "lenni0451", "reflect", "AgentLoader"); //Prevent repackaging tools from changing the name
     private static final String INSTRUMENTATION_FIELD_NAME = "instrumentation";
-    private static final Class<?> instrumentationImpl = optInit(
-            () -> Class.forName(CLASS_InstrumentationImpl)
-    );
-    private static final MethodHandle loadAgent = optInit(
-            () -> Methods.getDeclaredMethod(instrumentationImpl, METHOD_InstrumentationImpl_loadAgent, String.class),
-            TRUSTED_LOOKUP::unreflect
-    );
+    private static final Class<?> instrumentationImpl = FieldInitializer
+            .attempt(() -> Class.forName(CLASS_InstrumentationImpl))
+            .silent().get();
+    private static final MethodHandle loadAgent = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(instrumentationImpl, METHOD_InstrumentationImpl_loadAgent, String.class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .silent().get();
 
     /**
      * Create a temp empty dummy agent jar for a given class.

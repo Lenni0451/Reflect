@@ -1,5 +1,6 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.exceptions.ConstructorNotFoundException;
 import net.lenni0451.reflect.exceptions.FieldNotFoundException;
 
@@ -9,28 +10,27 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.*;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqOptInit;
 
 /**
  * This class contains some useful methods for working with enums.
  */
 public class Enums {
 
-    private static final Field enumVarsField = reqOptInit(
-            OPENJ9_RUNTIME,
-            () -> Fields.getDeclaredField(Class.class, FIELD_Class_EnumVars),
-            () -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_EnumVars)
-    );
-    private static final Field enumConstantsField = reqOptInit(
-            !OPENJ9_RUNTIME,
-            () -> Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants),
-            () -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_enumConstants)
-    );
-    private static final Field enumConstantDirectoryField = reqOptInit(
-            !OPENJ9_RUNTIME,
-            () -> Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory),
-            () -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_enumConstantDirectory)
-    );
+    private static final Field enumVarsField = FieldInitializer
+            .attempt(() -> Fields.getDeclaredField(Class.class, FIELD_Class_EnumVars))
+            .ensure(() -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_EnumVars))
+            .onlyIf(OPENJ9_RUNTIME)
+            .get();
+    private static final Field enumConstantsField = FieldInitializer
+            .attempt(() -> Fields.getDeclaredField(Class.class, FIELD_Class_enumConstants))
+            .ensure(() -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_enumConstants))
+            .onlyIf(!OPENJ9_RUNTIME)
+            .get();
+    private static final Field enumConstantDirectoryField = FieldInitializer
+            .attempt(() -> Fields.getDeclaredField(Class.class, FIELD_Class_enumConstantDirectory))
+            .ensure(() -> new FieldNotFoundException(Class.class.getName(), FIELD_Class_enumConstantDirectory))
+            .onlyIf(!OPENJ9_RUNTIME)
+            .get();
 
     /**
      * Create a new instance of an enum.<br>

@@ -1,6 +1,7 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.accessor.UnsafeAccess;
 import net.lenni0451.reflect.exceptions.MethodInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
@@ -13,23 +14,20 @@ import java.lang.invoke.MethodHandles;
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredClasses0;
 import static net.lenni0451.reflect.JVMConstants.METHOD_MethodHandles_Lookup_ensureInitialized;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
-import static net.lenni0451.reflect.utils.FieldInitializer.optInit;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with classes.
  */
 public class Classes {
 
-    private static final MethodHandle getDeclaredClasses0 = reqInit(
-            () -> Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0),
-            TRUSTED_LOOKUP::unreflect,
-            () -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0)
-    );
-    private static final MethodHandle ensureInitialized = optInit(
-            () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_ensureInitialized, Class.class),
-            TRUSTED_LOOKUP::unreflect
-    );
+    private static final MethodHandle getDeclaredClasses0 = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(Class.class, METHOD_Class_getDeclaredClasses0))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .require(() -> new MethodInvocationException(Class.class.getName(), METHOD_Class_getDeclaredClasses0));
+    private static final MethodHandle ensureInitialized = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_ensureInitialized, Class.class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .silent().get();
 
     /**
      * Get all declared classes of a class.<br>

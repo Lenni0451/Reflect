@@ -1,6 +1,7 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 import net.lenni0451.reflect.stream.RStream;
 
@@ -15,41 +16,39 @@ import java.util.List;
 
 import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.*;
-import static net.lenni0451.reflect.utils.FieldInitializer.*;
 
 /**
  * This class contains some useful methods for working with class loaders.
  */
 public class ClassLoaders {
 
-    private static final MethodHandle defineClass = reqInit(
-            () -> Methods.getDeclaredMethod(ClassLoader.class, METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class),
-            TRUSTED_LOOKUP::unreflect,
-            () -> new MethodNotFoundException(ClassLoader.class.getName(), METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class)
-    );
-    private static final MethodHandle unsafeDefineClass = optInit(
-            () -> Methods.getDeclaredMethod(UNSAFE.getClass(), METHOD_Unsafe_defineClass, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class),
-            TRUSTED_LOOKUP::unreflect
-    );
-    private static final MethodHandle internalUnsafeDefineClass = optInit(
-            () -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_INTERNAL_Unsafe_defineClass, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class),
-            TRUSTED_LOOKUP::unreflect
-    );
-    private static final Class<?> classOptionClass = optInit(
-            () -> Class.forName(CLASS_MethodHandles_Lookup_ClassOption)
-    );
-    private static final MethodHandle unsafeDefineAnonymousClass = reqOptInit(
-            classOptionClass == null,
-            () -> Methods.getDeclaredMethod(UNSAFE.getClass(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class),
-            TRUSTED_LOOKUP::unreflect,
-            () -> new MethodNotFoundException(UNSAFE.getClass().getName(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class)
-    );
-    private static final MethodHandle lookupDefineHiddenClass = reqOptInit(
-            classOptionClass != null,
-            () -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass()),
-            m -> TRUSTED_LOOKUP.unreflect(m).asFixedArity(),
-            () -> new MethodNotFoundException(MethodHandles.Lookup.class.getName(), METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass())
-    );
+    private static final MethodHandle defineClass = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(ClassLoader.class, METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .require(() -> new MethodNotFoundException(ClassLoader.class.getName(), METHOD_ClassLoader_defineClass, String.class, byte[].class, int.class, int.class, ProtectionDomain.class));
+    private static final MethodHandle unsafeDefineClass = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(UNSAFE.getClass(), METHOD_Unsafe_defineClass, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .silent().get();
+    private static final MethodHandle internalUnsafeDefineClass = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(INTERNAL_UNSAFE.getClass(), METHOD_INTERNAL_Unsafe_defineClass, String.class, byte[].class, int.class, int.class, ClassLoader.class, ProtectionDomain.class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .silent().get();
+    private static final Class<?> classOptionClass = FieldInitializer
+            .attempt(() -> Class.forName(CLASS_MethodHandles_Lookup_ClassOption))
+            .silent().get();
+    private static final MethodHandle unsafeDefineAnonymousClass = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(UNSAFE.getClass(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .ensure(() -> new MethodNotFoundException(UNSAFE.getClass().getName(), METHOD_Unsafe_defineAnonymousClass, Class.class, byte[].class, Object[].class))
+            .onlyIf(classOptionClass == null)
+            .get();
+    private static final MethodHandle lookupDefineHiddenClass = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(MethodHandles.Lookup.class, METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass()))
+            .map(m -> TRUSTED_LOOKUP.unreflect(m).asFixedArity())
+            .ensure(() -> new MethodNotFoundException(MethodHandles.Lookup.class.getName(), METHOD_MethodHandles_Lookup_defineHiddenClass, byte[].class, boolean.class, Array.newInstance(classOptionClass, 0).getClass()))
+            .onlyIf(classOptionClass != null)
+            .get();
 
     /**
      * Add a URL to the system classpath.

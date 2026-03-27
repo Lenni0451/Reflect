@@ -1,6 +1,7 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.exceptions.FieldNotFoundException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 
@@ -9,26 +10,22 @@ import java.lang.reflect.Field;
 
 import static net.lenni0451.reflect.JVMConstants.*;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with modules.
  */
 public class Modules {
 
-    private static final Field moduleField = reqInit(
-            () -> Fields.getDeclaredField(Class.class, FIELD_Class_module),
-            () -> new FieldNotFoundException(FIELD_Class_module, Class.class.getName())
-    );
-    private static final Field everyoneModuleField = reqInit(
-            () -> Fields.getDeclaredField(Module.class, FIELD_Module_EVERYONE_MODULE),
-            () -> new FieldNotFoundException(FIELD_Module_EVERYONE_MODULE, Module.class.getName())
-    );
-    private static final MethodHandle implAddExportsOrOpens = reqInit(
-            () -> Methods.getDeclaredMethod(Module.class, METHOD_Module_implAddExportsOrOpens, String.class, Module.class, boolean.class, boolean.class),
-            TRUSTED_LOOKUP::unreflect,
-            () -> new MethodNotFoundException(Module.class.getName(), METHOD_Module_implAddExportsOrOpens, String.class, Module.class, boolean.class, boolean.class)
-    );
+    private static final Field moduleField = FieldInitializer
+            .attempt(() -> Fields.getDeclaredField(Class.class, FIELD_Class_module))
+            .require(() -> new FieldNotFoundException(FIELD_Class_module, Class.class.getName()));
+    private static final Field everyoneModuleField = FieldInitializer
+            .attempt(() -> Fields.getDeclaredField(Module.class, FIELD_Module_EVERYONE_MODULE))
+            .require(() -> new FieldNotFoundException(FIELD_Module_EVERYONE_MODULE, Module.class.getName()));
+    private static final MethodHandle implAddExportsOrOpens = FieldInitializer
+            .attempt(() -> Methods.getDeclaredMethod(Module.class, METHOD_Module_implAddExportsOrOpens, String.class, Module.class, boolean.class, boolean.class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .require(() -> new MethodNotFoundException(Module.class.getName(), METHOD_Module_implAddExportsOrOpens, String.class, Module.class, boolean.class, boolean.class));
 
     /**
      * Copy the module from one class to another.<br>

@@ -1,6 +1,7 @@
 package net.lenni0451.reflect;
 
 import lombok.SneakyThrows;
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.exceptions.MethodInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
 
@@ -13,20 +14,22 @@ import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.METHOD_Class_getDeclaredMethods0;
 import static net.lenni0451.reflect.JavaBypass.TRUSTED_LOOKUP;
-import static net.lenni0451.reflect.utils.FieldInitializer.reqInit;
 
 /**
  * This class contains some useful methods for working with methods.
  */
 public class Methods {
 
-    private static final MethodHandle getDeclaredMethods0 = reqInit(
-            () -> {
-                if (JVMConstants.OPENJ9_RUNTIME) return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
-                else return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
-            },
-            TRUSTED_LOOKUP::unreflect, () -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean")
-    );
+    private static final MethodHandle getDeclaredMethods0 = FieldInitializer
+            .attempt(() -> {
+                if (JVMConstants.OPENJ9_RUNTIME) {
+                    return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0);
+                } else {
+                    return Class.class.getDeclaredMethod(METHOD_Class_getDeclaredMethods0, boolean.class);
+                }
+            })
+            .map(TRUSTED_LOOKUP::unreflect)
+            .require(() -> new MethodNotFoundException(Class.class.getName(), METHOD_Class_getDeclaredMethods0, JVMConstants.OPENJ9_RUNTIME ? "" : "boolean"));
 
     /**
      * Get all declared methods of a class.<br>

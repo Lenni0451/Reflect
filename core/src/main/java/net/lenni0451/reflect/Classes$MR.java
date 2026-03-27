@@ -1,7 +1,7 @@
 package net.lenni0451.reflect;
 
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
-import net.lenni0451.reflect.utils.FieldInitializer;
 import sun.reflect.Reflection;
 
 import java.lang.invoke.MethodHandle;
@@ -15,10 +15,9 @@ import static net.lenni0451.reflect.JVMConstants.METHOD_SecurityManager_getClass
 class Classes$MR {
 
     private static final SecurityManager SECURITY_MANAGER = new SecurityManager();
-    private static final MethodHandle GET_CLASS_CONTEXT = FieldInitializer.reqInit(
-            () -> JavaBypass.TRUSTED_LOOKUP.findVirtual(SecurityManager.class, METHOD_SecurityManager_getClassContext, MethodType.methodType(Class[].class)),
-            () -> new MethodNotFoundException(SecurityManager.class.getName(), METHOD_SecurityManager_getClassContext)
-    );
+    private static final MethodHandle GET_CLASS_CONTEXT = FieldInitializer
+            .attempt(() -> JavaBypass.TRUSTED_LOOKUP.findVirtual(SecurityManager.class, METHOD_SecurityManager_getClassContext, MethodType.methodType(Class[].class)))
+            .require(() -> new MethodNotFoundException(SecurityManager.class.getName(), METHOD_SecurityManager_getClassContext));
 
     public static Class<?> getCallerClass(final int depth) throws Throwable {
         try {

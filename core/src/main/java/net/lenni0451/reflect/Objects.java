@@ -2,15 +2,13 @@ package net.lenni0451.reflect;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
+import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.accessor.UnsafeAccess;
 import net.lenni0451.reflect.exceptions.InvalidOOPSizeException;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Array;
-
-import static net.lenni0451.reflect.utils.FieldInitializer.ThrowingSupplier.getFirst;
-import static net.lenni0451.reflect.utils.FieldInitializer.init;
 
 /**
  * This class contains some methods to do unsafe operations.
@@ -41,7 +39,7 @@ public class Objects {
     public static final int ADDRESS_SIZE = UnsafeAccess.addressSize();
     public static final int OOP_SIZE = CompressedOopsClass.getOopSize();
     public static final int OBJECT_HEADER_SIZE = BooleanHeaderClass.getHeaderSize();
-    public static final int OBJECT_ALIGNMENT = init(getFirst(() -> {
+    public static final int OBJECT_ALIGNMENT = FieldInitializer.firstOf(() -> {
         //Try to get the option from the JVM arguments
         //This only works if the option is explicitly set
         String option = "-XX:" + JVMConstants.VM_OPTION_ObjectAlignmentInBytes + "=";
@@ -64,14 +62,14 @@ public class Objects {
         //Default to 8 and hope for the best
         //The alignment usually is 8, unless the heap is huge (>32GB)
         return 8;
-    }));
+    }).get().intValue();
     public static final boolean COMPRESSED_OOPS = ADDRESS_SIZE != OOP_SIZE;
-    public static final int COMPRESSED_OOP_SHIFT = init(() -> {
+    public static final int COMPRESSED_OOP_SHIFT = FieldInitializer.attempt(() -> {
         int i = OBJECT_ALIGNMENT;
         int result = 0;
         while ((i >>= 1) != 0) result++;
         return result;
-    });
+    }).get();
     /**
      * The base address for compressed OOPs.<br>
      * The JVM can use different modes of memory layouts, so this can vary.

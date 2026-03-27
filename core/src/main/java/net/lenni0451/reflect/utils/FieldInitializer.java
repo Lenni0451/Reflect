@@ -1,14 +1,14 @@
 package net.lenni0451.reflect.utils;
 
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * Helper class to initialize fields with a value or throw an exception if the value is null.
- */
+@Deprecated
+@ApiStatus.ScheduledForRemoval
 public class FieldInitializer {
 
     public static <T> T init(final T value, final Consumer<T> initializer) {
