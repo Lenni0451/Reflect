@@ -13,6 +13,7 @@ configurations {
 }
 
 dependencies {
+    api libs.commons.unchecked // Need to include here so it appears in the POM file
     include(project(":core"))
     VERSION_SUBMODULES.each { version ->
         include(project(":j$version")) {
