@@ -11,6 +11,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.List;
 
@@ -84,14 +85,27 @@ public class ClassLoaders {
 
     /**
      * Load a URL into the context class loader and move it to the front of the classpath.<br>
-     * This allows overriding classes in the classpath with classes from an external jar.
+     * This allows overriding classes in the classpath with classes from an external jar (if they are not loaded yet).<br>
+     * The context class loader needs to be an {@link URLClassLoader} or other class loader impl which uses the URL class path.
      *
      * @param url The URL to load
      * @throws IllegalStateException If the url class path could not be found or the URL could not be found in the classpath
      */
     public static void loadToFront(final URL url) {
+        loadToFront(Thread.currentThread().getContextClassLoader(), url);
+    }
+
+    /**
+     * Load a URL into the given class loader and move it to the front of the classpath.<br>
+     * This allows overriding classes in the classpath with classes from an external jar (if they are not loaded yet).<br>
+     * The class loader needs to be an {@link URLClassLoader} or other class loader impl which uses the URL class path.
+     *
+     * @param classLoader The class loader to load the URL into
+     * @param url         The URL to load
+     * @throws IllegalStateException If the url class path could not be found or the URL could not be found in the classpath
+     */
+    public static void loadToFront(final ClassLoader classLoader, final URL url) {
         //First add the URL into the classpath
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Object ucp;
         try {
             ucp = RStream.of(classLoader).withSuper().fields().by(FIELD_URLClassLoader_ucp).get();
