@@ -7,6 +7,7 @@ import sun.reflect.ReflectionFactory;
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import static net.lenni0451.reflect.JVMConstants.*;
 
@@ -75,6 +76,11 @@ public class JavaBypass {
                             Field lookupField = MethodHandles.Lookup.class.getDeclaredField(FIELD_MethodHandles_Lookup_IMPL_LOOKUP);
                             long lookupFieldOffset = UNSAFE.staticFieldOffset(lookupField);
                             return (MethodHandles.Lookup) UNSAFE.getObject(UNSAFE.staticFieldBase(lookupField), lookupFieldOffset);
+                        },
+                        () -> {
+                            Class<?> clazz = Class.forName("net.lenni0451.reflect.utils.ImplLookupGetter");
+                            Method method = clazz.getDeclaredMethod("getLookup");
+                            return (MethodHandles.Lookup) method.invoke(null);
                         }
                 )
                 .ensure(() -> new IllegalStateException("Lookup field was null"))
