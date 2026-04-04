@@ -5,6 +5,7 @@ import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.exceptions.ConstructorInvocationException;
 import net.lenni0451.reflect.exceptions.FieldNotFoundException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
+import net.lenni0451.reflect.utils.Invoker;
 
 import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
@@ -137,7 +138,7 @@ public class Constructors {
      */
     public static <T> T invoke(final Constructor<T> constructor, final Object... args) {
         try {
-            return (T) TRUSTED_LOOKUP.unreflectConstructor(constructor).invokeWithArguments(args);
+            return Invoker.dynamicInvoke(TRUSTED_LOOKUP.unreflectConstructor(constructor), args);
         } catch (Throwable t) {
             throw new ConstructorInvocationException(constructor).cause(t);
         }

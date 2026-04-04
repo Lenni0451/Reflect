@@ -21,9 +21,16 @@ class EnumsTest {
 
     @Test
     void createVarargEnumInstance() {
-        VarargTestEnum instance = Enums.newInstance(VarargTestEnum.class, "THREE", 2, new Class[]{String.class, String[].class}, new Object[]{"three", "test5", "test6"});
-        assertEquals("THREE", instance.name());
-        assertEquals(2, instance.ordinal());
+        {
+            VarargTestEnum instance = Enums.newInstance(VarargTestEnum.class, "THREE", 2, new Class[]{String.class, String[].class}, new Object[]{"three", "test5", "test6"});
+            assertEquals("THREE", instance.name());
+            assertEquals(2, instance.ordinal());
+        }
+        {
+            VarargTestEnum instance = Enums.newInstance(VarargTestEnum.class, "THREE", 2, new Class[]{String.class, String[].class}, new Object[]{"three", new String[]{"test5", "test6"}});
+            assertEquals("THREE", instance.name());
+            assertEquals(2, instance.ordinal());
+        }
     }
 
     @Test

@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import net.lenni0451.commons.unchecked.FieldInitializer;
 import net.lenni0451.reflect.exceptions.MethodInvocationException;
 import net.lenni0451.reflect.exceptions.MethodNotFoundException;
+import net.lenni0451.reflect.utils.Invoker;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -82,9 +83,9 @@ public class Methods {
     public static <T> T invoke(@Nullable final Object instance, final Method method, final Object... args) {
         try {
             if (Modifier.isStatic(method.getModifiers())) {
-                return (T) TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
+                return Invoker.dynamicInvoke(TRUSTED_LOOKUP.unreflect(method), args);
             } else {
-                return (T) TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
+                return Invoker.dynamicInvoke(TRUSTED_LOOKUP.unreflect(method).bindTo(instance), args);
             }
         } catch (Throwable t) {
             throw new MethodInvocationException(method).cause(t);
@@ -109,7 +110,7 @@ public class Methods {
     public static <I extends S, S, T> T invokeSuper(@Nonnull final I instance, @Nonnull final Class<S> superClass, final Method method, final Object... args) {
         if (Modifier.isStatic(method.getModifiers())) throw new IllegalArgumentException("Cannot invoke static super method");
         try {
-            return (T) TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance).invokeWithArguments(args);
+            return Invoker.dynamicInvoke(TRUSTED_LOOKUP.unreflectSpecial(method, superClass).bindTo(instance), args);
         } catch (Throwable t) {
             throw new MethodInvocationException(method).cause(t);
         }
