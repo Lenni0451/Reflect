@@ -58,6 +58,16 @@ public class Modules {
     }
 
     /**
+     * Open the entire boot module layer to everyone.<br>
+     * This allows the usage of jdk internal classes which are normally protected by restricted module access.<br>
+     * In Java 8 this method does nothing.
+     */
+    public static void openBootModule() {
+        //Nothing to do in Java 8
+        //Check out the Java 9+ version
+    }
+
+    /**
      * Enable native access for a module.<br>
      * This allows the usage of the foreign memory API without the need to add the JVM argument.
      *

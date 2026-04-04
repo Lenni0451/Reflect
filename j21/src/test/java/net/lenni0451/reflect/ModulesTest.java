@@ -27,6 +27,11 @@ class ModulesTest {
     }
 
     @Test
+    void openBootModule() {
+        assertDoesNotThrow(Modules::openBootModule);
+    }
+
+    @Test
     void enableNativeAccess() {
         assertDoesNotThrow(() -> Modules.enableNativeAccess(ModulesTest.class));
     }

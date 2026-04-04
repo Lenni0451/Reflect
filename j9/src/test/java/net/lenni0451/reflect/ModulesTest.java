@@ -21,6 +21,11 @@ class ModulesTest {
         assertDoesNotThrow(() -> Modules.openEntireModule(ModulesTest.class));
     }
 
+    @Test
+    void openBootModule() {
+        assertDoesNotThrow(Modules::openBootModule);
+    }
+
 
     private static class ModuleHolder {
     }
