@@ -41,8 +41,11 @@ public class Methods {
      */
     @SneakyThrows
     public static Method[] getDeclaredMethods(final Class<?> clazz) {
-        if (JVMConstants.OPENJ9_RUNTIME) return (Method[]) getDeclaredMethods0.invokeExact(clazz);
-        else return (Method[]) getDeclaredMethods0.invokeExact(clazz, false);
+        if (JVMConstants.OPENJ9_RUNTIME) {
+            return (Method[]) getDeclaredMethods0.invokeExact(clazz);
+        } else {
+            return (Method[]) getDeclaredMethods0.invokeExact(clazz, false);
+        }
     }
 
     /**
@@ -57,7 +60,9 @@ public class Methods {
     @Nullable
     public static Method getDeclaredMethod(final Class<?> clazz, final String name, final Class<?>... parameterTypes) {
         for (Method method : getDeclaredMethods(clazz)) {
-            if (method.getName().equals(name) && Arrays.equals(method.getParameterTypes(), parameterTypes)) return method;
+            if (method.getName().equals(name) && Arrays.equals(method.getParameterTypes(), parameterTypes)) {
+                return method;
+            }
         }
         return null;
     }
@@ -76,8 +81,11 @@ public class Methods {
      */
     public static <T> T invoke(@Nullable final Object instance, final Method method, final Object... args) {
         try {
-            if (Modifier.isStatic(method.getModifiers())) return (T) TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
-            else return (T) TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
+            if (Modifier.isStatic(method.getModifiers())) {
+                return (T) TRUSTED_LOOKUP.unreflect(method).invokeWithArguments(args);
+            } else {
+                return (T) TRUSTED_LOOKUP.unreflect(method).bindTo(instance).invokeWithArguments(args);
+            }
         } catch (Throwable t) {
             throw new MethodInvocationException(method).cause(t);
         }

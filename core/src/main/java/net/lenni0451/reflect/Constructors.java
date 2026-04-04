@@ -117,7 +117,9 @@ public class Constructors {
     @Nullable
     public static <T> Constructor<T> getDeclaredConstructor(final Class<T> clazz, final Class<?>... parameterTypes) {
         for (Constructor<T> constructor : getDeclaredConstructors(clazz)) {
-            if (Arrays.equals(constructor.getParameterTypes(), parameterTypes)) return constructor;
+            if (Arrays.equals(constructor.getParameterTypes(), parameterTypes)) {
+                return constructor;
+            }
         }
         return null;
     }
