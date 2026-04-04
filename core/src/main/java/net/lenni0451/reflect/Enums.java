@@ -45,7 +45,7 @@ public class Enums {
      * @return The new enum value
      */
     public static <T extends Enum<T>> T newInstance(final Class<T> enumClass, final String name, final int ordinal, final Class<?>[] argumentTypes, final Object[] arguments) {
-        Class<?>[] types = new Class<?>[arguments.length + 2];
+        Class<?>[] types = new Class<?>[argumentTypes.length + 2];
         types[0] = String.class;
         types[1] = int.class;
         System.arraycopy(argumentTypes, 0, types, 2, argumentTypes.length);

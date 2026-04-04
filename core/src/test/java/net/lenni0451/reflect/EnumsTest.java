@@ -20,11 +20,27 @@ class EnumsTest {
     }
 
     @Test
+    void createVarargEnumInstance() {
+        VarargTestEnum instance = Enums.newInstance(VarargTestEnum.class, "THREE", 2, new Class[]{String.class, String[].class}, new Object[]{"three", "test5", "test6"});
+        assertEquals("THREE", instance.name());
+        assertEquals(2, instance.ordinal());
+    }
+
+    @Test
     void valueOfIgnoreCase() {
         assertEquals(DayOfWeek.MONDAY, Enums.valueOfIgnoreCase(DayOfWeek.class, "monday"));
         assertEquals(DayOfWeek.MONDAY, Enums.valueOfIgnoreCase(DayOfWeek.class, "MONDAY"));
         assertEquals(DayOfWeek.MONDAY, Enums.valueOfIgnoreCase(DayOfWeek.class, "Monday"));
         assertEquals(DayOfWeek.MONDAY, Enums.valueOfIgnoreCase(DayOfWeek.class, "mONdAY"));
+    }
+
+
+    public enum VarargTestEnum {
+        ONE("one", "test1", "test2"),
+        TWO("two", "test3", "test4");
+
+        VarargTestEnum(String arg, String... varargs) {
+        }
     }
 
 }

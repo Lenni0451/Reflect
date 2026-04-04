@@ -135,7 +135,7 @@ public class Constructors {
      */
     public static <T> T invoke(final Constructor<T> constructor, final Object... args) {
         try {
-            return (T) TRUSTED_LOOKUP.unreflectConstructor(constructor).asSpreader(Object[].class, args.length).invoke(args);
+            return (T) TRUSTED_LOOKUP.unreflectConstructor(constructor).invokeWithArguments(args);
         } catch (Throwable t) {
             throw new ConstructorInvocationException(constructor).cause(t);
         }
