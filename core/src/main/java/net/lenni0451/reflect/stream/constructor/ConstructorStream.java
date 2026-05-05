@@ -74,7 +74,7 @@ public class ConstructorStream {
      * @return The constructor wrapper
      */
     public Optional<ConstructorWrapper> opt(final int index) {
-        if (index < 0 || index > this.constructors.size()) return Optional.empty();
+        if (index < 0 || index >= this.constructors.size()) return Optional.empty();
         return Optional.of(this.constructors.get(index));
     }
 

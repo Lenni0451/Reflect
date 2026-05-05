@@ -75,7 +75,7 @@ public class FieldStream {
      * @return The field wrapper
      */
     public Optional<FieldWrapper> opt(final int index) {
-        if (index < 0 || index > this.fields.size()) return Optional.empty();
+        if (index < 0 || index >= this.fields.size()) return Optional.empty();
         return Optional.of(this.fields.get(index));
     }
 
