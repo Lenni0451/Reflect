@@ -141,7 +141,8 @@ public class ClassLoaders {
             if (jarLoaderClass.equals(loader.getClass())) {
                 URL loaderUrl = RStream.of(loader).fields().filter(URL.class).by(0).get();
                 if (url.equals(loaderUrl)) {
-                    loaders.add(0, loaders.remove(loaders.size() - 1));
+                    loaders.remove(loader);
+                    loaders.add(0, loader);
                     break;
                 }
             }
