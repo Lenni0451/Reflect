@@ -140,4 +140,20 @@ class ProxyTest {
         assertEquals(2, proxy.test());
     }
 
+    @Test
+    void packagePrivateMethod() {
+        ProxyClass proxyClass = new ProxyBuilder()
+                .setSuperClass(Class5.class)
+                .setInvocationHandler((thiz, proxyMethod, args) -> {
+                    if (proxyMethod.getInvokedMethod().getName().equals("pkgPrivateMethod")) {
+                        return 12345;
+                    }
+                    return proxyMethod.invokeSuper(args);
+                })
+                .build();
+        Class5 proxy = proxyClass.allocateInstance();
+
+        assertEquals(12345, proxy.invokeMethod());
+    }
+
 }

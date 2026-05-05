@@ -37,6 +37,8 @@ public class ProxyBuilder {
     private Class<?> superClass;
     @Nullable
     private Class<?>[] interfaces;
+    @Nullable
+    private String packageName;
     private Predicate<Method> methodFilter = m -> true;
     private Function<Method, Method> methodMapper = Function.identity();
     private InvocationHandler invocationHandler = InvocationHandler.forwarding();
@@ -109,6 +111,25 @@ public class ProxyBuilder {
 
         this.reset();
         this.interfaces = interfaces;
+        return this;
+    }
+
+    /**
+     * @return The package name of the proxy class
+     */
+    @Nullable
+    public String getPackageName() {
+        return this.packageName;
+    }
+
+    /**
+     * Set the package name of the proxy class.
+     *
+     * @param packageName The package name
+     * @return This builder
+     */
+    public ProxyBuilder setPackageName(@Nullable final String packageName) {
+        this.packageName = packageName;
         return this;
     }
 
@@ -217,7 +238,23 @@ public class ProxyBuilder {
     }
 
     private BuiltClass buildClass(final Reference<Method[]> methodsReference, final Reference<Method[]> originalMethodsReference) {
-        String className = "net/lenni0451/reflect/proxy/ProxyImpl$" + System.nanoTime();
+        String pkg;
+        if (this.packageName != null) {
+            pkg = this.packageName.replace('.', '/');
+            if (!pkg.isEmpty() && !pkg.endsWith("/")) {
+                pkg += "/";
+            }
+        } else if (this.superClass != null) {
+            Package superPackage = this.superClass.getPackage();
+            if (superPackage == null) {
+                pkg = "";
+            } else {
+                pkg = superPackage.getName().replace(".", "/") + "/";
+            }
+        } else {
+            pkg = "net/lenni0451/reflect/proxy/impl/";
+        }
+        String className = pkg + "ProxyImpl$" + System.nanoTime();
         Class<?>[] interfaces = this.interfaces;
         if (interfaces == null) {
             interfaces = new Class[]{Proxy.class};
