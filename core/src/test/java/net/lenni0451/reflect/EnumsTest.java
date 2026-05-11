@@ -41,6 +41,12 @@ class EnumsTest {
         assertEquals(DayOfWeek.MONDAY, Enums.valueOfIgnoreCase(DayOfWeek.class, "mONdAY"));
     }
 
+    @Test
+    void addWithValuesNameCollision() {
+        ValuesNameCollision val = Enums.newInstance(ValuesNameCollision.class, "TEST2", 1, new Class[0], new Object[0]);
+        Enums.addEnumInstance(ValuesNameCollision.class, val);
+    }
+
 
     public enum VarargTestEnum {
         ONE("one", "test1", "test2"),
@@ -48,6 +54,14 @@ class EnumsTest {
 
         VarargTestEnum(String arg, String... varargs) {
         }
+    }
+
+    public enum ValuesNameCollision {
+        TEST;
+
+        private static int $VALUES;
+        private static int $VALUES$;
+        private static int $VALUES$$$;
     }
 
 }

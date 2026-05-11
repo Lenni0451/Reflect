@@ -7,6 +7,7 @@ import net.lenni0451.reflect.exceptions.FieldNotFoundException;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 import static net.lenni0451.reflect.JVMConstants.*;
@@ -71,7 +72,27 @@ public class Enums {
      */
     public static <T extends Enum<T>> void addEnumInstance(final Class<T> enumClass, final T enumValue) {
         //Add the enum value to the enum class
-        Field values = Fields.getDeclaredField(enumClass, FIELD_Enum_$VALUES);
+        Field values = null;
+        Field potentialValues = null;
+        for (Field field : Fields.getDeclaredFields(enumClass)) {
+            if (!Modifier.isStatic(field.getModifiers())) continue;
+            if (!field.getType().isArray()) continue;
+            if (!field.getType().getComponentType().equals(enumClass)) continue;
+
+            if ((field.getModifiers() & 0x1000 /* ACC_SYNTHETIC */) != 0) {
+                values = field;
+                break;
+            } else if (field.getName().startsWith(FIELD_Enum_$VALUES)) {
+                // If the field isn't synthetic for some reason, this is the best guess we have
+                potentialValues = field;
+            }
+        }
+        if (values == null) {
+            if (potentialValues == null) {
+                throw new FieldNotFoundException(enumClass.getName(), FIELD_Enum_$VALUES);
+            }
+            values = potentialValues;
+        }
         Object[] valuesArray = Fields.getObject(null, values);
         valuesArray = Arrays.copyOf(valuesArray, valuesArray.length + 1);
         valuesArray[valuesArray.length - 1] = enumValue;
