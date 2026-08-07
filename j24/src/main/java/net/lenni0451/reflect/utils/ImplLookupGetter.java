@@ -50,7 +50,8 @@ public class ImplLookupGetter {
                 propertiesRef = env.callStaticObjectMethod(systemClass, getPropertiesMethod);
                 propertiesClass = env.findClass(Properties.class);
                 MemorySegment putMethod = env.getMethodId(propertiesClass, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-                previousValue = env.callObjectMethod(propertiesRef, putMethod, propertyName = env.newStringUTF(PROPERTY_NAME), implLookupRef);
+                propertyName = env.newStringUTF(PROPERTY_NAME);
+                previousValue = env.callObjectMethod(propertiesRef, putMethod, propertyName, implLookupRef);
             } finally {
                 env.deleteGlobalRef(lookupClass);
                 env.deleteGlobalRef(implLookupRef);
