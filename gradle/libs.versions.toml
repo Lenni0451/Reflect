@@ -3,7 +3,7 @@
 [libraries]
 findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 jetbrainsAnnotations = { module = "org.jetbrains:annotations", version = "26.1.0" }
-lombok = { module = "org.projectlombok:lombok", version = "1.18.46" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.48" }
 asm = { module = "org.ow2.asm:asm", version = "9.10.1" }
 commons-unchecked = { module = "net.lenni0451.commons:unchecked", version = "1.9.2" }
 
