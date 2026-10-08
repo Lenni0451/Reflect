@@ -34,6 +34,11 @@ public class Modules {
             .attempt(() -> Methods.getDeclaredMethod(Module.class, METHOD_Module_implAddEnableNativeAccessToAllUnnamed))
             .map(TRUSTED_LOOKUP::unreflect)
             .require(() -> new MethodNotFoundException(Module.class.getName(), METHOD_Module_implAddEnableNativeAccessToAllUnnamed));
+    private static final MethodHandle loadModule = FieldInitializer
+            .attempt(() -> Classes.byName(CLASS_Modules))
+            .map(clazz -> Methods.getDeclaredMethod(clazz, METHOD_Modules_loadModule, String.class))
+            .map(TRUSTED_LOOKUP::unreflect)
+            .require(() -> new MethodNotFoundException(CLASS_Modules, METHOD_Modules_loadModule, String.class));
 
     /**
      * Copy the module from one class to another.<br>
@@ -120,6 +125,15 @@ public class Modules {
     @SneakyThrows
     public static void enableNativeAccessToAllUnnamed() {
         implAddEnableNativeAccessToAllUnnamed.invoke();
+    }
+
+    /**
+     * Load a module by name.<br>
+     * This allows the usage of modules normally restricted behind JVM flags, like jdk.incubator.vector.
+     */
+    @SneakyThrows
+    public static void loadModule(final String moduleName) {
+        loadModule.invoke(moduleName);
     }
 
 }

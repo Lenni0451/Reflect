@@ -40,6 +40,7 @@ public class JVMConstants {
     public static final String CLASS_LiveStackFrameInfo = calc("java.lang.LiveStackFrameInfo");
     public static final String CLASS_LiveStackFrameInfo_PrimitiveSlot32 = calc("java.lang.LiveStackFrameInfo$PrimitiveSlot32");
     public static final String CLASS_LiveStackFrameInfo_PrimitiveSlot64 = calc("java.lang.LiveStackFrameInfo$PrimitiveSlot64");
+    public static final String CLASS_Modules = calc("jdk.internal.module.Modules");
 
     public static final String FIELD_MethodHandles_Lookup_IMPL_LOOKUP = calc("IMPL_LOOKUP");
     public static final String FIELD_URLClassLoader_ucp = calc("ucp");
@@ -83,6 +84,7 @@ public class JVMConstants {
     public static final String METHOD_LiveStackFrameInfo_mode = calc("mode");
     public static final String METHOD_LiveStackFrameInfo_PrimitiveSlot32_value = calc("value");
     public static final String METHOD_LiveStackFrameInfo_PrimitiveSlot64_value = calc("value");
+    public static final String METHOD_Modules_loadModule = calc("loadModule");
 
     public static final String VM_OPTION_ObjectAlignmentInBytes = calc("ObjectAlignmentInBytes");
 

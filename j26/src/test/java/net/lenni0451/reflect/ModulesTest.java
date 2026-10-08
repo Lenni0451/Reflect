@@ -41,6 +41,11 @@ class ModulesTest {
         assertDoesNotThrow(Modules::enableNativeAccessToAllUnnamed);
     }
 
+    @Test
+    void loadModule() {
+        assertDoesNotThrow(() -> Modules.loadModule("java.base"));
+    }
+
 
     private static class ModuleHolder {
     }

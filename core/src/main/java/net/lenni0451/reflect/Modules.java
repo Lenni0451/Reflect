@@ -89,4 +89,14 @@ public class Modules {
         //Check out the Java 21+ version
     }
 
+    /**
+     * Load a module by name.<br>
+     * This allows the usage of modules normally restricted behind JVM flags, like jdk.incubator.vector.
+     */
+    @SneakyThrows
+    public static void loadModule(final String moduleName) {
+        //Nothing to do in Java 8
+        //Check out the Java 9+ version
+    }
+
 }
